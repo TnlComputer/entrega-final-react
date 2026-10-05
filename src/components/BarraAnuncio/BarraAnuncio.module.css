@@ -1,0 +1,42 @@
+.barra-anuncio {
+  align-items: center;
+  background: var(--lime);
+  color: var(--ink);
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 10px 48px;
+  text-align: center;
+}
+.barra-anuncio p {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.descuento {
+  background: var(--ink);
+  border-radius: 999px;
+  color: var(--lime);
+  flex-shrink: 0;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.icono {
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+@media (max-width: 600px) {
+  .barra-anuncio {
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    padding: 9px 20px;
+  }
+  .barra-anuncio p {
+    font-size: 13px;
+  }
+}

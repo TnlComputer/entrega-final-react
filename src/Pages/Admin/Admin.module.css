@@ -1,0 +1,205 @@
+.admin-page {
+  padding-top: 56px;
+  text-align: left;
+}
+.admin-heading {
+  align-items: end;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+.admin-heading h2 {
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: 36px;
+  font-weight: 400;
+  margin: 0;
+}
+.usuario {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.tabs {
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 4px;
+  margin-bottom: 28px;
+}
+.tab {
+  border-bottom: 3px solid transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: -1px;
+  padding: 10px 16px;
+  text-decoration: none;
+}
+.tab:hover {
+  color: var(--ink);
+}
+.tab-activa {
+  border-bottom-color: var(--lime);
+  color: var(--ink);
+}
+
+.toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.resumen {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
+.filtros {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 2fr repeat(3, 1fr);
+  margin-bottom: 20px;
+}
+.vacio {
+  color: var(--muted);
+  padding: 32px 0;
+  text-align: center;
+}
+
+.tabla {
+  font-size: 14px;
+  vertical-align: middle;
+}
+.tabla th {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.fila-oculta td {
+  opacity: 0.55;
+}
+.fila-oculta td:last-child {
+  opacity: 1;
+}
+.celda-producto {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  min-width: 220px;
+}
+.celda-producto img {
+  border-radius: 4px;
+  flex-shrink: 0;
+  height: 44px;
+  object-fit: cover;
+  width: 52px;
+}
+.celda-producto strong {
+  display: block;
+  font-weight: 600;
+}
+.celda-producto small {
+  color: var(--muted);
+}
+.stock-bajo {
+  color: #c45d4f;
+  font-weight: 700;
+}
+.estados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.acciones {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.formulario {
+  max-width: 900px;
+}
+.titulo-formulario {
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: 400;
+  margin: 0;
+}
+.seccion {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  padding: 20px 24px 24px;
+}
+.seccion legend {
+  color: var(--violet);
+  float: none;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  width: auto;
+}
+.vista-previa {
+  align-items: center;
+  aspect-ratio: 4 / 3;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+.vista-previa img {
+  border: 6px solid rgba(255, 253, 250, 0.82);
+  max-height: 75%;
+  max-width: 75%;
+  object-fit: cover;
+  transform: rotate(-6deg);
+}
+.vista-previa span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.campo-corto {
+  max-width: 160px;
+}
+.botones-formulario {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-bottom: 20px;
+}
+
+@media (max-width: 820px) {
+  .filtros {
+    grid-template-columns: 1fr 1fr;
+  }
+  .filtros > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+  .admin-heading h2 {
+    font-size: 28px;
+  }
+  .filtros {
+    grid-template-columns: 1fr;
+  }
+  .seccion {
+    padding: 16px;
+  }
+}

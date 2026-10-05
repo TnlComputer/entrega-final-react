@@ -1,0 +1,25 @@
+{
+  "equipo": [
+    {
+      "nombre": "Martín Ferreyra",
+      "rol": "Fundador · Asesor de pesca",
+      "detalle": "Más de 20 años pescando en el Delta. Te ayuda a elegir el equipo según la especie.",
+      "email": "martin@elanzuelo.com.ar",
+      "avatar": "https://i.ibb.co/qY3d7sz9/martin-ferreyra.jpg"
+    },
+    {
+      "nombre": "Lucía Benítez",
+      "rol": "Atención al cliente",
+      "detalle": "Responde consultas, arma pedidos y coordina los envíos a todo el país.",
+      "email": "lucia@elanzuelo.com.ar",
+      "avatar": "https://i.ibb.co/fYYknLYk/lucia-benitez.jpg"
+    },
+    {
+      "nombre": "Diego Sosa",
+      "rol": "Depósito y logística",
+      "detalle": "Controla el stock y prepara cada paquete para que llegue a tiempo a la salida.",
+      "email": "diego@elanzuelo.com.ar",
+      "avatar": "https://i.ibb.co/nX2BR8z/diego-sosa.jpg"
+    }
+  ]
+}

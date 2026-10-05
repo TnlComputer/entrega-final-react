@@ -1,0 +1,84 @@
+:root {
+  --ink: #17151c;
+  --muted: #77727d;
+  --paper: #f6f4f0;
+  --white: #fffdfa;
+  --line: #dedbd5;
+  --violet: #11647a;
+  --lime: #f1ca4f;
+  --coral: #ed8e6d;
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--paper);
+}
+/* La página acompaña el ancho de la pantalla hasta 1920 px
+   (reemplaza el ancho fijo de 1126 px que venía en index.css) */
+#root {
+  width: 100%;
+  max-width: 1920px;
+  border-inline: 0;
+  background: var(--paper);
+}
+a {
+  color: inherit;
+}
+button,
+a {
+  font: inherit;
+}
+main {
+  flex: 1;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 48px 96px;
+}
+
+/* Pantallas de más de 1920 px: la página queda centrada y a los costados
+   se ve "agua profunda" con peces y anzuelos */
+@media (min-width: 1921px) {
+  body {
+    background:
+      url('./assets/fondo-pesca.svg') center top / 320px repeat fixed,
+      linear-gradient(180deg, var(--violet), #0b3f4d 55%, var(--ink)) fixed;
+  }
+  #root {
+    box-shadow: 0 0 60px rgba(23, 21, 28, 0.45);
+  }
+}
+
+/* Compartida por Home e ItemListContainer */
+.eyebrow {
+  color: var(--violet);
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1100px) {
+  main {
+    padding: 0 32px 80px;
+  }
+}
+
+@media (max-width: 600px) {
+  main {
+    padding: 0 20px 64px;
+  }
+}

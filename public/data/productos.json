@@ -1,0 +1,392 @@
+{
+  "rubros": [
+    {
+      "id": "canas-y-reels",
+      "nombre": "Cañas y reels",
+      "detalle": "Equipo para arrancar",
+      "orden": 1,
+      "subrubros": [
+        "Cañas",
+        "Reels"
+      ]
+    },
+    {
+      "id": "senuelos",
+      "nombre": "Señuelos",
+      "detalle": "Para tentar a la presa",
+      "orden": 2,
+      "subrubros": []
+    },
+    {
+      "id": "lineas-y-anzuelos",
+      "nombre": "Líneas y anzuelos",
+      "detalle": "Lo que no puede faltar",
+      "orden": 3,
+      "subrubros": [
+        "Líneas",
+        "Anzuelos"
+      ]
+    },
+    {
+      "id": "indumentaria",
+      "nombre": "Indumentaria",
+      "detalle": "Salí cómodo y protegido",
+      "orden": 4,
+      "subrubros": []
+    }
+  ],
+  "productos": [
+    {
+      "id": 1,
+      "nombre": "Caña Robalo 2,40 m",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Acción media, ideal para costa y laguna.",
+      "caracteristicas": [
+        "2,40 m de largo",
+        "Acción media",
+        "2 tramos"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Cañas",
+      "precio": 89900,
+      "precioOferta": null,
+      "stock": 6,
+      "imagen": "https://i.ibb.co/hxdwD9XS/1.jpg",
+      "clase": "product-lilac",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 2,
+      "nombre": "Reel Shimano FX",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Liviano, confiable y listo para darle uso.",
+      "caracteristicas": [
+        "5 rulemanes",
+        "Freno delantero",
+        "Recuperación 5.2:1"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Reels",
+      "precio": 74500,
+      "precioOferta": null,
+      "stock": 4,
+      "imagen": "https://i.ibb.co/PG0HKLL5/2.jpg",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 3,
+      "nombre": "Señuelo Rapala X-Rap",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Movimiento realista para tentar a la presa.",
+      "caracteristicas": [
+        "Color pejerrey",
+        "Flotante",
+        "Profundidad 1,2 m"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 32800,
+      "precioOferta": null,
+      "stock": 12,
+      "imagen": "https://i.ibb.co/mrkDxQ2j/3.jpg",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 4,
+      "nombre": "Multifilamento 0,30 mm",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Resistente y suave para lanzar más lejos.",
+      "caracteristicas": [
+        "150 metros",
+        "Resistencia 20 lb",
+        "Color verde oliva"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Líneas",
+      "precio": 18900,
+      "precioOferta": null,
+      "stock": 10,
+      "imagen": "https://i.ibb.co/wNr5d1Qc/4.jpg",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 5,
+      "nombre": "Kit de anzuelos Mustad",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Varios tamaños para tener siempre a mano.",
+      "caracteristicas": [
+        "Caja de 25 unidades",
+        "Acero reforzado",
+        "Tamaños 1 al 3/0"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Anzuelos",
+      "precio": 9600,
+      "precioOferta": null,
+      "stock": 15,
+      "imagen": "https://i.ibb.co/Z6ddzw1X/5.jpg",
+      "clase": "product-rust",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 6,
+      "nombre": "Chaleco pescador Norte",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Bolsillos amplios para llevar todo encima.",
+      "caracteristicas": [
+        "12 bolsillos",
+        "Tela impermeable",
+        "Talle único regulable"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 56000,
+      "precioOferta": null,
+      "stock": 3,
+      "imagen": "https://i.ibb.co/RTDgQsgz/6.jpg",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 7,
+      "nombre": "Caña Pejerrey 3,00 m",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Liviana y sensible, pensada para pejerrey de costa.",
+      "caracteristicas": [
+        "3,00 m de largo",
+        "Acción suave",
+        "3 tramos"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Cañas",
+      "precio": 64900,
+      "precioOferta": null,
+      "stock": 8,
+      "imagen": "https://i.ibb.co/gsx9wxZ/7.jpg",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 8,
+      "nombre": "Caña Embarcado 1,80 m",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Corta y potente para pescar desde la lancha.",
+      "caracteristicas": [
+        "1,80 m de largo",
+        "Acción pesada",
+        "Enterizo"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Cañas",
+      "precio": 72300,
+      "precioOferta": 65000,
+      "stock": 5,
+      "imagen": "https://i.ibb.co/jYKhQ94/8.jpg",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 9,
+      "nombre": "Reel Frontal Daiwa 3000",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Frontal suave y robusto para todo tipo de pesca.",
+      "caracteristicas": [
+        "6 rulemanes",
+        "Carretel de aluminio",
+        "Recuperación 5.3:1"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Reels",
+      "precio": 98500,
+      "precioOferta": null,
+      "stock": 4,
+      "imagen": "https://i.ibb.co/kVtTtLjy/9.jpg",
+      "clase": "product-lilac",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 10,
+      "nombre": "Reel Rotativo Abu Garcia",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Rotativo de perfil bajo para lances precisos.",
+      "caracteristicas": [
+        "Freno magnético",
+        "7 rulemanes",
+        "Mano derecha"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Reels",
+      "precio": 134900,
+      "precioOferta": null,
+      "stock": 2,
+      "imagen": "https://i.ibb.co/GQRVbTd2/10.jpg",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 11,
+      "nombre": "Cucharita Mepps N° 3",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Clásica giratoria que no falla con truchas y tarariras.",
+      "caracteristicas": [
+        "Paleta plateada",
+        "8 gramos",
+        "Anzuelo triple"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 7800,
+      "precioOferta": null,
+      "stock": 20,
+      "imagen": "https://i.ibb.co/qz5vqjn/11.jpg",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 12,
+      "nombre": "Señuelo de goma Paddle Tail",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Cola vibrante que imita a una presa herida.",
+      "caracteristicas": [
+        "Pack x 5",
+        "10 cm",
+        "Color natural"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 11200,
+      "precioOferta": 9500,
+      "stock": 14,
+      "imagen": "https://i.ibb.co/QvtgDK1w/12.jpg",
+      "clase": "product-rust",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 13,
+      "nombre": "Monofilamento 0,35 mm",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Nylon transparente, resistente a la abrasión.",
+      "caracteristicas": [
+        "300 metros",
+        "Resistencia 25 lb",
+        "Transparente"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Líneas",
+      "precio": 12400,
+      "precioOferta": null,
+      "stock": 18,
+      "imagen": "https://i.ibb.co/m5V9fq9f/13.jpg",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 14,
+      "nombre": "Anzuelos con rotor Owner",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Rotores armados para montar la línea en segundos.",
+      "caracteristicas": [
+        "Sobre de 10",
+        "Acero carbono",
+        "Tamaño 1/0"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Anzuelos",
+      "precio": 8300,
+      "precioOferta": null,
+      "stock": 25,
+      "imagen": "https://i.ibb.co/Hpt2WzQf/14.jpg",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 15,
+      "nombre": "Gorra con protección UV",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Visera amplia y tela fresca para días de sol.",
+      "caracteristicas": [
+        "Protección UV 50+",
+        "Secado rápido",
+        "Talle regulable"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 19900,
+      "precioOferta": null,
+      "stock": 9,
+      "imagen": "https://i.ibb.co/kgP0M1d7/15.jpg",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    },
+    {
+      "id": 16,
+      "nombre": "Campera rompeviento Delta",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Liviana e impermeable para salidas con viento.",
+      "caracteristicas": [
+        "Capucha desmontable",
+        "Tela impermeable",
+        "Talles S al XXL"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 87600,
+      "precioOferta": 79900,
+      "stock": 6,
+      "imagen": "https://i.ibb.co/gM1SkGHM/16.jpg",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0
+    }
+  ]
+}
