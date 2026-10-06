@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {Alert, Button, Form, Table} from 'react-bootstrap';
 import {useOutletContext} from 'react-router-dom';
-import {validarZonaEnvio, ZONA_ENVIO_VACIA} from '../../data/modeloEnvios';
+import {parsearLocalidades, validarZonaEnvio, ZONA_ENVIO_VACIA} from '../../data/modeloEnvios';
 import {guardarZonasEnvio} from '../../services/adminApi';
 import styles from './Admin.module.css';
 
@@ -42,6 +42,7 @@ function EditorEnvios({guardadas, reemplazarZonas}) {
       nombre: zona.nombre,
       codigoDesde: zona.codigoDesde,
       codigoHasta: zona.codigoHasta,
+      localidades: parsearLocalidades(zona.localidades).join(', '),
       precio: String(zona.precio)
     });
     setEditandoId(zona.id);
@@ -66,6 +67,7 @@ function EditorEnvios({guardadas, reemplazarZonas}) {
       nombre: formulario.nombre.trim(),
       codigoDesde: formulario.codigoDesde.trim(),
       codigoHasta: formulario.codigoHasta.trim(),
+      localidades: parsearLocalidades(formulario.localidades),
       precio: Number(formulario.precio),
       id: editandoId ?? crypto.randomUUID()
     };
@@ -99,7 +101,8 @@ function EditorEnvios({guardadas, reemplazarZonas}) {
     <div>
       <div className={styles.toolbar}>
         <p className={styles.resumen}>
-          Definí rangos de códigos postales argentinos (4 dígitos) y la tarifa fija de cada zona.
+          Definí un rango de CP, localidades o ambos para cada tarifa. Las localidades se comparan sin distinguir
+          mayúsculas ni acentos.
         </p>
       </div>
 
@@ -118,8 +121,21 @@ function EditorEnvios({guardadas, reemplazarZonas}) {
               <Form.Control value={formulario.nombre} onChange={cambiar('nombre')} isInvalid={Boolean(errores.nombre)} />
               <Form.Control.Feedback type="invalid">{errores.nombre}</Form.Control.Feedback>
             </Form.Group>
+            <Form.Group className={styles.localidadesZona} controlId="zona-envio-localidades">
+              <Form.Label>Localidades</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={2}
+                placeholder={'Buenos Aires, La Plata\nMar del Plata'}
+                value={formulario.localidades}
+                onChange={cambiar('localidades')}
+                isInvalid={Boolean(errores.localidades)}
+              />
+              <Form.Text>Opcional. Separalas por coma o por línea; se usan para calcular por dirección.</Form.Text>
+              <Form.Control.Feedback type="invalid">{errores.localidades}</Form.Control.Feedback>
+            </Form.Group>
             <Form.Group controlId="zona-envio-desde">
-              <Form.Label>CP desde *</Form.Label>
+              <Form.Label>CP desde</Form.Label>
               <Form.Control
                 inputMode="numeric"
                 maxLength={4}
@@ -131,7 +147,7 @@ function EditorEnvios({guardadas, reemplazarZonas}) {
               <Form.Control.Feedback type="invalid">{errores.codigoDesde}</Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="zona-envio-hasta">
-              <Form.Label>CP hasta *</Form.Label>
+              <Form.Label>CP hasta</Form.Label>
               <Form.Control
                 inputMode="numeric"
                 maxLength={4}
@@ -154,6 +170,9 @@ function EditorEnvios({guardadas, reemplazarZonas}) {
               />
               <Form.Control.Feedback type="invalid">{errores.precio}</Form.Control.Feedback>
             </Form.Group>
+            <Form.Text className={styles.zonaEnvioAyuda}>
+              Completá ambos CP para usar un rango, o dejalos vacíos si definís localidades. Podés completar los dos.
+            </Form.Text>
           </div>
           <div className={styles.botonesFormulario}>
             {editandoId && (
@@ -178,6 +197,7 @@ function EditorEnvios({guardadas, reemplazarZonas}) {
               <tr>
                 <th>Zona</th>
                 <th>Rango de CP</th>
+                <th>Localidades</th>
                 <th className="text-end">Tarifa</th>
                 <th className="text-end">Acciones</th>
               </tr>
@@ -186,7 +206,8 @@ function EditorEnvios({guardadas, reemplazarZonas}) {
               {zonas.map(zona => (
                 <tr key={zona.id}>
                   <td>{zona.nombre}</td>
-                  <td>{zona.codigoDesde}–{zona.codigoHasta}</td>
+                  <td>{zona.codigoDesde && zona.codigoHasta ? `${zona.codigoDesde}–${zona.codigoHasta}` : '—'}</td>
+                  <td>{parsearLocalidades(zona.localidades).join(', ') || '—'}</td>
                   <td className="text-end">{formatoPrecio.format(zona.precio)}</td>
                   <td>
                     <div className={styles.acciones}>
