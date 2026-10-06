@@ -118,6 +118,13 @@ function validarPedido(cuerpo) {
   if (!/^\d{1,6}(?:\s?[A-Za-z])?$/.test(direccion.numero)) {
     throw fallo(400, 'Ingresá un número de calle válido.');
   }
+  for (const [campo, limite] of [['piso', 10], ['departamento', 12], ['indicaciones', 300]]) {
+    const valor = entrega[campo] ?? '';
+    if (typeof valor !== 'string' || valor.trim().length > limite) {
+      throw fallo(400, `Revisá el campo ${campo} de la dirección.`);
+    }
+    direccion[campo] = valor.trim();
+  }
   return {items, entrega: {metodo: 'envio', busqueda: 'direccion', ...direccion}};
 }
 
@@ -269,7 +276,13 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
             ? 'Retiro en tienda — coordinar por contacto'
             : pedido.entrega.busqueda === 'codigoPostal'
               ? `Código postal ${pedido.entrega.codigoPostal}`
-              : `${pedido.entrega.calle} ${pedido.entrega.numero}, ${pedido.entrega.localidad}`,
+              : `${pedido.entrega.calle} ${pedido.entrega.numero}${
+                  pedido.entrega.piso ? `, Piso ${pedido.entrega.piso}` : ''
+                }${
+                  pedido.entrega.departamento ? `, Depto. ${pedido.entrega.departamento}` : ''
+                }, ${pedido.entrega.localidad}${
+                  pedido.entrega.indicaciones ? ` — ${pedido.entrega.indicaciones}` : ''
+                }`,
         total,
         stocks: nuevosStocks
       };
