@@ -70,6 +70,8 @@ function ItemListContainer({catalogo, onAgregarAlCarrito, comprasConfirmadas}) {
         <input
           id="buscador-productos"
           type="search"
+          name="buscar-productos"
+          autoComplete="off"
           placeholder="Buscá cañas, señuelos, anzuelos, indumentaria…"
           value={busqueda}
           onChange={evento => setBusqueda(evento.target.value)}
