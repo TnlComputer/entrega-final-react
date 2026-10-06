@@ -1,8 +1,25 @@
 import {useState} from 'react';
 import {Alert, Button, Form, Modal} from 'react-bootstrap';
 import {precioFinal} from '../../data/modeloCatalogo';
-import {UMBRAL_ENVIO_GRATIS, zonaParaCodigoPostal, zonaParaLocalidad} from '../../data/modeloEnvios';
+import {
+  UMBRAL_ENVIO_GRATIS,
+  celularValido,
+  zonaParaCodigoPostal,
+  zonaParaLocalidad
+} from '../../data/modeloEnvios';
 import styles from './CartModal.module.css';
+
+const ENTREGA_VACIA = {
+  metodo: 'envio',
+  calle: '',
+  numero: '',
+  piso: '',
+  departamento: '',
+  localidad: '',
+  codigoPostal: '',
+  celular: '',
+  indicaciones: ''
+};
 
 function CartModal({
   mostrar,
@@ -20,67 +37,45 @@ function CartModal({
   const [compraSimulada, setCompraSimulada] = useState(null);
   const [errorCompra, setErrorCompra] = useState(null);
   const [confirmando, setConfirmando] = useState(false);
-  const [entrega, setEntrega] = useState({
-    metodo: 'envio',
-    busqueda: 'codigoPostal',
-    calle: '',
-    numero: '',
-    localidad: '',
-    piso: '',
-    departamento: '',
-    indicaciones: '',
-    codigoPostal: ''
-  });
+  const [entrega, setEntrega] = useState(ENTREGA_VACIA);
   const subtotal = productos.reduce((total, item) => total + precioFinal(item.producto) * item.cantidad, 0);
   // Descuento del anuncio (free day…): se aplica sobre todo el carrito
   const montoDescuento = Math.round((subtotal * descuento) / 100);
   const totalProductos = subtotal - montoDescuento;
-  const zonaEnvio =
-    entrega.busqueda === 'direccion'
-      ? zonaParaLocalidad(envios.zonas, entrega.localidad)
-      : zonaParaCodigoPostal(envios.zonas, entrega.codigoPostal);
-  const envioGratis = entrega.metodo === 'envio' && Boolean(zonaEnvio) && totalProductos > UMBRAL_ENVIO_GRATIS;
-  const costoEnvio =
-    entrega.metodo === 'retiro' ? 0 : zonaEnvio ? (envioGratis ? 0 : zonaEnvio.precio) : null;
+  // Superado el umbral el envío es gratis y no hace falta una zona con tarifa
+  const envioGratisPorMonto = totalProductos > UMBRAL_ENVIO_GRATIS;
+  const envioGratis = entrega.metodo === 'envio' && envioGratisPorMonto;
+  // La tarifa sale del código postal; si no tiene zona, de la localidad
+  const zonaEnvio = envioGratisPorMonto
+    ? null
+    : (zonaParaCodigoPostal(envios.zonas, entrega.codigoPostal) ??
+      zonaParaLocalidad(envios.zonas, entrega.localidad));
+  const costoEnvio = entrega.metodo === 'retiro' || envioGratis ? 0 : zonaEnvio ? zonaEnvio.precio : null;
   const total = subtotal - montoDescuento + (costoEnvio ?? 0);
-  const destinoValido =
-    entrega.busqueda === 'direccion'
-      ? Boolean(
-          entrega.calle.trim().length >= 2 &&
-            entrega.calle.trim().length <= 120 &&
-            /^\d{1,6}(?:\s?[A-Za-z])?$/.test(entrega.numero.trim()) &&
-            entrega.localidad.trim().length >= 2 &&
-            entrega.localidad.trim().length <= 80 &&
-            zonaEnvio
-        )
-      : Boolean(zonaEnvio);
-  const pagoValido = entrega.metodo === 'retiro' || (destinoValido && !envios.cargando);
+  const datosEnvioCompletos =
+    entrega.calle.trim().length >= 2 &&
+    entrega.calle.trim().length <= 120 &&
+    /^\d{1,6}(?:\s?[A-Za-z])?$/.test(entrega.numero.trim()) &&
+    entrega.localidad.trim().length >= 2 &&
+    entrega.localidad.trim().length <= 80 &&
+    /^\d{4}$/.test(entrega.codigoPostal) &&
+    celularValido(entrega.celular);
+  const destinoValido = datosEnvioCompletos && (envioGratis || Boolean(zonaEnvio));
+  const pagoValido = entrega.metodo === 'retiro' || (destinoValido && (envioGratis || !envios.cargando));
   const textoEntrega =
     entrega.metodo === 'retiro'
       ? 'Retiro en tienda — coordinar por contacto'
-      : entrega.busqueda === 'codigoPostal'
-        ? `Código postal ${entrega.codigoPostal}`
-        : `${entrega.calle.trim()} ${entrega.numero.trim()}${
+      : `${entrega.calle.trim()} ${entrega.numero.trim()}${
           entrega.piso.trim() ? `, Piso ${entrega.piso.trim()}` : ''
-        }${entrega.departamento.trim() ? `, Depto. ${entrega.departamento.trim()}` : ''}, ${entrega.localidad.trim()}${
-          entrega.indicaciones.trim() ? ` — ${entrega.indicaciones.trim()}` : ''
-        }`;
+        }${entrega.departamento.trim() ? `, Depto. ${entrega.departamento.trim()}` : ''}, ${entrega.localidad.trim()} (CP ${
+          entrega.codigoPostal
+        }) · Cel. ${entrega.celular.trim()}${entrega.indicaciones.trim() ? ` — ${entrega.indicaciones.trim()}` : ''}`;
 
   const cerrar = () => {
     setPaso('carrito');
     setCompraSimulada(null);
     setErrorCompra(null);
-    setEntrega({
-      metodo: 'envio',
-      busqueda: 'codigoPostal',
-      calle: '',
-      numero: '',
-      localidad: '',
-      piso: '',
-      departamento: '',
-      indicaciones: '',
-      codigoPostal: ''
-    });
+    setEntrega(ENTREGA_VACIA);
     onCerrar();
   };
 
@@ -136,7 +131,9 @@ function CartModal({
               </div>
               <div>
                 <span>Entrega</span>
-                <strong>{compraSimulada?.metodo === 'retiro' ? 'Retiro en tienda' : compraSimulada?.zona}</strong>
+                <strong>{compraSimulada?.metodo === 'retiro'
+                    ? 'Retiro en tienda'
+                    : (compraSimulada?.zona ?? 'Envío a domicilio')}</strong>
               </div>
               <div>
                 <span>Envío</span>
@@ -183,133 +180,122 @@ function CartModal({
             </fieldset>
             {entrega.metodo === 'envio' && (
               <div className={styles.deliveryAddress}>
-                <p className={styles.deliveryIntro}>Elegí cómo querés calcular la tarifa de envío.</p>
-                {envios.error && <Alert variant="danger">No pudimos consultar las tarifas de envío: {envios.error}</Alert>}
-                <fieldset className={styles.deliveryOptions}>
-                  <legend>Calcular por</legend>
-                  <Form.Check
-                    type="radio"
-                    name="metodo-calculo-envio"
-                    id="calculo-codigo-postal"
-                    label="Código postal"
-                    checked={entrega.busqueda === 'codigoPostal'}
-                    onChange={() => setEntrega(actual => ({...actual, busqueda: 'codigoPostal'}))}
-                  />
-                  <Form.Check
-                    type="radio"
-                    name="metodo-calculo-envio"
-                    id="calculo-direccion"
-                    label="Dirección y localidad"
-                    checked={entrega.busqueda === 'direccion'}
-                    onChange={() => setEntrega(actual => ({...actual, busqueda: 'direccion'}))}
-                  />
-                </fieldset>
-                {entrega.busqueda === 'codigoPostal' ? (
-                  <div className={styles.deliveryFields}>
-                    <Form.Group controlId="checkout-cp">
-                      <Form.Label>Código postal *</Form.Label>
-                      <Form.Control
-                        value={entrega.codigoPostal}
-                        onChange={evento =>
-                          setEntrega(actual => ({
-                            ...actual,
-                            codigoPostal: evento.target.value.replace(/\D/g, '').slice(0, 4)
-                          }))
-                        }
-                        inputMode="numeric"
-                        autoComplete="postal-code"
-                        maxLength={4}
-                        placeholder="1000"
-                      />
-                    </Form.Group>
-                  </div>
-                ) : (
-                  <div className={styles.deliveryFields}>
-                    <Form.Group className={styles.deliveryStreet} controlId="checkout-calle">
-                      <Form.Label>Calle *</Form.Label>
-                      <Form.Control
-                        value={entrega.calle}
-                        onChange={cambiarEntrega('calle')}
-                        autoComplete="street-address"
-                        minLength={2}
-                        maxLength={120}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group controlId="checkout-numero">
-                      <Form.Label>Número *</Form.Label>
-                      <Form.Control
-                        value={entrega.numero}
-                        onChange={cambiarEntrega('numero')}
-                        inputMode="text"
-                        maxLength={8}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group controlId="checkout-localidad">
-                      <Form.Label>Localidad *</Form.Label>
-                      <Form.Control
-                        value={entrega.localidad}
-                        onChange={cambiarEntrega('localidad')}
-                        autoComplete="address-level2"
-                        minLength={2}
-                        maxLength={80}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group controlId="checkout-piso">
-                      <Form.Label>Piso (opcional)</Form.Label>
-                      <Form.Control
-                        value={entrega.piso}
-                        onChange={cambiarEntrega('piso')}
-                        maxLength={10}
-                        autoComplete="address-level3"
-                      />
-                    </Form.Group>
-                    <Form.Group controlId="checkout-departamento">
-                      <Form.Label>Departamento (opcional)</Form.Label>
-                      <Form.Control
-                        value={entrega.departamento}
-                        onChange={cambiarEntrega('departamento')}
-                        maxLength={12}
-                      />
-                    </Form.Group>
-                    <Form.Group className={styles.deliveryStreet} controlId="checkout-indicaciones">
-                      <Form.Label>Aclaraciones para la entrega (opcional)</Form.Label>
-                      <Form.Control
-                        as="textarea"
-                        rows={2}
-                        value={entrega.indicaciones}
-                        onChange={cambiarEntrega('indicaciones')}
-                        maxLength={300}
-                        placeholder="Timbre, entre calles, horario u otra indicación"
-                      />
-                    </Form.Group>
-                  </div>
+                <p className={styles.deliveryIntro}>
+                  {envioGratisPorMonto
+                    ? `Tu compra supera ${formatoPrecio.format(UMBRAL_ENVIO_GRATIS)}: el envío es gratis. Completá los datos de entrega.`
+                    : 'Completá los datos de entrega. La tarifa se calcula por código postal o localidad.'}
+                </p>
+                {!envioGratisPorMonto && envios.error && (
+                  <Alert variant="danger">No pudimos consultar las tarifas de envío: {envios.error}</Alert>
                 )}
-                {envios.cargando ? (
+                <div className={styles.deliveryFields}>
+                  <Form.Group className={styles.deliveryStreet} controlId="checkout-calle">
+                    <Form.Label>Calle *</Form.Label>
+                    <Form.Control
+                      value={entrega.calle}
+                      onChange={cambiarEntrega('calle')}
+                      autoComplete="address-line1"
+                      minLength={2}
+                      maxLength={120}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="checkout-numero">
+                    <Form.Label>Número *</Form.Label>
+                    <Form.Control
+                      value={entrega.numero}
+                      onChange={cambiarEntrega('numero')}
+                      inputMode="text"
+                      maxLength={8}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="checkout-piso">
+                    <Form.Label>Piso (opcional)</Form.Label>
+                    <Form.Control value={entrega.piso} onChange={cambiarEntrega('piso')} maxLength={10} />
+                  </Form.Group>
+                  <Form.Group controlId="checkout-departamento">
+                    <Form.Label>Departamento (opcional)</Form.Label>
+                    <Form.Control
+                      value={entrega.departamento}
+                      onChange={cambiarEntrega('departamento')}
+                      maxLength={12}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="checkout-localidad">
+                    <Form.Label>Localidad *</Form.Label>
+                    <Form.Control
+                      value={entrega.localidad}
+                      onChange={cambiarEntrega('localidad')}
+                      autoComplete="address-level2"
+                      minLength={2}
+                      maxLength={80}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="checkout-cp">
+                    <Form.Label>Código postal *</Form.Label>
+                    <Form.Control
+                      value={entrega.codigoPostal}
+                      onChange={evento =>
+                        setEntrega(actual => ({
+                          ...actual,
+                          codigoPostal: evento.target.value.replace(/\D/g, '').slice(0, 4)
+                        }))
+                      }
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      maxLength={4}
+                      placeholder="1000"
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="checkout-celular">
+                    <Form.Label>Celular *</Form.Label>
+                    <Form.Control
+                      type="tel"
+                      value={entrega.celular}
+                      onChange={cambiarEntrega('celular')}
+                      autoComplete="tel"
+                      maxLength={25}
+                      placeholder="11 2345-6789"
+                      isInvalid={Boolean(entrega.celular.trim()) && !celularValido(entrega.celular)}
+                      required
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Ingresá un celular con código de área (8 a 15 dígitos).
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group className={styles.deliveryStreet} controlId="checkout-indicaciones">
+                    <Form.Label>Observaciones para la entrega (opcional)</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={2}
+                      value={entrega.indicaciones}
+                      onChange={cambiarEntrega('indicaciones')}
+                      maxLength={300}
+                      placeholder="Timbre, entre calles, horario u otra indicación"
+                    />
+                  </Form.Group>
+                </div>
+                {envioGratis ? (
+                  <Alert variant="success" className={styles.deliveryFeedback}>
+                    Envío gratis por superar {formatoPrecio.format(UMBRAL_ENVIO_GRATIS)} en productos.
+                  </Alert>
+                ) : envios.cargando ? (
                   <p className={styles.deliveryFeedback}>Consultando zonas de envío…</p>
                 ) : zonaEnvio ? (
                   <Alert variant="success" className={styles.deliveryFeedback}>
-                    {envioGratis
-                      ? `Zona ${zonaEnvio.nombre}: envío gratis por superar ${formatoPrecio.format(UMBRAL_ENVIO_GRATIS)} en productos.`
-                      : `Zona ${zonaEnvio.nombre}: envío ${formatoPrecio.format(zonaEnvio.precio)}.`}
+                    Zona {zonaEnvio.nombre}: envío {formatoPrecio.format(zonaEnvio.precio)}.
                   </Alert>
-                ) : entrega.busqueda === 'codigoPostal' && entrega.codigoPostal.length === 4 && !envios.error ? (
+                ) : entrega.codigoPostal.length === 4 && entrega.localidad.trim() && !envios.error ? (
                   <Alert variant="warning" className={styles.deliveryFeedback}>
-                    No tenemos una tarifa configurada para ese código postal. Probá otro código o elegí retiro en tienda.
-                  </Alert>
-                ) : entrega.busqueda === 'direccion' && entrega.localidad.trim() && !envios.error ? (
-                  <Alert variant="warning" className={styles.deliveryFeedback}>
-                    No encontramos una tarifa para esa localidad. Revisá el nombre o elegí calcular por código postal.
+                    No tenemos una tarifa para ese código postal ni para esa localidad. Revisá los datos o elegí retiro
+                    en tienda.
                   </Alert>
                 ) : (
                   <p className={styles.deliveryFeedback}>
-                    {totalProductos > UMBRAL_ENVIO_GRATIS
-                      ? `Con un total de productos mayor a ${formatoPrecio.format(UMBRAL_ENVIO_GRATIS)}, el envío será gratis cuando encontremos una zona.`
-                      : entrega.busqueda === 'codigoPostal'
-                        ? 'Ingresá un código postal válido de 4 dígitos para consultar la tarifa.'
-                        : 'Ingresá una localidad configurada para consultar la tarifa por dirección.'}
+                    Ingresá el código postal y la localidad para consultar la tarifa.
                   </p>
                 )}
               </div>
@@ -342,9 +328,11 @@ function CartModal({
                 <strong>{formatoPrecio.format(total)}</strong>
               </div>
             </div>
-                <p className={styles.totalUpdated}>
-                  El total se actualiza automáticamente según el código postal o la localidad ingresada.
-                </p>
+                {!envioGratisPorMonto && (
+                  <p className={styles.totalUpdated}>
+                    El total se actualiza automáticamente según el código postal o la localidad ingresada.
+                  </p>
+                )}
               </>
             ) : (
               <section className={styles.orderReview} aria-label="Revisión final del pedido">
@@ -453,7 +441,7 @@ function CartModal({
               <div>
                 <span>Envío</span>
                 <strong>
-                  {totalProductos > UMBRAL_ENVIO_GRATIS ? 'Gratis al elegir destino' : 'A calcular por CP o localidad'}
+                  {envioGratisPorMonto ? 'Gratis' : 'A calcular por CP o localidad'}
                 </strong>
               </div>
               <div className={styles.cartTotal}>

@@ -9,9 +9,10 @@ function AdminLayout() {
   const navegar = useNavigate();
   const {pathname} = useLocation();
 
+  // Primero sale de /admin: si se cerrara antes la sesión, RutaPrivada mandaría a /login
   const salir = async () => {
-    await cerrarSesion();
     navegar('/', {replace: true});
+    await cerrarSesion();
   };
 
   const claseTab = ({isActive}) => `${styles.tab} ${isActive ? styles.tabActiva : ''}`;

@@ -8,6 +8,13 @@ export const ZONA_ENVIO_VACIA = {
 
 export const UMBRAL_ENVIO_GRATIS = 300000;
 
+// Celular con código de área: números, espacios, guiones, paréntesis y "+" opcional (8 a 15 dígitos)
+export function celularValido(celular) {
+  if (typeof celular !== 'string' || !/^\+?[\d\s()-]{8,25}$/.test(celular.trim())) return false;
+  const digitos = celular.replace(/\D/g, '').length;
+  return digitos >= 8 && digitos <= 15;
+}
+
 export const ZONAS_ENVIO_MOCK = [
   {
     id: 'demo-caba-gba',
