@@ -16,7 +16,7 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 **Tienda**
 - Catálogo de productos agrupado por rubros (cañas y reels, señuelos, líneas y anzuelos, indumentaria), con precios de oferta y aviso de últimas unidades.
 - Buscador de productos y tarjetas que se dan vuelta para ver las características.
-- Favoritos y carrito de compras: se puede sumar o restar cantidades respetando el stock; favoritos y carrito se guardan en el navegador.
+- Favoritos y carrito de compras: se puede sumar o restar cantidades respetando el stock; favoritos y carrito se guardan en el navegador. El checkout ofrece una simulación de pago, sin procesar ni registrar pagos o pedidos reales.
 - Franja de anuncio arriba de todo (por ejemplo, un "free day"), con fechas de inicio y fin y un descuento opcional que se aplica al total del carrito.
 - Diseño adaptable: celular, tablet y escritorio hasta 1920 px; en pantallas más grandes aparece un fondo decorativo de pesca a los costados.
 

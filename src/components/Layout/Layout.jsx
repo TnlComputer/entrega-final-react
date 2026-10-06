@@ -124,6 +124,7 @@ function Layout({productos = [], catalogo}) {
         onCerrar={() => setMostrarCarrito(false)}
         onQuitar={quitarDelCarrito}
         onCambiarCantidad={cambiarCantidadCarrito}
+        onPagoSimulado={() => setCarrito({})}
         formatoPrecio={formatoPrecio}
         descuento={descuentoVigente(anuncio.anuncio)}
       />
