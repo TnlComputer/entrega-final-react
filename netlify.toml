@@ -1,0 +1,14 @@
+# Configuración de Netlify (se lee sola al importar el repo)
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Las rutas de React (/login, /admin…) cargan la app.
+# Los archivos que existen (data/*.json, assets) se sirven igual: Netlify no los pisa.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

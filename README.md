@@ -3,7 +3,7 @@
 > **Proyecto académico** hecho para el curso **React JS de Talento Tech (comisión C26243)**, como entrega final.
 > "El Anzuelo" es una tienda **ficticia**: los productos, precios, el equipo y los datos de contacto son de ejemplo.
 
-**Sitio publicado:** _(pendiente: Vercel)_
+**Sitio publicado:** _(pendiente: Netlify)_
 
 ![Captura de la página de inicio de El.Anzuelo](docs/captura.png)
 
@@ -34,7 +34,7 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 - [React Router](https://reactrouter.com/) para la navegación
 - [React Bootstrap](https://react-bootstrap.github.io/) y CSS Modules para los estilos
 - Datos en JSON (`public/data/`): productos (con sus rubros), equipo y anuncio
-- Publicación automática en Vercel
+- Publicación automática en Netlify
 
 ## Cómo correrlo en local
 
@@ -58,7 +58,7 @@ Para usar el panel de administración, copiá `.env.example` como `.env.local` y
 
 ## Publicación
 
-Cada `git push` a la rama `main` compila el sitio y lo publica en Vercel (configuración en [vercel.json](vercel.json)).
+Cada `git push` a la rama `main` compila el sitio y lo publica en Netlify (configuración en [netlify.toml](netlify.toml)).
 
 ## Autor
 
