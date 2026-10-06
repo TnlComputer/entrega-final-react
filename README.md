@@ -17,7 +17,7 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 - Catálogo de productos agrupado por rubros (cañas y reels, señuelos, líneas y anzuelos, indumentaria), con precios de oferta y aviso de últimas unidades.
 - Buscador de productos y tarjetas que se dan vuelta para ver las características.
 - Favoritos y carrito de compras: se puede sumar o restar cantidades respetando el stock; favoritos y carrito se guardan en el navegador. El checkout ofrece una simulación de pago, sin procesar ni registrar pagos o pedidos reales.
-- Envío calculado por rangos inclusivos de códigos postales numéricos de 4 dígitos, con tarifas fijas configurables desde `/admin/envios`; también se puede elegir retiro en tienda sin costo. Las tarifas deben cargarse en el panel antes de habilitar cada zona.
+- Envío simulado por código postal o por localidad configurada, con tarifas fijas por zona desde `/admin/envios`; el retiro en tienda no tiene costo. Si el total de productos luego del descuento supera $300.000, el envío es gratis. Las zonas deben configurarse en el panel para calcular tarifas.
 - Franja de anuncio arriba de todo (por ejemplo, un "free day"), con fechas de inicio y fin y un descuento opcional que se aplica al total del carrito.
 - Diseño adaptable: celular, tablet y escritorio hasta 1920 px; en pantallas más grandes aparece un fondo decorativo de pesca a los costados.
 
@@ -25,7 +25,7 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 - Alta, edición, baja y ocultamiento de productos, con carga de imágenes a ImgBB o por URL.
 - Galería de imágenes por rubro: permite elegir imágenes ya usadas en productos del rubro o guardadas en la galería. Al reemplazar una imagen, la anterior se conserva para volver a usarla.
 - Gestión de rubros y subrubros.
-- Configuración de zonas de envío sin rangos superpuestos, tarifas fijas en ARS y retiro en tienda sin costo.
+- Configuración de zonas de envío por rangos inclusivos de CP numéricos de 4 dígitos y/o localidades, sin rangos superpuestos ni localidades duplicadas. Incluye tarifas fijas en ARS y retiro en tienda sin costo.
 - Edición del anuncio: texto, fechas, descuento y vista previa.
 
 El login se realiza con Firebase Authentication. El catálogo, los avisos, las tarifas de envío y los enlaces de la galería se guardan en Cloud Firestore. Solo pueden entrar al panel las cuentas autorizadas en `admins/{uid}`.

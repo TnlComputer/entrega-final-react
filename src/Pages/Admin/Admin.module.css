@@ -214,6 +214,10 @@
   gap: 14px;
   grid-template-columns: 2fr repeat(3, minmax(100px, 1fr));
 }
+.localidades-zona,
+.zona-envio-ayuda {
+  grid-column: 1 / -1;
+}
 .botones-formulario {
   display: flex;
   gap: 10px;
