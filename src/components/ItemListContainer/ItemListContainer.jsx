@@ -18,7 +18,7 @@ function leerFavoritosGuardados() {
   }
 }
 
-function ItemListContainer({catalogo, onAgregarAlCarrito}) {
+function ItemListContainer({catalogo, onAgregarAlCarrito, comprasConfirmadas}) {
   const [busqueda, setBusqueda] = useState('');
   const [favoritos, setFavoritos] = useState(leerFavoritosGuardados);
 
@@ -93,6 +93,7 @@ function ItemListContainer({catalogo, onAgregarAlCarrito}) {
           onAlternarFavorito={alternarFavorito}
           onAgregarAlCarrito={onAgregarAlCarrito}
           formatoPrecio={formatoPrecio}
+          comprasConfirmadas={comprasConfirmadas}
         />
       )}
     </section>

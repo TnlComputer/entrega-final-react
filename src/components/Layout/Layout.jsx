@@ -33,6 +33,8 @@ function Layout({productos = [], catalogo}) {
   const [carrito, setCarrito] = useState(leerCarritoGuardado);
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
   const [aviso, setAviso] = useState(null);
+  // Cambia con cada compra para que las cards de la tienda reinicien su contador
+  const [comprasConfirmadas, setComprasConfirmadas] = useState(0);
   const anuncio = useAnuncio();
   const envios = useEnvios();
 
@@ -114,6 +116,7 @@ function Layout({productos = [], catalogo}) {
     const resultado = await confirmarCompraSimulada(compra);
     actualizarStocks(resultado.stocks);
     setCarrito({});
+    setComprasConfirmadas(total => total + 1);
     return resultado;
   };
 
@@ -126,7 +129,7 @@ function Layout({productos = [], catalogo}) {
       <Notificacion aviso={aviso} onCerrar={() => setAviso(null)} />
 
       <main>
-        <Outlet context={{onAgregarAlCarrito: agregarAlCarrito, catalogo, anuncio, envios}} />
+        <Outlet context={{onAgregarAlCarrito: agregarAlCarrito, catalogo, anuncio, envios, comprasConfirmadas}} />
       </main>
 
       <Footer />
