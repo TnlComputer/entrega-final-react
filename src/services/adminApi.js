@@ -5,7 +5,7 @@
 //   Imágenes: /api/imagenes (Netlify Function), que sube a ImgBB con la clave oculta.
 // Quién puede escribir lo deciden las reglas de Firestore (firestore.rules), no este archivo.
 import {onAuthStateChanged, signInWithEmailAndPassword, signOut} from 'firebase/auth';
-import {collection, doc, getDoc, getDocs, setDoc, writeBatch} from 'firebase/firestore';
+import {collection, doc, getDoc, getDocs, query, setDoc, where, writeBatch} from 'firebase/firestore';
 import {auth, db} from './firebase';
 
 const MENSAJES_FIREBASE = {
@@ -107,4 +107,36 @@ export async function subirImagen(archivo) {
   const datos = await respuesta.json().catch(() => ({}));
   if (!respuesta.ok) throw new Error(datos.error || 'No se pudo subir la imagen.');
   return datos.url;
+}
+
+async function idImagen(url) {
+  const contenido = new TextEncoder().encode(url);
+  const resumen = await crypto.subtle.digest('SHA-256', contenido);
+  return Array.from(new Uint8Array(resumen), byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+export async function listarImagenesGaleria(rubro) {
+  if (!rubro) return [];
+  try {
+    const imagenes = await getDocs(query(collection(db, 'imagenes'), where('rubro', '==', rubro)));
+    return imagenes.docs
+      .map(imagen => imagen.data())
+      .sort((a, b) => (b.creadaEn ?? '').localeCompare(a.creadaEn ?? ''));
+  } catch (error) {
+    throw traducir(error);
+  }
+}
+
+export async function guardarImagenGaleria({url, rubro, nombre}) {
+  if (!url || !rubro) return;
+  try {
+    const id = await idImagen(url);
+    await setDoc(
+      doc(db, 'imagenes', id),
+      {url, rubro, nombre: nombre || 'Imagen guardada', creadaEn: new Date().toISOString()},
+      {merge: true}
+    );
+  } catch (error) {
+    throw traducir(error);
+  }
 }

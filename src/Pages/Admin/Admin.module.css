@@ -169,6 +169,43 @@
   color: var(--muted);
   font-size: 12px;
 }
+.galeria-imagenes {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 2px;
+}
+.imagen-galeria {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+  cursor: pointer;
+  min-width: 0;
+  padding: 6px;
+  text-align: left;
+}
+.imagen-galeria:hover,
+.imagen-galeria-seleccionada {
+  border: 2px solid var(--violet);
+  padding: 5px;
+}
+.imagen-galeria img {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+.imagen-galeria small {
+  display: block;
+  overflow: hidden;
+  padding-top: 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .campo-corto {
   max-width: 160px;
 }

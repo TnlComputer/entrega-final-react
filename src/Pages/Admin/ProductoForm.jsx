@@ -1,10 +1,10 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Alert, Button, Col, Form, InputGroup, Row} from 'react-bootstrap';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import heroImage from '../../assets/hero.jpg';
 import {COLORES, LIMITES, PRODUCTO_VACIO, prepararProducto, validarProducto} from '../../data/modeloCatalogo';
 import useAdminCatalogo from '../../hooks/useAdminCatalogo';
-import {subirImagen} from '../../services/adminApi';
+import {guardarImagenGaleria, listarImagenesGaleria, subirImagen} from '../../services/adminApi';
 import itemStyles from '../../components/Item/Item.module.css';
 import styles from './Admin.module.css';
 
@@ -62,6 +62,7 @@ function FormularioProducto({inicial, id, catalogo}) {
   const [guardando, setGuardando] = useState(false);
   const [subiendo, setSubiendo] = useState(false);
   const [errorGeneral, setErrorGeneral] = useState(null);
+  const [galeria, setGaleria] = useState({rubro: null, imagenes: [], error: null});
 
   const datos = formularioADatos(formulario);
   const errores = validarProducto(datos, {rubros, productos, id});
@@ -70,6 +71,33 @@ function FormularioProducto({inicial, id, catalogo}) {
 
   const rubroElegido = rubros.find(rubro => rubro.id === formulario.rubro);
   const subrubros = rubroElegido?.subrubros ?? [];
+  const galeriaActual = galeria.rubro === formulario.rubro;
+  const imagenesGuardadas = galeriaActual ? galeria.imagenes : [];
+  const cargandoGaleria = Boolean(formulario.rubro) && !galeriaActual;
+  const errorGaleria = galeriaActual ? galeria.error : null;
+  const imagenesProductos = productos
+    .filter(producto => producto.rubro === formulario.rubro && producto.imagen)
+    .map(producto => ({url: producto.imagen, nombre: producto.nombre}));
+  const imagenesUnicas = [
+    ...new Map([...imagenesProductos, ...imagenesGuardadas].map(imagen => [imagen.url, imagen])).values()
+  ];
+
+  useEffect(() => {
+    if (!formulario.rubro) return undefined;
+
+    let vigente = true;
+    listarImagenesGaleria(formulario.rubro)
+      .then(imagenes => {
+        if (vigente) setGaleria({rubro: formulario.rubro, imagenes, error: null});
+      })
+      .catch(errorCapturado => {
+        if (vigente) setGaleria({rubro: formulario.rubro, imagenes: [], error: errorCapturado.message});
+      });
+
+    return () => {
+      vigente = false;
+    };
+  }, [formulario.rubro]);
 
   const cambiar = campo => evento => {
     const {type, checked, value} = evento.target;
@@ -96,6 +124,7 @@ function FormularioProducto({inicial, id, catalogo}) {
     try {
       const url = await subirImagen(archivo);
       setFormulario(actual => ({...actual, imagen: url}));
+      await guardarImagenGaleria({url, rubro: formulario.rubro, nombre: formulario.nombre.trim()});
     } catch (errorCapturado) {
       setErrorGeneral(errorCapturado.message);
     } finally {
@@ -111,6 +140,13 @@ function FormularioProducto({inicial, id, catalogo}) {
 
     setGuardando(true);
     try {
+      if (
+        id !== null &&
+        inicial.imagen &&
+        (inicial.imagen !== datos.imagen || inicial.rubro !== datos.rubro)
+      ) {
+        await guardarImagenGaleria({url: inicial.imagen, rubro: inicial.rubro, nombre: inicial.nombre});
+      }
       await guardarProducto(datos, id);
       navegar('/admin', {
         state: {aviso: {tipo: 'success', texto: `${id === null ? 'Creamos' : 'Guardamos'} "${datos.nombre}".`}}
@@ -318,6 +354,32 @@ function FormularioProducto({inicial, id, catalogo}) {
               <Form.Control type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={elegirImagen} disabled={subiendo} />
               <Form.Text>{subiendo ? 'Subiendo a ImgBB…' : 'JPG, PNG, WEBP o GIF, hasta 5 MB. Se sube a ImgBB y se completa el link.'}</Form.Text>
             </Form.Group>
+            <div className="mb-3">
+              <Form.Label>Imágenes guardadas de {rubroElegido?.nombre ?? 'este rubro'}</Form.Label>
+              {cargandoGaleria && <Form.Text className="d-block">Cargando galería…</Form.Text>}
+              {errorGaleria && <Alert variant="warning">No pudimos cargar las imágenes guardadas: {errorGaleria}</Alert>}
+              {!cargandoGaleria && !errorGaleria && imagenesUnicas.length === 0 && (
+                <Form.Text className="d-block">Todavía no hay imágenes para este rubro.</Form.Text>
+              )}
+              {imagenesUnicas.length > 0 && (
+                <div className={styles.galeriaImagenes}>
+                  {imagenesUnicas.map(imagen => (
+                    <button
+                      key={imagen.url}
+                      type="button"
+                      className={`${styles.imagenGaleria} ${
+                        formulario.imagen === imagen.url ? styles.imagenGaleriaSeleccionada : ''
+                      }`}
+                      aria-label={`Usar imagen ${imagen.nombre}`}
+                      aria-pressed={formulario.imagen === imagen.url}
+                      onClick={() => setFormulario(actual => ({...actual, imagen: imagen.url}))}>
+                      <img src={imagen.url} alt="" loading="lazy" />
+                      <small>{imagen.nombre || 'Imagen guardada'}</small>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <Form.Group controlId="producto-color">
               <Form.Label>Color de fondo de la tarjeta</Form.Label>
               <Form.Select value={formulario.clase} onChange={cambiar('clase')}>
