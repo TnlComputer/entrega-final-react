@@ -21,6 +21,11 @@ service cloud.firestore {
       allow write: if esAdmin();
     }
 
+    match /imagenes/{id} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
     match /config/{id} {
       allow read: if true;
       allow write: if esAdmin();
