@@ -1,0 +1,35 @@
+rules_version = '2';
+
+// Reglas de Firestore. Se pegan en la consola de Firebase: Firestore Database → Reglas → Publicar.
+//   - La tienda (cualquiera, sin sesión) puede leer el catálogo y el anuncio.
+//   - Solo los admins pueden escribir. Admin = cuenta con un documento admins/{uid},
+//     que se crea a mano en la consola (cualquiera puede registrarse en Auth, pero no ser admin).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function esAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    match /productos/{id} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    match /rubros/{id} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    match /config/{id} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    // Cada uno puede ver si su propia cuenta es admin; nadie puede crearse admin desde la app
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+  }
+}

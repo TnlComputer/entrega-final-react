@@ -1,6 +1,6 @@
 // Modelo de datos del catálogo, compartido por la tienda, el panel admin
-// y la API de desarrollo (server/catalogoApi.js).
-// Todo vive en public/data/productos.json: {rubros: [...], productos: [...]}
+// y el script que carga los datos iniciales (scripts/cargarDatos.js).
+// Vive en Firestore: colección "rubros" (id = slug) y colección "productos" (id = número como texto).
 //
 // Rubro (id = slug del nombre):
 //   {id, nombre, detalle, orden, subrubros: ['Cañas', 'Reels']}
@@ -186,7 +186,7 @@ export function ordenarProductos(productos, rubros) {
   );
 }
 
-// Lo que llega de productos.json, listo para mostrar: rubros ordenados y
+// Lo que llega de Firestore, listo para mostrar: rubros ordenados y
 // productos en el orden de la tienda, con el nombre de su rubro
 export function prepararCatalogo({rubros = [], productos = []}) {
   const rubrosOrdenados = [...rubros].sort((a, b) => a.orden - b.orden);

@@ -13,7 +13,7 @@ function useAdminCatalogo() {
   const {catalogo} = useOutletContext();
   const {rubros, todosLosProductos: productos, cargando, error, reemplazarCatalogo} = catalogo;
 
-  // Escribe el JSON completo y, si salió bien, actualiza la tienda
+  // Guarda el catálogo en Firestore y, si salió bien, actualiza la tienda
   const guardar = async (nuevosRubros, nuevosProductos) => {
     const datos = {rubros: nuevosRubros, productos: nuevosProductos.map(limpiarProducto)};
     await guardarCatalogo(datos);

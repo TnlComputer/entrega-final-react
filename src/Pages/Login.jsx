@@ -2,7 +2,6 @@ import {useState} from 'react';
 import {Alert, Button, Form} from 'react-bootstrap';
 import {Navigate, useLocation} from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
-import {MODO_DEMO} from '../services/adminApi';
 import styles from './Login.module.css';
 
 function Login() {
@@ -36,11 +35,6 @@ function Login() {
       <div className={styles.loginCard}>
         <span className="eyebrow">Acceso administración</span>
         <h2>Ingresar</h2>
-        {MODO_DEMO && (
-          <Alert variant="info" className="small">
-            Modo demostración: ingresá con cualquier email y contraseña para recorrer el panel.
-          </Alert>
-        )}
 
         <Form onSubmit={enviar} noValidate>
           <Form.Group className="mb-3" controlId="login-email">

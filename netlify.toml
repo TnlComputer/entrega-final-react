@@ -6,6 +6,13 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# /api/imagenes → Netlify Function (netlify/functions/imagenes.js). Va antes que la regla de React.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
 # Las rutas de React (/login, /admin…) cargan la app.
 # Los archivos que existen (data/*.json, assets) se sirven igual: Netlify no los pisa.
 [[redirects]]

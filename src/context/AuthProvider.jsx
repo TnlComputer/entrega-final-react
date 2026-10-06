@@ -2,27 +2,21 @@ import {useEffect, useState} from 'react';
 import * as adminApi from '../services/adminApi';
 import AuthContext from './AuthContext';
 
-// En local, la contraseña se valida en server/catalogoApi.js (con ADMIN_EMAIL y
-// ADMIN_PASSWORD de .env.local), nunca en el navegador.
-// En el sitio publicado, por ahora, no se valida: ver MODO_DEMO en services/adminApi.js.
+// La contraseña la valida Firebase Auth, nunca este código. Además de iniciar sesión,
+// la cuenta tiene que estar en la colección "admins" de Firestore (ver services/adminApi.js).
 function AuthProvider({children}) {
   const [usuario, setUsuario] = useState(null);
-  const [cargando, setCargando] = useState(() => Boolean(adminApi.leerToken()));
+  // Hasta que Firebase diga si hay una sesión guardada
+  const [cargando, setCargando] = useState(true);
 
-  useEffect(() => {
-    if (!adminApi.leerToken()) return;
-
-    let cancelado = false;
-    adminApi.consultarSesion().then(email => {
-      if (cancelado) return;
-      setUsuario(email ? {email} : null);
-      setCargando(false);
-    });
-
-    return () => {
-      cancelado = true;
-    };
-  }, []);
+  useEffect(
+    () =>
+      adminApi.observarSesion(email => {
+        setUsuario(email ? {email} : null);
+        setCargando(false);
+      }),
+    []
+  );
 
   const iniciarSesion = async (email, contrasenia) => {
     const emailConfirmado = await adminApi.iniciarSesion(email, contrasenia);
@@ -34,7 +28,7 @@ function AuthProvider({children}) {
     setUsuario(null);
   };
 
-  // Hay un solo usuario y es el admin
+  // Solo los admins quedan con sesión iniciada
   const esAdmin = Boolean(usuario);
 
   return (

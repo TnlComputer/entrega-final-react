@@ -1,132 +1,110 @@
-// Cliente de la API del panel admin (server/catalogoApi.js).
-// Esa API existe solo con `npm run dev`; en el sitio publicado no hay.
-const CLAVE_TOKEN = 'admin-token';
+// Operaciones del panel admin contra Firebase.
+//   Login: Firebase Auth (email y contraseña). Es admin quien tenga un documento admins/{uid}.
+//   Catálogo: colecciones "rubros" (id = slug) y "productos" (id = número como texto).
+//   Anuncio: documento config/anuncio.
+//   Imágenes: /api/imagenes (Netlify Function), que sube a ImgBB con la clave oculta.
+// Quién puede escribir lo deciden las reglas de Firestore (firestore.rules), no este archivo.
+import {onAuthStateChanged, signInWithEmailAndPassword, signOut} from 'firebase/auth';
+import {collection, doc, getDoc, getDocs, setDoc, writeBatch} from 'firebase/firestore';
+import {auth, db} from './firebase';
 
-// MODO DEMOSTRACIÓN (por ahora, en el sitio publicado):
-// - el login acepta cualquier email y contraseña, sin validarlos, para que se pueda ver el panel;
-// - guardar productos, rubros, anuncio o subir imágenes no hace nada (avisa que es una demo).
-// En local (`npm run dev`) sigue todo como siempre: login con .env.local y cambios que se guardan.
-// Para volver a usar el login real también en el sitio publicado (con un backend), poner false.
-export const MODO_DEMO = import.meta.env.PROD;
-const PREFIJO_DEMO = 'demo:';
-const avisoDemo = () =>
-  Promise.reject(new Error('Modo demostración: los cambios no se guardan. El panel se puede recorrer, pero no modifica el catálogo.'));
+const MENSAJES_FIREBASE = {
+  'auth/invalid-credential': 'Email o contraseña incorrectos.',
+  'auth/invalid-email': 'El email no es válido.',
+  'auth/too-many-requests': 'Demasiados intentos. Esperá unos minutos y probá de nuevo.',
+  'auth/network-request-failed': 'No hay conexión. Revisá internet.',
+  'permission-denied': 'No tenés permiso para hacer cambios. Iniciá sesión de nuevo.',
+  unavailable: 'No hay conexión con la base de datos. Revisá internet.'
+};
 
+// Pasa los errores de Firebase a un mensaje para mostrar
+const traducir = error => new Error(MENSAJES_FIREBASE[error.code] || error.message || 'Algo salió mal.', {cause: error});
 
-export function leerToken() {
+async function esAdmin(usuario) {
   try {
-    return sessionStorage.getItem(CLAVE_TOKEN);
+    return (await getDoc(doc(db, 'admins', usuario.uid))).exists();
   } catch {
-    return null;
+    return false;
   }
 }
 
-function guardarToken(token) {
-  try {
-    if (token) sessionStorage.setItem(CLAVE_TOKEN, token);
-    else sessionStorage.removeItem(CLAVE_TOKEN);
-  } catch {
-    // Sin sessionStorage la sesión dura hasta recargar la página
-  }
-}
-
-async function pedir(ruta, {method = 'GET', body, headers = {}} = {}) {
-  const token = leerToken();
-  let respuesta;
-
-  try {
-    respuesta = await fetch(`/api${ruta}`, {
-      method,
-      body,
-      headers: {...(token && {Authorization: `Bearer ${token}`}), ...headers}
-    });
-  } catch (error) {
-    throw new Error('No hay conexión con el servidor de desarrollo.', {cause: error});
-  }
-
-  const tipo = respuesta.headers.get('content-type') || '';
-  if (!tipo.includes('application/json')) {
-    // En el sitio publicado /api no existe y el servidor devuelve otra cosa
-    throw new Error('El panel de administración solo funciona corriendo el proyecto en local (npm run dev).');
-  }
-
-  const datos = await respuesta.json();
-  if (!respuesta.ok) {
-    if (respuesta.status === 401) guardarToken(null);
-    throw Object.assign(new Error(datos.error || 'Algo salió mal.'), {estado: respuesta.status});
-  }
-  return datos;
+// Avisa cada vez que cambia la sesión: callback(email) o callback(null).
+// Firebase recuerda la sesión al recargar la página. Devuelve la función para dejar de escuchar.
+export function observarSesion(callback) {
+  return onAuthStateChanged(auth, async usuario => {
+    callback(usuario && (await esAdmin(usuario)) ? usuario.email : null);
+  });
 }
 
 export async function iniciarSesion(email, contrasenia) {
-  if (MODO_DEMO) {
-    // Sin validar: cualquier email y contraseña entran al panel
-    guardarToken(`${PREFIJO_DEMO}${email}`);
-    return email;
-  }
-
-  const datos = await pedir('/login', {
-    method: 'POST',
-    body: JSON.stringify({email, contrasenia}),
-    headers: {'Content-Type': 'application/json'}
-  });
-  guardarToken(datos.token);
-  return datos.email;
-}
-
-export async function consultarSesion() {
-  const token = leerToken();
-  if (!token) return null;
-  if (MODO_DEMO) return token.startsWith(PREFIJO_DEMO) ? token.slice(PREFIJO_DEMO.length) : null;
-
+  let credencial;
   try {
-    return (await pedir('/sesion')).email;
-  } catch {
-    return null;
+    credencial = await signInWithEmailAndPassword(auth, email, contrasenia);
+  } catch (error) {
+    throw traducir(error);
   }
+
+  if (!(await esAdmin(credencial.user))) {
+    await signOut(auth);
+    throw new Error('Esta cuenta no tiene permiso para entrar al panel.');
+  }
+  return credencial.user.email;
 }
 
-export async function cerrarSesion() {
-  if (MODO_DEMO) {
-    guardarToken(null);
-    return;
-  }
+export function cerrarSesion() {
+  return signOut(auth);
+}
 
+// Recibe el catálogo completo (como lo arma useAdminCatalogo) y deja Firestore igual:
+// escribe cada rubro y producto, y borra los que ya no están. Todo junto o nada.
+export async function guardarCatalogo({rubros, productos}) {
   try {
-    await pedir('/logout', {method: 'POST'});
-  } finally {
-    guardarToken(null);
+    const lote = writeBatch(db);
+    const [rubrosGuardados, productosGuardados] = await Promise.all([
+      getDocs(collection(db, 'rubros')),
+      getDocs(collection(db, 'productos'))
+    ]);
+
+    const idsRubros = new Set(rubros.map(rubro => rubro.id));
+    const idsProductos = new Set(productos.map(producto => String(producto.id)));
+
+    rubrosGuardados.docs.filter(d => !idsRubros.has(d.id)).forEach(d => lote.delete(d.ref));
+    productosGuardados.docs.filter(d => !idsProductos.has(d.id)).forEach(d => lote.delete(d.ref));
+    rubros.forEach(rubro => lote.set(doc(db, 'rubros', rubro.id), rubro));
+    productos.forEach(producto => lote.set(doc(db, 'productos', String(producto.id)), producto));
+
+    await lote.commit();
+  } catch (error) {
+    throw traducir(error);
   }
-}
-
-export function guardarCatalogo(catalogo) {
-  if (MODO_DEMO) return avisoDemo();
-
-  return pedir('/catalogo', {
-    method: 'PUT',
-    body: JSON.stringify(catalogo),
-    headers: {'Content-Type': 'application/json'}
-  });
 }
 
 // Devuelve el anuncio tal como quedó guardado
-export function guardarAnuncio(anuncio) {
-  if (MODO_DEMO) return avisoDemo();
-
-  return pedir('/anuncio', {
-    method: 'PUT',
-    body: JSON.stringify(anuncio),
-    headers: {'Content-Type': 'application/json'}
-  });
+export async function guardarAnuncio(anuncio) {
+  try {
+    await setDoc(doc(db, 'config', 'anuncio'), anuncio);
+    return anuncio;
+  } catch (error) {
+    throw traducir(error);
+  }
 }
 
 export async function subirImagen(archivo) {
-  if (MODO_DEMO) return avisoDemo();
+  if (!auth.currentUser) throw new Error('Iniciá sesión de nuevo.');
+  const token = await auth.currentUser.getIdToken();
 
-  const datos = await pedir('/imagenes', {
-    method: 'POST',
-    body: archivo,
-    headers: {'Content-Type': archivo.type}
-  });
+  let respuesta;
+  try {
+    respuesta = await fetch('/api/imagenes', {
+      method: 'POST',
+      body: archivo,
+      headers: {Authorization: `Bearer ${token}`, 'Content-Type': archivo.type}
+    });
+  } catch (error) {
+    throw new Error('No hay conexión con el servidor.', {cause: error});
+  }
+
+  const datos = await respuesta.json().catch(() => ({}));
+  if (!respuesta.ok) throw new Error(datos.error || 'No se pudo subir la imagen.');
   return datos.url;
 }

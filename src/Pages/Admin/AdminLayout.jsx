@@ -1,7 +1,6 @@
-import {Alert, Button} from 'react-bootstrap';
+import {Button} from 'react-bootstrap';
 import {NavLink, Outlet, useLocation, useNavigate, useOutletContext} from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
-import {MODO_DEMO} from '../../services/adminApi';
 import styles from './Admin.module.css';
 
 function AdminLayout() {
@@ -43,13 +42,6 @@ function AdminLayout() {
           Anuncio
         </NavLink>
       </nav>
-
-      {MODO_DEMO && (
-        <Alert variant="warning">
-          <strong>Modo demostración.</strong> Podés recorrer los formularios de productos, rubros y anuncio, pero los
-          cambios no se guardan.
-        </Alert>
-      )}
 
       {/* Se pasa el mismo contexto (catálogo y carrito) a las pantallas del panel */}
       <Outlet context={contexto} />

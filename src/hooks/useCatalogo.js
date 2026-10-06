@@ -37,7 +37,7 @@ function useCatalogo() {
     productos: todos.filter(producto => producto.activo),
     cargando,
     error,
-    // Lo usa el panel después de guardar en el JSON
+    // Lo usa el panel después de guardar en Firestore
     reemplazarCatalogo: datos => {
       actualizarProductos(datos);
       setCatalogo(datos);

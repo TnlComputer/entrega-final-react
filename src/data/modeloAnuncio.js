@@ -1,6 +1,6 @@
 // Modelo del anuncio que se muestra arriba de toda la página (free day, envío gratis…),
-// compartido por la tienda, el panel admin y la API de desarrollo (server/catalogoApi.js).
-// Vive en public/data/anuncio.json:
+// compartido por la tienda, el panel admin y el script de datos iniciales (scripts/cargarDatos.js).
+// Vive en Firestore, en el documento config/anuncio:
 //   {activo, texto, desde, hasta, descuento}
 //   desde / hasta: 'AAAA-MM-DD' o '' (sin fecha = sin límite)
 //   descuento: % entero sobre el total del carrito mientras el anuncio se muestra (0 = sin descuento)
