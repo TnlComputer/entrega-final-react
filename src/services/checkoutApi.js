@@ -12,7 +12,12 @@ export async function confirmarCompraSimulada(compra) {
 
   const datos = await respuesta.json().catch(() => ({}));
   if (!respuesta.ok) {
-    const error = new Error(datos.error || 'No se pudo confirmar la compra simulada.');
+    const mensajeServidor = datos.error || 'No se pudo confirmar la compra simulada.';
+    const error = new Error(
+      respuesta.status >= 500
+        ? `El servidor no pudo procesar la compra. ${mensajeServidor} Revisá la configuración de Netlify Functions.`
+        : mensajeServidor
+    );
     error.stocks = datos.stocks;
     throw error;
   }
