@@ -1,7 +1,12 @@
 import {useState} from 'react';
 import {Alert, Button, Form, Table} from 'react-bootstrap';
 import {useOutletContext} from 'react-router-dom';
-import {parsearLocalidades, validarZonaEnvio, ZONA_ENVIO_VACIA} from '../../data/modeloEnvios';
+import {
+  parsearLocalidades,
+  validarZonaEnvio,
+  ZONAS_ENVIO_MOCK,
+  ZONA_ENVIO_VACIA
+} from '../../data/modeloEnvios';
 import {guardarZonasEnvio} from '../../services/adminApi';
 import styles from './Admin.module.css';
 
@@ -19,7 +24,7 @@ function AdminEnvios() {
 
   return (
     <EditorEnvios
-      key={JSON.stringify(envios.zonas)}
+      key={JSON.stringify(envios.zonas.length ? envios.zonas : ZONAS_ENVIO_MOCK)}
       guardadas={envios.zonas}
       reemplazarZonas={envios.reemplazarZonas}
     />
@@ -27,7 +32,8 @@ function AdminEnvios() {
 }
 
 function EditorEnvios({guardadas, reemplazarZonas}) {
-  const [zonas, setZonas] = useState(guardadas);
+  const esPrimeraCarga = guardadas.length === 0;
+  const [zonas, setZonas] = useState(() => (esPrimeraCarga ? ZONAS_ENVIO_MOCK : guardadas));
   const [formulario, setFormulario] = useState(ZONA_ENVIO_VACIA);
   const [editandoId, setEditandoId] = useState(null);
   const [errores, setErrores] = useState({});
@@ -105,6 +111,13 @@ function EditorEnvios({guardadas, reemplazarZonas}) {
           mayúsculas ni acentos.
         </p>
       </div>
+
+      {esPrimeraCarga && (
+        <Alert variant="warning">
+          Mostrando zonas y precios de prueba (DEMO). No son tarifas reales y todavía no afectan el checkout. Editalas o
+          reemplazalas y guardá para publicarlas.
+        </Alert>
+      )}
 
       {aviso && (
         <Alert variant={aviso.tipo} dismissible onClose={() => setAviso(null)}>

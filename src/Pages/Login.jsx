@@ -19,11 +19,20 @@ function Login() {
   const enviar = async evento => {
     evento.preventDefault();
     setError(null);
+    const emailLimpio = email.trim();
+    if (emailLimpio.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailLimpio)) {
+      setError('Ingresá un correo electrónico válido.');
+      return;
+    }
+    if (!contrasenia || contrasenia.length > 4096) {
+      setError('Ingresá una contraseña válida.');
+      return;
+    }
     setEnviando(true);
 
     try {
       // Al confirmarse la sesión, el <Navigate> de arriba lleva a destino
-      await iniciarSesion(email.trim(), contrasenia);
+      await iniciarSesion(emailLimpio, contrasenia);
     } catch (errorCapturado) {
       setError(errorCapturado.message);
       setEnviando(false);
@@ -42,6 +51,7 @@ function Login() {
             <Form.Control
               type="email"
               autoComplete="username"
+              maxLength={254}
               value={email}
               onChange={evento => setEmail(evento.target.value)}
               required
@@ -52,6 +62,7 @@ function Login() {
             <Form.Control
               type="password"
               autoComplete="current-password"
+              maxLength={4096}
               value={contrasenia}
               onChange={evento => setContrasenia(evento.target.value)}
               required

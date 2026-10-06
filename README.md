@@ -16,8 +16,8 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 **Tienda**
 - Catálogo de productos agrupado por rubros (cañas y reels, señuelos, líneas y anzuelos, indumentaria), con precios de oferta y aviso de últimas unidades.
 - Buscador de productos y tarjetas que se dan vuelta para ver las características.
-- Favoritos y carrito de compras: se puede sumar o restar cantidades respetando el stock; favoritos y carrito se guardan en el navegador. El checkout ofrece una simulación de pago, sin procesar ni registrar pagos o pedidos reales.
-- Envío simulado por código postal o por localidad configurada, con tarifas fijas por zona desde `/admin/envios`; el retiro en tienda no tiene costo. Si el total de productos luego del descuento supera $300.000, el envío es gratis. Las zonas deben configurarse en el panel para calcular tarifas.
+- Favoritos y carrito de compras: se puede sumar o restar cantidades respetando el stock; favoritos y carrito se guardan en el navegador. El checkout es una simulación (no cobra ni registra pagos), valida nuevamente el stock en el servidor y lo descuenta de forma atómica en Firestore.
+- Envío simulado por código postal o por localidad configurada, con tarifas fijas por zona desde `/admin/envios`; el retiro en tienda no tiene costo. Si el total de productos luego del descuento supera $300.000, el envío es gratis. Cuando aún no hay zonas guardadas, el panel muestra zonas y precios DEMO que deben revisarse y guardarse para usarse en el checkout.
 - Franja de anuncio arriba de todo (por ejemplo, un "free day"), con fechas de inicio y fin y un descuento opcional que se aplica al total del carrito.
 - Diseño adaptable: celular, tablet y escritorio hasta 1920 px; en pantallas más grandes aparece un fondo decorativo de pesca a los costados.
 
@@ -62,6 +62,7 @@ Copiá `.env.example` como `.env.local` y completalo. `.env.local` no se sube al
 3. **Authentication**: activar *Correo electrónico/contraseña* y crear el usuario admin (el mismo de `ADMIN_EMAIL` y `ADMIN_PASSWORD`).
 4. En Firestore, crear la colección `admins` con un documento cuyo ID sea el *UID* de ese usuario (se ve en Authentication). Puede quedar sin campos.
 5. `npm run cargar-datos` sube el catálogo y el anuncio iniciales de `scripts/datos/`.
+6. Para simular compras con descuento de stock, creá una cuenta de servicio de Firebase con acceso de edición a Firestore y guardá su JSON completo en `FIREBASE_SERVICE_ACCOUNT_JSON`. En local va en `.env.local`; en Netlify, en *Site configuration → Environment variables*. Es una credencial privada: no la subas a Git, no uses el prefijo `VITE_` y no la compartas por chat.
 
 | Comando | Qué hace |
 | --- | --- |
@@ -70,10 +71,13 @@ Copiá `.env.example` como `.env.local` y completalo. `.env.local` no se sube al
 | `npm run preview` | Muestra la versión generada |
 | `npm run lint` | Revisa el código con ESLint |
 | `npm run cargar-datos` | Carga en Firestore el catálogo y el anuncio iniciales |
+| `npm run cargar-envios-mock` | Carga las tarifas DEMO solo si `config/envios` está vacío |
 
 ## Publicación
 
-Cada `git push` a la rama `main` compila el sitio y lo publica en Netlify (configuración en [netlify.toml](netlify.toml)). En Netlify debe estar configurada la variable de entorno `IMGBB_KEY`, que usa la función de imágenes del servidor. La configuración web de Firebase está en `src/services/firebaseConfig.js`; las reglas de Firestore se publican en Firebase, no desde Netlify.
+Cada `git push` a la rama `main` compila el sitio y lo publica en Netlify (configuración en [netlify.toml](netlify.toml)). En Netlify deben estar configuradas las variables `IMGBB_KEY` y `FIREBASE_SERVICE_ACCOUNT_JSON`. La segunda se usa exclusivamente en la función de compras para validar y actualizar stock dentro de una transacción; no se expone al navegador. El endpoint rechaza pedidos con productos inactivos, cantidades inválidas o stock insuficiente. La configuración web de Firebase está en `src/services/firebaseConfig.js`; las reglas de Firestore se publican en Firebase, no desde Netlify, y no deben abrir escritura pública de productos.
+
+La compra sigue siendo ficticia: no existe integración con pasarela, cobro ni registro de pedido. Por eso, en este proyecto de demostración, confirmar la simulación sí consume stock persistente. Las tarifas DEMO de envío pueden cargarse con `npm run cargar-envios-mock` si `config/envios` está vacío; el comando valida la sesión de administrador y verifica la escritura. Si ya existen tarifas, no las sobrescribe: gestioná cambios desde `/admin/envios`.
 
 ## Autor
 

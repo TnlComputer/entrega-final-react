@@ -1,27 +1,44 @@
-// Plugin de Vite: /api/imagenes con `npm run dev`, igual que la Netlify Function del sitio publicado.
+// Plugin de Vite: las rutas /api/* usan los mismos handlers que las Netlify Functions.
 import {Readable} from 'node:stream';
 import subirImagen from './subirImagen.js';
+import comprar from './comprar.js';
 
 export default function imagenesDev(opciones) {
   return {
-    name: 'imagenes-dev',
+    name: 'api-dev',
     apply: 'serve',
 
     configureServer(servidor) {
-      servidor.middlewares.use('/api/imagenes', async (peticion, respuesta) => {
-        // De la petición de Node a una Request estándar, y la Response de vuelta
-        const request = new Request(`http://localhost${peticion.originalUrl}`, {
-          method: peticion.method,
-          headers: peticion.headers,
-          body: peticion.method === 'POST' ? Readable.toWeb(peticion) : undefined,
-          duplex: 'half'
-        });
+      const rutas = {
+        '/api/imagenes': (request, config) => subirImagen(request, config),
+        '/api/compras': (request, config) => comprar(request, config)
+      };
 
-        const resultado = await subirImagen(request, opciones);
-        respuesta.statusCode = resultado.status;
-        resultado.headers.forEach((valor, nombre) => respuesta.setHeader(nombre, valor));
-        respuesta.end(await resultado.text());
-      });
+      for (const [ruta, handler] of Object.entries(rutas)) {
+        servidor.middlewares.use(ruta, async (peticion, respuesta) => {
+          const request = new Request(`http://localhost${peticion.originalUrl}`, {
+            method: peticion.method,
+            headers: peticion.headers,
+            body: peticion.method === 'POST' ? Readable.toWeb(peticion) : undefined,
+            duplex: 'half'
+          });
+
+          const resultado = await handler(request, configFor(ruta, opciones));
+          respuesta.statusCode = resultado.status;
+          resultado.headers.forEach((valor, nombre) => respuesta.setHeader(nombre, valor));
+          respuesta.end(await resultado.text());
+        });
+      }
     }
   };
+}
+
+function configFor(ruta, opciones) {
+  if (ruta === '/api/compras') {
+    return {
+      serviceAccountJson: opciones.cuentaServicioFirebase,
+      projectId: opciones.proyectoFirebase
+    };
+  }
+  return opciones;
 }

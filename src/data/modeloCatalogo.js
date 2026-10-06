@@ -65,7 +65,7 @@ export function crearSlug(texto) {
     .replace(/^-+|-+$/g, '');
 }
 
-const esEnteroNoNegativo = valor => Number.isInteger(valor) && valor >= 0;
+const esEnteroNoNegativo = valor => Number.isSafeInteger(valor) && valor >= 0;
 
 // Convierte lo que viene del formulario (todo texto) al formato que se guarda.
 export function prepararProducto(formulario) {
@@ -94,29 +94,45 @@ export function prepararProducto(formulario) {
 export function validarProducto(producto, {rubros = [], productos = [], id = null} = {}) {
   const errores = {};
 
-  if (!producto.nombre) errores.nombre = 'Poné un nombre.';
-  else if (producto.nombre.length > LIMITES.nombre) errores.nombre = `Máximo ${LIMITES.nombre} caracteres.`;
+  for (const campo of ['nombre', 'marca', 'sku', 'descripcion', 'subrubro', 'imagen']) {
+    if (typeof producto[campo] !== 'string') errores[campo] = 'Ingresá un texto válido.';
+  }
 
-  if (producto.marca.length > LIMITES.marca) errores.marca = `Máximo ${LIMITES.marca} caracteres.`;
+  if (typeof producto.nombre === 'string') {
+    if (!producto.nombre) errores.nombre = 'Poné un nombre.';
+    else if (producto.nombre.length > LIMITES.nombre) errores.nombre = `Máximo ${LIMITES.nombre} caracteres.`;
+  }
+  if (typeof producto.marca === 'string' && producto.marca.length > LIMITES.marca) {
+    errores.marca = `Máximo ${LIMITES.marca} caracteres.`;
+  }
 
-  if (producto.sku.length > LIMITES.sku) {
+  if (typeof producto.sku === 'string' && producto.sku.length > LIMITES.sku) {
     errores.sku = `Máximo ${LIMITES.sku} caracteres.`;
-  } else if (producto.sku && productos.some(otro => otro.id !== id && otro.sku === producto.sku)) {
+  } else if (
+    typeof producto.sku === 'string' &&
+    producto.sku &&
+    productos.some(otro => otro.id !== id && otro.sku === producto.sku)
+  ) {
     errores.sku = 'Ya hay otro producto con este código.';
   }
 
-  if (!producto.descripcion) errores.descripcion = 'Poné una descripción corta.';
-  else if (producto.descripcion.length > LIMITES.descripcion) {
+  if (typeof producto.descripcion === 'string' && !producto.descripcion) {
+    errores.descripcion = 'Poné una descripción corta.';
+  } else if (typeof producto.descripcion === 'string' && producto.descripcion.length > LIMITES.descripcion) {
     errores.descripcion = `Máximo ${LIMITES.descripcion} caracteres.`;
   }
 
-  if (producto.caracteristicas.length > LIMITES.caracteristicas) {
+  if (!Array.isArray(producto.caracteristicas)) {
+    errores.caracteristicas = 'Las características no tienen un formato válido.';
+  } else if (producto.caracteristicas.length > LIMITES.caracteristicas) {
     errores.caracteristicas = `Máximo ${LIMITES.caracteristicas} características.`;
-  } else if (producto.caracteristicas.some(texto => texto.length > LIMITES.caracteristica)) {
+  } else if (
+    producto.caracteristicas.some(texto => typeof texto !== 'string' || texto.length > LIMITES.caracteristica)
+  ) {
     errores.caracteristicas = `Cada característica puede tener hasta ${LIMITES.caracteristica} caracteres.`;
   }
 
-  const rubro = rubros.find(opcion => opcion.id === producto.rubro);
+  const rubro = Array.isArray(rubros) ? rubros.find(opcion => opcion.id === producto.rubro) : null;
   if (!rubro) {
     errores.rubro = 'Elegí un rubro.';
   } else if (rubro.subrubros.length > 0 && !rubro.subrubros.includes(producto.subrubro)) {
@@ -126,12 +142,16 @@ export function validarProducto(producto, {rubros = [], productos = [], id = nul
     errores.subrubro = 'Este rubro no tiene subrubros.';
   }
 
-  if (producto.precio === null || Number.isNaN(producto.precio) || producto.precio <= 0) {
-    errores.precio = 'Poné un precio mayor a 0.';
+  if (!Number.isSafeInteger(producto.precio) || producto.precio <= 0 || producto.precio > 1_000_000_000) {
+    errores.precio = 'Poné un precio entero entre $1 y $1.000.000.000.';
   }
   if (producto.precioOferta !== null) {
-    if (Number.isNaN(producto.precioOferta) || producto.precioOferta <= 0) {
-      errores.precioOferta = 'El precio de oferta tiene que ser mayor a 0.';
+    if (
+      !Number.isSafeInteger(producto.precioOferta) ||
+      producto.precioOferta <= 0 ||
+      producto.precioOferta > 1_000_000_000
+    ) {
+      errores.precioOferta = 'El precio de oferta tiene que ser un entero entre $1 y $1.000.000.000.';
     } else if (!errores.precio && producto.precioOferta >= producto.precio) {
       errores.precioOferta = 'Tiene que ser menor al precio normal.';
     }
@@ -140,8 +160,18 @@ export function validarProducto(producto, {rubros = [], productos = [], id = nul
   if (!esEnteroNoNegativo(producto.stock)) errores.stock = 'El stock es un número entero (0 o más).';
   if (!esEnteroNoNegativo(producto.orden)) errores.orden = 'El orden es un número entero (0 o más).';
 
-  if (!producto.imagen) errores.imagen = 'Poné el link de la imagen o subí una.';
-  else if (!/^https:\/\//.test(producto.imagen)) errores.imagen = 'Tiene que ser un link que empiece con https://';
+  if (typeof producto.imagen === 'string' && !producto.imagen) errores.imagen = 'Poné el link de la imagen o subí una.';
+  else if (typeof producto.imagen === 'string') {
+    try {
+      if (new URL(producto.imagen).protocol !== 'https:') throw new Error('URL inválida');
+    } catch {
+      errores.imagen = 'Ingresá un link HTTPS válido.';
+    }
+  }
+
+  if (!COLORES.some(color => color.clase === producto.clase)) errores.clase = 'Elegí un color válido.';
+  if (typeof producto.destacado !== 'boolean') errores.destacado = 'El estado de destacado no es válido.';
+  if (typeof producto.activo !== 'boolean') errores.activo = 'El estado de publicación no es válido.';
 
   return errores;
 }
@@ -163,12 +193,20 @@ export function prepararRubro(formulario) {
 export function validarRubro(rubro, {rubros = [], id = null} = {}) {
   const errores = {};
 
-  if (!rubro.nombre) errores.nombre = 'Poné un nombre.';
+  if (typeof rubro.nombre !== 'string' || !rubro.nombre) errores.nombre = 'Poné un nombre válido.';
+  else if (rubro.nombre.length > 60) errores.nombre = 'Máximo 60 caracteres.';
+  else if (!crearSlug(rubro.nombre)) errores.nombre = 'El nombre debe incluir letras o números.';
   else if (!id && rubros.some(otro => otro.id === crearSlug(rubro.nombre))) {
     errores.nombre = 'Ya existe un rubro con ese nombre.';
   }
-  if (rubro.detalle.length > 60) errores.detalle = 'Máximo 60 caracteres.';
+  if (typeof rubro.detalle !== 'string') errores.detalle = 'El detalle no tiene un formato válido.';
+  else if (rubro.detalle.length > 60) errores.detalle = 'Máximo 60 caracteres.';
   if (!esEnteroNoNegativo(rubro.orden)) errores.orden = 'El orden es un número entero (0 o más).';
+  if (!Array.isArray(rubro.subrubros) || rubro.subrubros.length > 20) {
+    errores.subrubros = 'Ingresá como máximo 20 subrubros.';
+  } else if (rubro.subrubros.some(subrubro => typeof subrubro !== 'string' || subrubro.length > 40)) {
+    errores.subrubros = 'Cada subrubro puede tener hasta 40 caracteres.';
+  }
 
   return errores;
 }
