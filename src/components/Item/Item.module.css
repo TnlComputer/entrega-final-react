@@ -4,7 +4,7 @@
   font-weight: 400;
   margin: 0 0 6px;
 }
-.product-info span {
+.product-categoria {
   color: var(--muted);
   font-size: 12px;
   margin: 0;
@@ -176,23 +176,41 @@
   flex-direction: column;
   height: 100%;
 }
+/* #root centra el texto (index.css); en la card todo va alineado a la izquierda */
 .product-info {
-  align-items: end;
   display: flex;
   flex: 1;
-  justify-content: space-between;
-  padding: 15px 2px;
+  flex-direction: column;
+  padding: 15px 2px 12px;
+  text-align: left;
 }
 .product-info h4 {
   font-size: 21px;
   margin: 4px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.product-info p {
+/* Siempre ocupa 2 líneas, así precio y botones quedan a la misma altura en toda la fila */
+.product-descripcion {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   color: var(--muted);
+  display: -webkit-box;
   font-size: 12px;
   line-height: 1.4;
   margin: 8px 0 0;
-  max-width: 190px;
+  min-height: calc(2 * 1.4em);
+  overflow: hidden;
+}
+.product-precio-fila {
+  align-items: flex-end;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-top: auto;
+  min-height: 46px;
+  padding-top: 10px;
 }
 .product-info strong {
   font-size: 14px;
@@ -214,10 +232,11 @@
 .stock-hint {
   color: var(--coral);
   font-size: 12px;
-  margin: 8px 0 0;
+  margin: 0;
 }
 .stock-hint.stock-agotado {
-  color: var(--muted);
+  color: #c62828;
+  font-weight: 700;
 }
 .product-actions {
   align-items: center;

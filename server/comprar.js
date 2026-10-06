@@ -6,6 +6,13 @@ import {
   validarAnuncio
 } from '../src/data/modeloAnuncio.js';
 import {
+  emailValido,
+  errorResumenPago,
+  limpiarResumenPago,
+  normalizarEmail,
+  textoPago
+} from '../src/data/modeloCompra.js';
+import {
   UMBRAL_ENVIO_GRATIS,
   celularValido,
   zonaParaCodigoPostal,
@@ -90,11 +97,18 @@ function validarPedido(cuerpo) {
     return {id, cantidad};
   });
 
+  if (!emailValido(cuerpo.email)) throw fallo(400, 'Ingresá un email válido para enviarte el resumen.');
+  const email = normalizarEmail(cuerpo.email);
+  // Solo llega el resumen del pago (marca y últimos 4 dígitos, nunca la tarjeta completa)
+  const errorPago = errorResumenPago(cuerpo.pago);
+  if (errorPago) throw fallo(400, errorPago);
+  const pago = limpiarResumenPago(cuerpo.pago);
+
   const entrega = cuerpo.entrega;
   if (!entrega || !['envio', 'retiro'].includes(entrega.metodo)) {
     throw fallo(400, 'Elegí un método de entrega válido.');
   }
-  if (entrega.metodo === 'retiro') return {items, entrega: {metodo: 'retiro'}};
+  if (entrega.metodo === 'retiro') return {items, email, pago, entrega: {metodo: 'retiro'}};
   // Todo envío exige domicilio, código postal y celular
   if (typeof entrega.codigoPostal !== 'string' || !/^\d{4}$/.test(entrega.codigoPostal)) {
     throw fallo(400, 'Ingresá un código postal numérico de 4 dígitos.');
@@ -125,6 +139,8 @@ function validarPedido(cuerpo) {
   }
   return {
     items,
+    email,
+    pago,
     entrega: {
       metodo: 'envio',
       ...direccion,
@@ -259,6 +275,8 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
       renglones.forEach(item => transaction.update(item.ref, {stock: item.stock - item.cantidad}));
 
       return {
+        // Número de pedido de demostración (no se guarda el pedido)
+        numero: `DEMO-${Date.now().toString(36).toUpperCase()}`,
         cantidad: renglones.reduce((sum, item) => sum + item.cantidad, 0),
         items: renglones.map(({id, nombre, cantidad, unitario, totalLinea}) => ({
           id,
@@ -271,6 +289,9 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
         descuento,
         montoDescuento,
         metodo: pedido.entrega.metodo,
+        email: pedido.email,
+        pago: pedido.pago,
+        pagoTexto: textoPago(pedido.pago),
         envio,
         envioGratis,
         zona: zona?.nombre ?? null,

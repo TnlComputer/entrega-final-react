@@ -2,12 +2,57 @@ import {useState} from 'react';
 import {Alert, Button, Form, Modal} from 'react-bootstrap';
 import {precioFinal} from '../../data/modeloCatalogo';
 import {
+  CUOTAS,
+  DATOS_TRANSFERENCIA,
+  MAX_EMAIL,
+  METODOS_PAGO,
+  cvvValido,
+  emailValido,
+  marcaTarjeta,
+  normalizarEmail,
+  numeroTarjetaValido,
+  pagoCompleto,
+  resumenPago,
+  textoPago,
+  titularValido,
+  vencimientoValido
+} from '../../data/modeloCompra';
+import {
   UMBRAL_ENVIO_GRATIS,
   celularValido,
   zonaParaCodigoPostal,
   zonaParaLocalidad
 } from '../../data/modeloEnvios';
 import styles from './CartModal.module.css';
+
+const PASOS_CHECKOUT = [
+  {id: 'contacto', nombre: 'Contacto'},
+  {id: 'entrega', nombre: 'Entrega'},
+  {id: 'pago', nombre: 'Pago'},
+  {id: 'revision', nombre: 'Revisión'}
+];
+
+const PAGO_VACIO = {
+  metodo: 'tarjetaCredito',
+  numero: '',
+  titular: '',
+  vencimiento: '',
+  cvv: '',
+  cuotas: '1',
+  emailMercadoPago: ''
+};
+
+// Agrupa el número de a 4 dígitos mientras se escribe
+const formatearNumeroTarjeta = valor =>
+  valor
+    .replace(/\D/g, '')
+    .slice(0, 19)
+    .replace(/(\d{4})(?=\d)/g, '$1 ');
+
+const formatearVencimiento = valor => {
+  const digitos = valor.replace(/\D/g, '').slice(0, 4);
+  return digitos.length > 2 ? `${digitos.slice(0, 2)}/${digitos.slice(2)}` : digitos;
+};
 
 const ENTREGA_VACIA = {
   metodo: 'envio',
@@ -38,6 +83,10 @@ function CartModal({
   const [errorCompra, setErrorCompra] = useState(null);
   const [confirmando, setConfirmando] = useState(false);
   const [entrega, setEntrega] = useState(ENTREGA_VACIA);
+  // Email para enviar el resumen de la compra (obligatorio también en retiro)
+  const [email, setEmail] = useState('');
+  // Los datos completos de la tarjeta quedan en el navegador; al servidor va resumenPago(pago)
+  const [pago, setPago] = useState(PAGO_VACIO);
   const subtotal = productos.reduce((total, item) => total + precioFinal(item.producto) * item.cantidad, 0);
   // Descuento del anuncio (free day…): se aplica sobre todo el carrito
   const montoDescuento = Math.round((subtotal * descuento) / 100);
@@ -61,7 +110,21 @@ function CartModal({
     /^\d{4}$/.test(entrega.codigoPostal) &&
     celularValido(entrega.celular);
   const destinoValido = datosEnvioCompletos && (envioGratis || Boolean(zonaEnvio));
-  const pagoValido = entrega.metodo === 'retiro' || (destinoValido && (envioGratis || !envios.cargando));
+  const contactoValido = emailValido(email);
+  const entregaValida =
+    entrega.metodo === 'retiro' || (destinoValido && (envioGratis || !envios.cargando));
+  const pagoValido = contactoValido && entregaValida && pagoCompleto(pago);
+  const marca = marcaTarjeta(pago.numero);
+  const esTarjeta = pago.metodo === 'tarjetaCredito' || pago.metodo === 'tarjetaDebito';
+  const campoInvalido = (valor, valido) => Boolean(String(valor).trim()) && !valido;
+  const cambiarPago = campo => evento => setPago(actual => ({...actual, [campo]: evento.target.value}));
+  const elegirMetodoPago = metodo =>
+    setPago(actual => ({
+      ...actual,
+      metodo,
+      // Mercado Pago arranca con el email de contacto
+      emailMercadoPago: actual.emailMercadoPago || normalizarEmail(email)
+    }));
   const textoEntrega =
     entrega.metodo === 'retiro'
       ? 'Retiro en tienda — coordinar por contacto'
@@ -76,6 +139,8 @@ function CartModal({
     setCompraSimulada(null);
     setErrorCompra(null);
     setEntrega(ENTREGA_VACIA);
+    setEmail('');
+    setPago(PAGO_VACIO);
     onCerrar();
   };
 
@@ -86,8 +151,12 @@ function CartModal({
     try {
       const resultado = await onPagoSimulado({
         items: productos.map(({producto, cantidad}) => ({id: producto.id, cantidad})),
-        entrega
+        entrega,
+        email: normalizarEmail(email),
+        pago: resumenPago(pago)
       });
+      // Ya no se necesitan: se borran los datos de la tarjeta de la memoria del formulario
+      setPago(PAGO_VACIO);
       setCompraSimulada(resultado);
       setPaso('confirmacion');
     } catch (error) {
@@ -105,8 +174,12 @@ function CartModal({
     <Modal show={mostrar} onHide={cerrar} centered className={styles.cartModal}>
       <Modal.Header closeButton>
         <Modal.Title>
-          {paso === 'pago'
+          {paso === 'contacto'
+            ? 'Tus datos'
+            : paso === 'entrega'
             ? 'Entrega y envío'
+            : paso === 'pago'
+            ? 'Forma de pago'
             : paso === 'revision'
               ? 'Revisión de compra'
               : paso === 'confirmacion'
@@ -120,44 +193,93 @@ function CartModal({
             <span className={styles.paymentResultIcon} aria-hidden="true">
               ✓
             </span>
-            <h3>Compra simulada confirmada</h3>
+            <h3>Pago aprobado (simulado)</h3>
             <p>
-              Esta compra fue solo una demostración. No se realizó ningún cobro; el stock sí se actualizó en el catálogo.
+              Pedido <strong>{compraSimulada?.numero}</strong>. Esta compra fue solo una demostración: no se realizó
+              ningún cobro ni se envió un email; el stock sí se actualizó en el catálogo.
             </p>
-            <div className={styles.cartSummary}>
-              <div>
-                <span>Artículos</span>
-                <strong>{compraSimulada?.cantidad ?? 0}</strong>
+            <section className={styles.orderReview} aria-label="Resumen de la compra">
+              <p className={styles.reviewDestination}>
+                <strong>Entrega:</strong> {compraSimulada?.direccion}
+                {compraSimulada?.zona && ` · Zona ${compraSimulada.zona}`}
+                <br />
+                <strong>Pago:</strong> {compraSimulada?.pagoTexto}
+                <br />
+                <strong>Resumen para:</strong> {compraSimulada?.email} (en la demo no se envía)
+              </p>
+              <div className={styles.reviewItems}>
+                {compraSimulada?.items.map(item => (
+                  <div className={styles.reviewItem} key={item.id}>
+                    <span>
+                      {item.cantidad} × {item.nombre}
+                    </span>
+                    <strong>{formatoPrecio.format(item.total)}</strong>
+                  </div>
+                ))}
               </div>
-              <div>
-                <span>Entrega</span>
-                <strong>{compraSimulada?.metodo === 'retiro'
-                    ? 'Retiro en tienda'
-                    : (compraSimulada?.zona ?? 'Envío a domicilio')}</strong>
+              <div className={styles.cartSummary}>
+                <div>
+                  <span>Subtotal</span>
+                  <strong>{formatoPrecio.format(compraSimulada?.subtotal ?? 0)}</strong>
+                </div>
+                {compraSimulada?.montoDescuento > 0 && (
+                  <div className={styles.cartDescuento}>
+                    <span>Descuento {compraSimulada.descuento}%</span>
+                    <strong>−{formatoPrecio.format(compraSimulada.montoDescuento)}</strong>
+                  </div>
+                )}
+                <div>
+                  <span>Envío</span>
+                  <strong>
+                    {compraSimulada?.metodo === 'retiro'
+                      ? 'Sin costo'
+                      : compraSimulada?.envioGratis
+                        ? 'Gratis por compra'
+                        : formatoPrecio.format(compraSimulada?.envio ?? 0)}
+                  </strong>
+                </div>
+                <div className={styles.cartTotal}>
+                  <span>Total pagado (simulado)</span>
+                  <strong>{formatoPrecio.format(compraSimulada?.total ?? 0)}</strong>
+                </div>
               </div>
-              <div>
-                <span>Envío</span>
-                <strong>
-                  {compraSimulada?.envio === 0 ? 'Gratis' : formatoPrecio.format(compraSimulada?.envio ?? 0)}
-                </strong>
-              </div>
-              {compraSimulada?.direccion && (
-                <p className={styles.paymentAddress}>{compraSimulada.direccion}</p>
-              )}
-              <div className={styles.cartTotal}>
-                <span>Total de prueba</span>
-                <strong>{formatoPrecio.format(compraSimulada?.total ?? 0)}</strong>
-              </div>
-            </div>
+            </section>
           </div>
-        ) : paso === 'pago' || paso === 'revision' ? (
+        ) : PASOS_CHECKOUT.some(({id}) => id === paso) ? (
           <div className={styles.paymentStep}>
-            <p className={styles.simulationNotice}>
-              Estás en una demostración: no ingreses datos de tarjeta. No se procesa ningún pago real; al confirmar la
-              compra, se validará y descontará el stock disponible.
-            </p>
+            <ol className={styles.checkoutSteps} aria-label="Pasos de la compra">
+              {PASOS_CHECKOUT.map(({id, nombre}, indice) => (
+                <li
+                  key={id}
+                  className={id === paso ? styles.checkoutStepActual : ''}
+                  aria-current={id === paso ? 'step' : undefined}>
+                  {indice + 1}. {nombre}
+                </li>
+              ))}
+            </ol>
+            {paso === 'contacto' && (
+              <p className={styles.simulationNotice}>
+                Estás en una demostración: no ingreses datos de tarjeta. No se procesa ningún pago real; al confirmar
+                la compra, se validará y descontará el stock disponible.
+              </p>
+            )}
             {errorCompra && <Alert variant="danger" role="alert">{errorCompra}</Alert>}
-            {paso === 'pago' ? (
+            {paso === 'contacto' ? (
+              <Form.Group className={styles.contactEmail} controlId="checkout-email">
+                  <Form.Label>Email para el resumen de compra *</Form.Label>
+                  <Form.Control
+                    type="email"
+                    value={email}
+                    onChange={evento => setEmail(evento.target.value)}
+                    autoComplete="email"
+                    maxLength={MAX_EMAIL}
+                    placeholder="nombre@correo.com"
+                    isInvalid={Boolean(email.trim()) && !emailValido(email)}
+                    required
+                  />
+                  <Form.Control.Feedback type="invalid">Ingresá un email válido.</Form.Control.Feedback>
+                </Form.Group>
+            ) : paso === 'entrega' ? (
               <>
                 <fieldset className={styles.deliveryOptions}>
               <legend>Forma de entrega</legend>
@@ -334,12 +456,157 @@ function CartModal({
                   </p>
                 )}
               </>
+            ) : paso === 'pago' ? (
+              <>
+                <fieldset className={styles.deliveryOptions}>
+                  <legend>Elegí cómo pagar</legend>
+                  {METODOS_PAGO.map(({id, nombre}) => (
+                    <Form.Check
+                      key={id}
+                      type="radio"
+                      name="metodo-pago"
+                      id={`pago-${id}`}
+                      label={nombre}
+                      checked={pago.metodo === id}
+                      onChange={() => elegirMetodoPago(id)}
+                    />
+                  ))}
+                </fieldset>
+                <p className={styles.deliveryIntro}>
+                  Simulación: usá datos de prueba (por ejemplo, la tarjeta 4111 1111 1111 1111). No se cobra nada y los
+                  datos de la tarjeta no salen de tu navegador.
+                </p>
+                {esTarjeta && (
+                  <div className={styles.deliveryFields}>
+                    <Form.Group className={styles.deliveryStreet} controlId="pago-numero">
+                      <Form.Label>Número de tarjeta *{pago.numero && ` · ${marca}`}</Form.Label>
+                      <Form.Control
+                        value={pago.numero}
+                        onChange={evento => setPago(actual => ({...actual, numero: formatearNumeroTarjeta(evento.target.value)}))}
+                        inputMode="numeric"
+                        autoComplete="cc-number"
+                        placeholder="4111 1111 1111 1111"
+                        isInvalid={pago.numero.replace(/\D/g, '').length >= 13 && !numeroTarjetaValido(pago.numero)}
+                        required
+                      />
+                      <Form.Control.Feedback type="invalid">Revisá el número de la tarjeta.</Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group className={styles.deliveryStreet} controlId="pago-titular">
+                      <Form.Label>Nombre como figura en la tarjeta *</Form.Label>
+                      <Form.Control
+                        value={pago.titular}
+                        onChange={cambiarPago('titular')}
+                        autoComplete="cc-name"
+                        maxLength={80}
+                        isInvalid={campoInvalido(pago.titular, titularValido(pago.titular))}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="pago-vencimiento">
+                      <Form.Label>Vencimiento *</Form.Label>
+                      <Form.Control
+                        value={pago.vencimiento}
+                        onChange={evento =>
+                          setPago(actual => ({...actual, vencimiento: formatearVencimiento(evento.target.value)}))
+                        }
+                        inputMode="numeric"
+                        autoComplete="cc-exp"
+                        placeholder="MM/AA"
+                        isInvalid={pago.vencimiento.length === 5 && !vencimientoValido(pago.vencimiento)}
+                        required
+                      />
+                      <Form.Control.Feedback type="invalid">La tarjeta está vencida o la fecha no es válida.</Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group controlId="pago-cvv">
+                      <Form.Label>Código de seguridad *</Form.Label>
+                      <Form.Control
+                        type="password"
+                        value={pago.cvv}
+                        onChange={evento =>
+                          setPago(actual => ({...actual, cvv: evento.target.value.replace(/\D/g, '').slice(0, 4)}))
+                        }
+                        inputMode="numeric"
+                        autoComplete="cc-csc"
+                        placeholder={marca === 'American Express' ? '4 dígitos' : '3 dígitos'}
+                        isInvalid={campoInvalido(pago.cvv, cvvValido(pago.cvv, marca))}
+                        required
+                      />
+                    </Form.Group>
+                    {pago.metodo === 'tarjetaCredito' && (
+                      <Form.Group controlId="pago-cuotas">
+                        <Form.Label>Cuotas</Form.Label>
+                        <Form.Select value={pago.cuotas} onChange={cambiarPago('cuotas')}>
+                          {CUOTAS.map(cuotas => (
+                            <option key={cuotas} value={cuotas}>
+                              {cuotas === 1
+                                ? `1 pago de ${formatoPrecio.format(total)}`
+                                : `${cuotas} cuotas sin interés de ${formatoPrecio.format(Math.ceil(total / cuotas))}`}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    )}
+                  </div>
+                )}
+                {pago.metodo === 'transferencia' && (
+                  <>
+                    <div className={styles.cartSummary}>
+                      <div>
+                        <span>Titular</span>
+                        <strong>{DATOS_TRANSFERENCIA.titular}</strong>
+                      </div>
+                      <div>
+                        <span>Alias</span>
+                        <strong>{DATOS_TRANSFERENCIA.alias}</strong>
+                      </div>
+                      <div>
+                        <span>CBU</span>
+                        <strong>{DATOS_TRANSFERENCIA.cbu}</strong>
+                      </div>
+                      <div>
+                        <span>Importe</span>
+                        <strong>{formatoPrecio.format(total)}</strong>
+                      </div>
+                    </div>
+                    <Form.Group className={styles.contactEmail} controlId="pago-titular-transferencia">
+                      <Form.Label>Titular de la cuenta desde la que transferís *</Form.Label>
+                      <Form.Control
+                        value={pago.titular}
+                        onChange={cambiarPago('titular')}
+                        autoComplete="name"
+                        maxLength={80}
+                        isInvalid={campoInvalido(pago.titular, titularValido(pago.titular))}
+                        required
+                      />
+                    </Form.Group>
+                  </>
+                )}
+                {pago.metodo === 'mercadoPago' && (
+                  <Form.Group className={styles.contactEmail} controlId="pago-email-mp">
+                    <Form.Label>Email de tu cuenta de Mercado Pago *</Form.Label>
+                    <Form.Control
+                      type="email"
+                      value={pago.emailMercadoPago}
+                      onChange={cambiarPago('emailMercadoPago')}
+                      autoComplete="email"
+                      maxLength={MAX_EMAIL}
+                      isInvalid={campoInvalido(pago.emailMercadoPago, emailValido(pago.emailMercadoPago))}
+                      required
+                    />
+                    <Form.Text>En una tienda real te llevaríamos a Mercado Pago para aprobar el pago.</Form.Text>
+                  </Form.Group>
+                )}
+              </>
             ) : (
               <section className={styles.orderReview} aria-label="Revisión final del pedido">
                 <h3>Revisá tu compra</h3>
                 <p className={styles.reviewDestination}>
                   <strong>Entrega:</strong> {textoEntrega}
                   {zonaEnvio && ` · Zona ${zonaEnvio.nombre}`}
+                  <br />
+                  <strong>Pago:</strong> {pagoCompleto(pago) && textoPago(resumenPago(pago))}
+                  <br />
+                  <strong>Resumen a:</strong> {normalizarEmail(email)}
                 </p>
                 <div className={styles.reviewItems}>
                   {productos.map(({producto, cantidad}) => (
@@ -457,22 +724,40 @@ function CartModal({
           <Button variant="dark" onClick={cerrar}>
             Cerrar
           </Button>
-        ) : paso === 'pago' ? (
+        ) : paso === 'contacto' ? (
           <>
             <Button variant="outline-secondary" onClick={() => setPaso('carrito')}>
               Volver al carrito
             </Button>
+            <Button variant="dark" onClick={() => setPaso('entrega')} disabled={!contactoValido}>
+              Continuar a la entrega
+            </Button>
+          </>
+        ) : paso === 'entrega' ? (
+          <>
+            <Button variant="outline-secondary" onClick={() => setPaso('contacto')}>
+              Volver
+            </Button>
+            <Button variant="dark" onClick={() => setPaso('pago')} disabled={!entregaValida}>
+              Continuar al pago · {formatoPrecio.format(total)}
+            </Button>
+          </>
+        ) : paso === 'pago' ? (
+          <>
+            <Button variant="outline-secondary" onClick={() => setPaso('entrega')}>
+              Volver
+            </Button>
             <Button variant="dark" onClick={() => setPaso('revision')} disabled={!pagoValido}>
-              Revisar pedido · {formatoPrecio.format(total)}
+              Revisar pedido
             </Button>
           </>
         ) : paso === 'revision' ? (
           <>
             <Button variant="outline-secondary" onClick={() => setPaso('pago')} disabled={confirmando}>
-              Volver a la entrega
+              Volver al pago
             </Button>
             <Button variant="dark" onClick={confirmarPagoSimulado} disabled={!pagoValido || confirmando}>
-              {confirmando ? 'Confirmando stock…' : 'Confirmar compra'}
+              {confirmando ? 'Procesando pago…' : `Pagar ${formatoPrecio.format(total)} (simulado)`}
             </Button>
           </>
         ) : (
@@ -480,7 +765,7 @@ function CartModal({
             <Button variant="outline-secondary" onClick={cerrar}>
               Seguir comprando
             </Button>
-            <Button variant="dark" disabled={productos.length === 0} onClick={() => setPaso('pago')}>
+            <Button variant="dark" disabled={productos.length === 0} onClick={() => setPaso('contacto')}>
               Continuar al pago
             </Button>
           </>

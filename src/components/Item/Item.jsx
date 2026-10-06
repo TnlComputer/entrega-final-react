@@ -69,28 +69,31 @@ function Item({producto, esFavorito, onAlternarFavorito, onAgregarAlCarrito, for
         </div>
       </div>
       <div className={styles.productInfo}>
-        <div>
-          <span>
-            {producto.subrubro || producto.rubroNombre}
-            {producto.marca && ` · ${producto.marca}`}
-          </span>
-          <h4>{producto.nombre}</h4>
-          <p>{producto.descripcion}</p>
+        <span className={styles.productCategoria}>
+          {producto.subrubro || producto.rubroNombre}
+          {producto.marca && ` · ${producto.marca}`}
+        </span>
+        <h4 title={producto.nombre}>{producto.nombre}</h4>
+        <p className={styles.productDescripcion}>{producto.descripcion}</p>
+        {/* Fila de alto fijo: aviso de stock a la izquierda y precio a la derecha, igual en todas las cards */}
+        <div className={styles.productPrecioFila}>
+          {sinStock ? (
+            <p className={`${styles.stockHint} ${styles.stockAgotado}`}>Sin stock por el momento.</p>
+          ) : producto.stock <= 5 ? (
+            <p className={styles.stockHint}>¡Últimas {producto.stock} unidades!</p>
+          ) : (
+            <span />
+          )}
+          {producto.precioOferta ? (
+            <div className={styles.precioOferta}>
+              <del aria-label="Precio anterior">{formatoPrecio.format(producto.precio)}</del>
+              <strong>{formatoPrecio.format(producto.precioOferta)}</strong>
+            </div>
+          ) : (
+            <strong>{formatoPrecio.format(producto.precio)}</strong>
+          )}
         </div>
-        {producto.precioOferta ? (
-          <div className={styles.precioOferta}>
-            <del aria-label="Precio anterior">{formatoPrecio.format(producto.precio)}</del>
-            <strong>{formatoPrecio.format(producto.precioOferta)}</strong>
-          </div>
-        ) : (
-          <strong>{formatoPrecio.format(producto.precio)}</strong>
-        )}
       </div>
-      {sinStock ? (
-        <p className={`${styles.stockHint} ${styles.stockAgotado}`}>Sin stock por el momento.</p>
-      ) : (
-        producto.stock <= 5 && <p className={styles.stockHint}>¡Últimas {producto.stock} unidades!</p>
-      )}
       <div className={styles.productActions}>
         <div className={styles.quantityControl} aria-label={`Cantidad de ${producto.nombre}`}>
           <button
