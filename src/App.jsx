@@ -5,6 +5,7 @@ import ScrollAlInicio from './components/ScrollAlInicio/ScrollAlInicio';
 import AuthProvider from './context/AuthProvider';
 import useCatalogo from './hooks/useCatalogo';
 import AdminAnuncio from './Pages/Admin/AdminAnuncio';
+import AdminEnvios from './Pages/Admin/AdminEnvios';
 import AdminLayout from './Pages/Admin/AdminLayout';
 import AdminProductos from './Pages/Admin/AdminProductos';
 import AdminRubros from './Pages/Admin/AdminRubros';
@@ -37,6 +38,7 @@ function App() {
               <Route path="productos/:id" element={<ProductoForm />} />
               <Route path="rubros" element={<AdminRubros />} />
               <Route path="anuncio" element={<AdminAnuncio />} />
+              <Route path="envios" element={<AdminEnvios />} />
             </Route>
             <Route path="*" element={<p>No encontramos esta página.</p>} />
           </Route>
