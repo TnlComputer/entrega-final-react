@@ -11,12 +11,15 @@ function CartModal({
   onQuitar,
   onCambiarCantidad,
   onPagoSimulado,
+  onActualizarStocks,
   formatoPrecio,
   descuento = 0,
   envios = {zonas: [], cargando: false, error: null}
 }) {
   const [paso, setPaso] = useState('carrito');
   const [compraSimulada, setCompraSimulada] = useState(null);
+  const [errorCompra, setErrorCompra] = useState(null);
+  const [confirmando, setConfirmando] = useState(false);
   const [entrega, setEntrega] = useState({
     metodo: 'envio',
     busqueda: 'codigoPostal',
@@ -39,34 +42,48 @@ function CartModal({
   const total = subtotal - montoDescuento + (costoEnvio ?? 0);
   const destinoValido =
     entrega.busqueda === 'direccion'
-      ? Boolean(entrega.calle.trim() && entrega.numero.trim() && entrega.localidad.trim() && zonaEnvio)
+      ? Boolean(
+          entrega.calle.trim().length >= 2 &&
+            entrega.calle.trim().length <= 120 &&
+            /^\d{1,6}(?:\s?[A-Za-z])?$/.test(entrega.numero.trim()) &&
+            entrega.localidad.trim().length >= 2 &&
+            entrega.localidad.trim().length <= 80 &&
+            zonaEnvio
+        )
       : Boolean(zonaEnvio);
   const pagoValido = entrega.metodo === 'retiro' || (destinoValido && !envios.cargando);
+  const textoEntrega =
+    entrega.metodo === 'retiro'
+      ? 'Retiro en tienda — coordinar por contacto'
+      : entrega.busqueda === 'codigoPostal'
+        ? `Código postal ${entrega.codigoPostal}`
+        : `${entrega.calle.trim()} ${entrega.numero.trim()}, ${entrega.localidad.trim()}`;
 
   const cerrar = () => {
     setPaso('carrito');
     setCompraSimulada(null);
+    setErrorCompra(null);
     setEntrega({metodo: 'envio', busqueda: 'codigoPostal', calle: '', numero: '', localidad: '', codigoPostal: ''});
     onCerrar();
   };
 
-  const confirmarPagoSimulado = () => {
-    if (!pagoValido) return;
-    setCompraSimulada({
-      cantidad: productos.reduce((suma, item) => suma + item.cantidad, 0),
-      total,
-      metodo: entrega.metodo,
-      envio: costoEnvio,
-      zona: zonaEnvio?.nombre ?? null,
-      direccion:
-        entrega.metodo === 'envio' && entrega.busqueda === 'direccion'
-          ? `${entrega.calle.trim()} ${entrega.numero.trim()}, ${entrega.localidad.trim()}`
-          : entrega.metodo === 'envio'
-            ? `Código postal ${entrega.codigoPostal}`
-          : 'Retiro en tienda — coordinar por contacto'
-    });
-    onPagoSimulado();
-    setPaso('confirmacion');
+  const confirmarPagoSimulado = async () => {
+    if (!pagoValido || confirmando) return;
+    setErrorCompra(null);
+    setConfirmando(true);
+    try {
+      const resultado = await onPagoSimulado({
+        items: productos.map(({producto, cantidad}) => ({id: producto.id, cantidad})),
+        entrega
+      });
+      setCompraSimulada(resultado);
+      setPaso('confirmacion');
+    } catch (error) {
+      if (error.stocks) onActualizarStocks?.(error.stocks);
+      setErrorCompra(error.message);
+    } finally {
+      setConfirmando(false);
+    }
   };
 
   const cambiarEntrega = campo => evento =>
@@ -76,7 +93,13 @@ function CartModal({
     <Modal show={mostrar} onHide={cerrar} centered className={styles.cartModal}>
       <Modal.Header closeButton>
         <Modal.Title>
-          {paso === 'pago' ? 'Pago de prueba' : paso === 'confirmacion' ? 'Compra de prueba' : 'Tu equipo'}
+          {paso === 'pago'
+            ? 'Entrega y envío'
+            : paso === 'revision'
+              ? 'Revisión de compra'
+              : paso === 'confirmacion'
+                ? 'Compra de prueba'
+                : 'Tu equipo'}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -85,9 +108,9 @@ function CartModal({
             <span className={styles.paymentResultIcon} aria-hidden="true">
               ✓
             </span>
-            <h3>Pago simulado aprobado</h3>
+            <h3>Compra simulada confirmada</h3>
             <p>
-              Esta compra fue solo una demostración. No se realizó ningún cobro ni se enviaron datos de pago.
+              Esta compra fue solo una demostración. No se realizó ningún cobro; el stock sí se actualizó en el catálogo.
             </p>
             <div className={styles.cartSummary}>
               <div>
@@ -113,13 +136,16 @@ function CartModal({
               </div>
             </div>
           </div>
-        ) : paso === 'pago' ? (
+        ) : paso === 'pago' || paso === 'revision' ? (
           <div className={styles.paymentStep}>
             <p className={styles.simulationNotice}>
-              Estás en una demostración: no ingreses datos de tarjeta. Al confirmar, se vaciará el carrito, pero no se
-              procesará ni registrará ningún pago o pedido real.
+              Estás en una demostración: no ingreses datos de tarjeta. No se procesa ningún pago real; al confirmar la
+              compra, se validará y descontará el stock disponible.
             </p>
-            <fieldset className={styles.deliveryOptions}>
+            {errorCompra && <Alert variant="danger" role="alert">{errorCompra}</Alert>}
+            {paso === 'pago' ? (
+              <>
+                <fieldset className={styles.deliveryOptions}>
               <legend>Forma de entrega</legend>
               <Form.Check
                 type="radio"
@@ -184,11 +210,24 @@ function CartModal({
                   <div className={styles.deliveryFields}>
                     <Form.Group className={styles.deliveryStreet} controlId="checkout-calle">
                       <Form.Label>Calle *</Form.Label>
-                      <Form.Control value={entrega.calle} onChange={cambiarEntrega('calle')} autoComplete="street-address" />
+                      <Form.Control
+                        value={entrega.calle}
+                        onChange={cambiarEntrega('calle')}
+                        autoComplete="street-address"
+                        minLength={2}
+                        maxLength={120}
+                        required
+                      />
                     </Form.Group>
                     <Form.Group controlId="checkout-numero">
                       <Form.Label>Número *</Form.Label>
-                      <Form.Control value={entrega.numero} onChange={cambiarEntrega('numero')} inputMode="numeric" />
+                      <Form.Control
+                        value={entrega.numero}
+                        onChange={cambiarEntrega('numero')}
+                        inputMode="text"
+                        maxLength={8}
+                        required
+                      />
                     </Form.Group>
                     <Form.Group controlId="checkout-localidad">
                       <Form.Label>Localidad *</Form.Label>
@@ -196,6 +235,9 @@ function CartModal({
                         value={entrega.localidad}
                         onChange={cambiarEntrega('localidad')}
                         autoComplete="address-level2"
+                        minLength={2}
+                        maxLength={80}
+                        required
                       />
                     </Form.Group>
                   </div>
@@ -227,7 +269,7 @@ function CartModal({
                 )}
               </div>
             )}
-            <div className={styles.cartSummary}>
+                <div className={styles.cartSummary} aria-live="polite">
               <div>
                 <span>Artículos</span>
                 <strong>{productos.reduce((suma, item) => suma + item.cantidad, 0)}</strong>
@@ -251,10 +293,59 @@ function CartModal({
                 </strong>
               </div>
               <div className={styles.cartTotal}>
-                <span>Total con envío</span>
+                <span>Total final estimado</span>
                 <strong>{formatoPrecio.format(total)}</strong>
               </div>
             </div>
+                <p className={styles.totalUpdated}>
+                  El total se actualiza automáticamente según el código postal o la localidad ingresada.
+                </p>
+              </>
+            ) : (
+              <section className={styles.orderReview} aria-label="Revisión final del pedido">
+                <h3>Revisá tu compra</h3>
+                <p className={styles.reviewDestination}>
+                  <strong>Entrega:</strong> {textoEntrega}
+                  {zonaEnvio && ` · Zona ${zonaEnvio.nombre}`}
+                </p>
+                <div className={styles.reviewItems}>
+                  {productos.map(({producto, cantidad}) => (
+                    <div className={styles.reviewItem} key={producto.id}>
+                      <span>
+                        {cantidad} × {producto.nombre}
+                      </span>
+                      <strong>{formatoPrecio.format(precioFinal(producto) * cantidad)}</strong>
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.cartSummary}>
+                  <div>
+                    <span>Subtotal</span>
+                    <strong>{formatoPrecio.format(subtotal)}</strong>
+                  </div>
+                  {montoDescuento > 0 && (
+                    <div className={styles.cartDescuento}>
+                      <span>Descuento {descuento}%</span>
+                      <strong>−{formatoPrecio.format(montoDescuento)}</strong>
+                    </div>
+                  )}
+                  <div>
+                    <span>Envío</span>
+                    <strong>
+                      {envioGratis
+                        ? 'Gratis por compra'
+                        : costoEnvio === 0
+                          ? 'Sin costo'
+                          : formatoPrecio.format(costoEnvio)}
+                    </strong>
+                  </div>
+                  <div className={styles.cartTotal}>
+                    <span>Total a confirmar</span>
+                    <strong>{formatoPrecio.format(total)}</strong>
+                  </div>
+                </div>
+              </section>
+            )}
           </div>
         ) : productos.length === 0 ? (
           <div className={styles.emptyCart}>
@@ -338,8 +429,17 @@ function CartModal({
             <Button variant="outline-secondary" onClick={() => setPaso('carrito')}>
               Volver al carrito
             </Button>
-            <Button variant="dark" onClick={confirmarPagoSimulado} disabled={!pagoValido}>
-              Confirmar pago simulado
+            <Button variant="dark" onClick={() => setPaso('revision')} disabled={!pagoValido}>
+              Revisar pedido · {formatoPrecio.format(total)}
+            </Button>
+          </>
+        ) : paso === 'revision' ? (
+          <>
+            <Button variant="outline-secondary" onClick={() => setPaso('pago')} disabled={confirmando}>
+              Volver a la entrega
+            </Button>
+            <Button variant="dark" onClick={confirmarPagoSimulado} disabled={!pagoValido || confirmando}>
+              {confirmando ? 'Confirmando stock…' : 'Confirmar compra'}
             </Button>
           </>
         ) : (

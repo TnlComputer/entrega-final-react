@@ -13,7 +13,11 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       babel({ presets: [reactCompilerPreset()] }),
-      imagenesDev({ claveImgbb: env.IMGBB_KEY, proyectoFirebase: firebaseConfig.projectId })
+      imagenesDev({
+        claveImgbb: env.IMGBB_KEY,
+        cuentaServicioFirebase: env.FIREBASE_SERVICE_ACCOUNT_JSON,
+        proyectoFirebase: firebaseConfig.projectId
+      })
     ],
     css: {
       modules: {

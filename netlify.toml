@@ -6,7 +6,7 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# /api/imagenes → Netlify Function (netlify/functions/imagenes.js). Va antes que la regla de React.
+# /api/* → Netlify Functions (netlify/functions). Va antes que la regla de React.
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"

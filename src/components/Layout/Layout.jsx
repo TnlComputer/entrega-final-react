@@ -9,6 +9,7 @@ import useAnuncio from '../../hooks/useAnuncio';
 import useEnvios from '../../hooks/useEnvios';
 import {descuentoVigente} from '../../data/modeloAnuncio';
 import Notificacion from '../Notificacion/Notificacion';
+import {confirmarCompraSimulada} from '../../services/checkoutApi';
 import styles from './Layout.module.css';
 
 const formatoPrecio = new Intl.NumberFormat('es-AR', {
@@ -107,6 +108,15 @@ function Layout({productos = [], catalogo}) {
     setCarrito(carritoActual => ({...carritoActual, [id]: cantidadNueva}));
   };
 
+  const actualizarStocks = stocks => catalogo?.actualizarStocks?.(stocks);
+
+  const procesarCompraSimulada = async compra => {
+    const resultado = await confirmarCompraSimulada(compra);
+    actualizarStocks(resultado.stocks);
+    setCarrito({});
+    return resultado;
+  };
+
   return (
     <div className={styles.appLayout}>
       <BarraAnuncio anuncio={anuncio.anuncio} />
@@ -126,7 +136,8 @@ function Layout({productos = [], catalogo}) {
         onCerrar={() => setMostrarCarrito(false)}
         onQuitar={quitarDelCarrito}
         onCambiarCantidad={cambiarCantidadCarrito}
-        onPagoSimulado={() => setCarrito({})}
+        onPagoSimulado={procesarCompraSimulada}
+        onActualizarStocks={actualizarStocks}
         formatoPrecio={formatoPrecio}
         descuento={descuentoVigente(anuncio.anuncio)}
         envios={envios}

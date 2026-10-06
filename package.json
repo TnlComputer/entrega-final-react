@@ -8,11 +8,13 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "cargar-datos": "node scripts/cargarDatos.js"
+    "cargar-datos": "node scripts/cargarDatos.js",
+    "cargar-envios-mock": "node scripts/cargarEnviosMock.js"
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
     "firebase": "^12.19.0",
+    "firebase-admin": "^14.5.0",
     "react": "^19.2.8",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.8",

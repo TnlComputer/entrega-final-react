@@ -8,8 +8,35 @@ export const ZONA_ENVIO_VACIA = {
 
 export const UMBRAL_ENVIO_GRATIS = 300000;
 
+export const ZONAS_ENVIO_MOCK = [
+  {
+    id: 'demo-caba-gba',
+    nombre: 'CABA y GBA (DEMO)',
+    codigoDesde: '1000',
+    codigoHasta: '1999',
+    localidades: ['Ciudad Autónoma de Buenos Aires', 'Avellaneda', 'Lanús', 'Lomas de Zamora', 'San Isidro'],
+    precio: 5000
+  },
+  {
+    id: 'demo-centro',
+    nombre: 'Centro (DEMO)',
+    codigoDesde: '2000',
+    codigoHasta: '3999',
+    localidades: ['Rosario', 'Córdoba', 'Santa Fe', 'Paraná'],
+    precio: 8500
+  },
+  {
+    id: 'demo-interior',
+    nombre: 'Interior (DEMO)',
+    codigoDesde: '4000',
+    codigoHasta: '9999',
+    localidades: ['Mendoza', 'San Miguel de Tucumán', 'Salta', 'Neuquén', 'San Carlos de Bariloche'],
+    precio: 15000
+  }
+];
+
 export function normalizarLocalidad(localidad) {
-  return localidad
+  return String(localidad ?? '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .trim()
@@ -19,14 +46,16 @@ export function normalizarLocalidad(localidad) {
 
 export function parsearLocalidades(localidades) {
   const valores = Array.isArray(localidades) ? localidades : String(localidades ?? '').split(/[,\n]/);
-  return [...new Set(valores.map(localidad => localidad.trim()).filter(Boolean))];
+  return [...new Set(valores.filter(localidad => typeof localidad === 'string').map(localidad => localidad.trim()).filter(Boolean))];
 }
 
 export function validarZonaEnvio(zona, zonas, idEditado = null) {
   const errores = {};
-  const nombre = zona.nombre.trim();
-  const desde = zona.codigoDesde.trim();
-  const hasta = zona.codigoHasta.trim();
+  if (!zona || typeof zona !== 'object') return {nombre: 'Los datos de la zona no son válidos.'};
+
+  const nombre = typeof zona.nombre === 'string' ? zona.nombre.trim() : '';
+  const desde = typeof zona.codigoDesde === 'string' ? zona.codigoDesde.trim() : '';
+  const hasta = typeof zona.codigoHasta === 'string' ? zona.codigoHasta.trim() : '';
   const localidades = parsearLocalidades(zona.localidades);
   const precio = Number(zona.precio);
 
@@ -76,7 +105,7 @@ export function validarZonaEnvio(zona, zonas, idEditado = null) {
     errores.localidades = 'Una o más localidades ya están asignadas a otra zona.';
   }
 
-  if (zona.precio === '' || !Number.isSafeInteger(precio) || precio < 0) {
+  if (zona.precio === '' || !Number.isSafeInteger(precio) || precio < 0 || precio > 1_000_000_000) {
     errores.precio = 'Ingresá un precio entero igual o mayor a 0.';
   }
 

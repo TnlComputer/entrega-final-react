@@ -19,7 +19,27 @@ export const ANUNCIO_VACIO = {
 const FORMATO_FECHA = /^\d{4}-\d{2}-\d{2}$/;
 
 // Fecha local en formato AAAA-MM-DD (así se comparan como texto)
-export const fechaDeHoy = () => new Date().toLocaleDateString('en-CA');
+export const fechaDeHoy = () => {
+  const partes = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(new Date());
+  const parte = tipo => partes.find(item => item.type === tipo)?.value;
+  return `${parte('year')}-${parte('month')}-${parte('day')}`;
+};
+
+const fechaValida = fecha => {
+  if (!FORMATO_FECHA.test(fecha)) return false;
+  const [anio, mes, dia] = fecha.split('-').map(Number);
+  const fechaParseada = new Date(Date.UTC(anio, mes - 1, dia));
+  return (
+    fechaParseada.getUTCFullYear() === anio &&
+    fechaParseada.getUTCMonth() === mes - 1 &&
+    fechaParseada.getUTCDate() === dia
+  );
+};
 
 export function prepararAnuncio(formulario) {
   return {
@@ -35,16 +55,22 @@ export function prepararAnuncio(formulario) {
 export function validarAnuncio(anuncio) {
   const errores = {};
 
-  if (anuncio.activo && !anuncio.texto) errores.texto = 'Escribí el texto del anuncio para poder mostrarlo.';
+  if (typeof anuncio.activo !== 'boolean') errores.activo = 'El estado del anuncio no es válido.';
+  if (typeof anuncio.texto !== 'string') errores.texto = 'El texto del anuncio no es válido.';
+  else if (anuncio.activo && !anuncio.texto.trim()) errores.texto = 'Escribí el texto del anuncio para poder mostrarlo.';
   else if (anuncio.texto.length > LIMITE_TEXTO_ANUNCIO) errores.texto = `Máximo ${LIMITE_TEXTO_ANUNCIO} caracteres.`;
 
-  if (anuncio.desde && !FORMATO_FECHA.test(anuncio.desde)) errores.desde = 'Fecha inválida.';
-  if (anuncio.hasta && !FORMATO_FECHA.test(anuncio.hasta)) errores.hasta = 'Fecha inválida.';
+  if (typeof anuncio.desde !== 'string' || (anuncio.desde && !fechaValida(anuncio.desde))) {
+    errores.desde = 'Fecha inválida.';
+  }
+  if (typeof anuncio.hasta !== 'string' || (anuncio.hasta && !fechaValida(anuncio.hasta))) {
+    errores.hasta = 'Fecha inválida.';
+  }
   else if (anuncio.desde && anuncio.hasta && anuncio.hasta < anuncio.desde) {
     errores.hasta = 'Tiene que ser igual o posterior a la fecha "desde".';
   }
 
-  if (!Number.isInteger(anuncio.descuento) || anuncio.descuento < 0 || anuncio.descuento > DESCUENTO_MAXIMO) {
+  if (!Number.isSafeInteger(anuncio.descuento) || anuncio.descuento < 0 || anuncio.descuento > DESCUENTO_MAXIMO) {
     errores.descuento = `El descuento es un número entero de 0 a ${DESCUENTO_MAXIMO}.`;
   }
 
