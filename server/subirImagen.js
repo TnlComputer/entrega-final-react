@@ -59,7 +59,7 @@ export default async function subirImagen(peticion, {claveImgbb, proyectoFirebas
   try {
     if (peticion.method !== 'POST') return responder(405, {error: 'Usá POST.'});
     if (!claveImgbb) return responder(500, {error: 'Falta IMGBB_KEY en el servidor.'});
-    if (!proyectoFirebase) return responder(500, {error: 'Falta VITE_FIREBASE_PROJECT_ID en el servidor.'});
+    if (!proyectoFirebase) return responder(500, {error: 'Falta el projectId de Firebase (src/services/firebaseConfig.js).'});
 
     const token = (peticion.headers.get('authorization') || '').replace(/^Bearer /, '');
     if (!token || !(await esAdmin(token, proyectoFirebase))) {

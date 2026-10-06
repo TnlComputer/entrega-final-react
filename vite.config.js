@@ -2,6 +2,7 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { defineConfig, loadEnv } from 'vite'
 import imagenesDev from './server/imagenesDev.js'
+import firebaseConfig from './src/services/firebaseConfig.js'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -12,7 +13,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       babel({ presets: [reactCompilerPreset()] }),
-      imagenesDev({ claveImgbb: env.IMGBB_KEY, proyectoFirebase: env.VITE_FIREBASE_PROJECT_ID })
+      imagenesDev({ claveImgbb: env.IMGBB_KEY, proyectoFirebase: firebaseConfig.projectId })
     ],
     css: {
       modules: {

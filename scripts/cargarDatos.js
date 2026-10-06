@@ -9,18 +9,14 @@ import {getAuth, signInWithEmailAndPassword, signOut} from 'firebase/auth';
 import {collection, doc, getDocs, getFirestore, writeBatch} from 'firebase/firestore';
 import {validarProducto, validarRubro} from '../src/data/modeloCatalogo.js';
 import {validarAnuncio} from '../src/data/modeloAnuncio.js';
+import firebaseConfig from '../src/services/firebaseConfig.js';
 
 process.loadEnvFile('.env.local');
 const {env} = process;
 
 const leerJson = async nombre => JSON.parse(await readFile(new URL(`./datos/${nombre}`, import.meta.url), 'utf8'));
 
-const app = initializeApp({
-  apiKey: env.VITE_FIREBASE_API_KEY,
-  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: env.VITE_FIREBASE_PROJECT_ID,
-  appId: env.VITE_FIREBASE_APP_ID
-});
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 

@@ -52,7 +52,7 @@ Copiá `.env.example` como `.env.local` y completalo. `.env.local` no se sube al
 
 ### Firebase (una sola vez)
 
-1. Crear un proyecto en la [consola de Firebase](https://console.firebase.google.com/) y agregarle una app web. Su configuración va en las variables `VITE_FIREBASE_*`.
+1. Crear un proyecto en la [consola de Firebase](https://console.firebase.google.com/) y agregarle una app web. Su configuración va en [src/services/firebaseConfig.js](src/services/firebaseConfig.js) (no es secreta).
 2. **Firestore Database**: crearla y, en *Reglas*, pegar y publicar el contenido de [firestore.rules](firestore.rules).
 3. **Authentication**: activar *Correo electrónico/contraseña* y crear el usuario admin (el mismo de `ADMIN_EMAIL` y `ADMIN_PASSWORD`).
 4. En Firestore, crear la colección `admins` con un documento cuyo ID sea el *UID* de ese usuario (se ve en Authentication). Puede quedar sin campos.
@@ -68,7 +68,7 @@ Copiá `.env.example` como `.env.local` y completalo. `.env.local` no se sube al
 
 ## Publicación
 
-Cada `git push` a la rama `main` compila el sitio y lo publica en Netlify (configuración en [netlify.toml](netlify.toml)). En Netlify hay que cargar las variables `VITE_FIREBASE_*` e `IMGBB_KEY`.
+Cada `git push` a la rama `main` compila el sitio y lo publica en Netlify (configuración en [netlify.toml](netlify.toml)). En Netlify solo hay que cargar la variable `IMGBB_KEY`.
 
 ## Autor
 
