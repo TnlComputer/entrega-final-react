@@ -519,8 +519,10 @@ function CartModal({
                     </Form.Group>
                     <Form.Group controlId="pago-cvv">
                       <Form.Label>Código de seguridad *</Form.Label>
+                      {/* No usar type="password": el navegador toma email + CVV como un login,
+                          ofrece guardarlo y después autocompleta el email en el buscador */}
                       <Form.Control
-                        type="password"
+                        type="text"
                         value={pago.cvv}
                         onChange={evento =>
                           setPago(actual => ({...actual, cvv: evento.target.value.replace(/\D/g, '').slice(0, 4)}))
