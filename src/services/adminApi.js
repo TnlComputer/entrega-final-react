@@ -89,6 +89,15 @@ export async function guardarAnuncio(anuncio) {
   }
 }
 
+export async function guardarZonasEnvio(zonas) {
+  try {
+    await setDoc(doc(db, 'config', 'envios'), {zonas});
+    return zonas;
+  } catch (error) {
+    throw traducir(error);
+  }
+}
+
 export async function subirImagen(archivo) {
   if (!auth.currentUser) throw new Error('Iniciá sesión de nuevo.');
   const token = await auth.currentUser.getIdToken();

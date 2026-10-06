@@ -41,6 +41,9 @@ function AdminLayout() {
         <NavLink to="/admin/anuncio" className={claseTab}>
           Anuncio
         </NavLink>
+        <NavLink to="/admin/envios" className={claseTab}>
+          Envíos
+        </NavLink>
       </nav>
 
       {/* Se pasa el mismo contexto (catálogo y carrito) a las pantallas del panel */}

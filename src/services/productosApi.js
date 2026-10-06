@@ -36,3 +36,8 @@ export async function cargarAnuncio() {
   const documento = await getDoc(doc(db, 'config', 'anuncio'));
   return documento.exists() ? {...ANUNCIO_VACIO, ...documento.data()} : ANUNCIO_VACIO;
 }
+
+export async function cargarEnvios() {
+  const documento = await getDoc(doc(db, 'config', 'envios'));
+  return documento.exists() ? documento.data().zonas ?? [] : [];
+}

@@ -6,6 +6,7 @@ import Footer from './Footer';
 import BarraAnuncio from '../BarraAnuncio/BarraAnuncio';
 import CartModal from '../Cart/CartModal';
 import useAnuncio from '../../hooks/useAnuncio';
+import useEnvios from '../../hooks/useEnvios';
 import {descuentoVigente} from '../../data/modeloAnuncio';
 import Notificacion from '../Notificacion/Notificacion';
 import styles from './Layout.module.css';
@@ -32,6 +33,7 @@ function Layout({productos = [], catalogo}) {
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
   const [aviso, setAviso] = useState(null);
   const anuncio = useAnuncio();
+  const envios = useEnvios();
 
   useEffect(() => {
     localStorage.setItem(CLAVE_CARRITO, JSON.stringify(carrito));
@@ -114,7 +116,7 @@ function Layout({productos = [], catalogo}) {
       <Notificacion aviso={aviso} onCerrar={() => setAviso(null)} />
 
       <main>
-        <Outlet context={{onAgregarAlCarrito: agregarAlCarrito, catalogo, anuncio}} />
+        <Outlet context={{onAgregarAlCarrito: agregarAlCarrito, catalogo, anuncio, envios}} />
       </main>
 
       <Footer />
@@ -127,6 +129,7 @@ function Layout({productos = [], catalogo}) {
         onPagoSimulado={() => setCarrito({})}
         formatoPrecio={formatoPrecio}
         descuento={descuentoVigente(anuncio.anuncio)}
+        envios={envios}
       />
     </div>
   );

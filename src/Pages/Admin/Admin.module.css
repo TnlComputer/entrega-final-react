@@ -209,6 +209,11 @@
 .campo-corto {
   max-width: 160px;
 }
+.zona-envio-formulario {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 2fr repeat(3, minmax(100px, 1fr));
+}
 .botones-formulario {
   display: flex;
   gap: 10px;
@@ -222,6 +227,9 @@
   }
   .filtros > :first-child {
     grid-column: 1 / -1;
+  }
+  .zona-envio-formulario {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -238,5 +246,8 @@
   }
   .seccion {
     padding: 16px;
+  }
+  .zona-envio-formulario {
+    grid-template-columns: 1fr;
   }
 }
