@@ -3,7 +3,7 @@
 > **Proyecto académico** hecho para el curso **React JS de Talento Tech (comisión C26243)**, como entrega final.
 > "El Anzuelo" es una tienda **ficticia**: los productos, precios, el equipo y los datos de contacto son de ejemplo.
 
-**Sitio publicado:** _(pendiente: Netlify)_
+**Sitio publicado:** https://react-final-eccomerce.netlify.app/
 
 ![Captura de la página de inicio de El.Anzuelo](docs/captura.png)
 
