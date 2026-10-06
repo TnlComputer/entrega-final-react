@@ -231,7 +231,8 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
 
       let zona = null;
       if (pedido.entrega.metodo === 'envio') {
-        const zonas = validarZonas(snapshotEnvios.exists() ? snapshotEnvios.data().zonas : []);
+        // firebase-admin: `exists` es una propiedad (en el SDK web es `exists()`).
+        const zonas = validarZonas(snapshotEnvios.exists ? snapshotEnvios.data().zonas : []);
         zona =
           pedido.entrega.busqueda === 'codigoPostal'
             ? zonaParaCodigoPostal(zonas, pedido.entrega.codigoPostal)

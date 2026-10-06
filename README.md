@@ -79,6 +79,16 @@ Cada `git push` a la rama `main` compila el sitio y lo publica en Netlify (confi
 
 La compra sigue siendo ficticia: no existe integración con pasarela, cobro ni registro de pedido. Por eso, en este proyecto de demostración, confirmar la simulación sí consume stock persistente. Las tarifas DEMO de envío pueden cargarse con `npm run cargar-envios-mock` si `config/envios` está vacío; el comando valida la sesión de administrador y verifica la escritura. Si ya existen tarifas, no las sobrescribe: gestioná cambios desde `/admin/envios`.
 
+### Si la compra falla en producción
+
+Cuando `/api/compras` responde 500, el detalle queda en el log de la función (*Netlify → Logs → Functions → compras*). Revisá en este orden:
+
+1. **`Falta FIREBASE_SERVICE_ACCOUNT_JSON` o cuenta de servicio no válida**: la variable no está cargada en Netlify, no es el JSON completo o pertenece a otro proyecto. Después de cambiarla hay que volver a publicar (*Deploys → Trigger deploy*).
+2. **`TypeError: ... is not a function`**: la función usa `firebase-admin`, no el SDK web. En el servidor `snapshot.exists` es una propiedad; `snapshot.exists()` solo existe en el navegador. Este error rompía las compras con envío a domicilio (el retiro en tienda funcionaba) y ya está corregido en [server/comprar.js](server/comprar.js).
+3. **Precio, stock, descuento o zona inválidos**: el mensaje indica qué dato del catálogo corregir desde el panel de administración.
+
+Las respuestas 400 y 409 (stock insuficiente, código postal sin tarifa, datos de envío incompletos) son validaciones esperadas y se muestran tal cual en el carrito.
+
 ## Autor
 
 **Jorge Martinez** · Curso React JS · Talento Tech · Comisión C26243
