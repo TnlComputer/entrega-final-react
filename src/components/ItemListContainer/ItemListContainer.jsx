@@ -1,6 +1,4 @@
 import {useEffect, useState} from 'react';
-import {prepararCatalogo} from '../../data/modeloCatalogo';
-import {cargarProductos} from '../../services/productosApi';
 import ItemList from '../ItemList/ItemList';
 import styles from './ItemListContainer.module.css';
 
@@ -20,31 +18,9 @@ function leerFavoritosGuardados() {
   }
 }
 
-function ItemListContainer({onAgregarAlCarrito}) {
-  const [catalogo, setCatalogo] = useState({rubros: [], productos: []});
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState(null);
+function ItemListContainer({catalogo, onAgregarAlCarrito}) {
   const [busqueda, setBusqueda] = useState('');
   const [favoritos, setFavoritos] = useState(leerFavoritosGuardados);
-
-  useEffect(() => {
-    let cancelado = false;
-
-    cargarProductos()
-      .then(datos => {
-        if (!cancelado) setCatalogo(datos);
-      })
-      .catch(errorCapturado => {
-        if (!cancelado) setError(errorCapturado.message);
-      })
-      .finally(() => {
-        if (!cancelado) setCargando(false);
-      });
-
-    return () => {
-      cancelado = true;
-    };
-  }, []);
 
   useEffect(() => {
     localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favoritos));
@@ -62,8 +38,7 @@ function ItemListContainer({onAgregarAlCarrito}) {
     });
   };
 
-  // En la tienda solo se ven los activos
-  const productos = prepararCatalogo(catalogo).productos.filter(producto => producto.activo);
+  const {productos = [], cargando, error} = catalogo;
 
   const termino = busqueda.trim().toLowerCase();
   const productosFiltrados = termino

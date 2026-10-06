@@ -26,6 +26,9 @@ function CartModal({
     calle: '',
     numero: '',
     localidad: '',
+    piso: '',
+    departamento: '',
+    indicaciones: '',
     codigoPostal: ''
   });
   const subtotal = productos.reduce((total, item) => total + precioFinal(item.producto) * item.cantidad, 0);
@@ -57,13 +60,27 @@ function CartModal({
       ? 'Retiro en tienda — coordinar por contacto'
       : entrega.busqueda === 'codigoPostal'
         ? `Código postal ${entrega.codigoPostal}`
-        : `${entrega.calle.trim()} ${entrega.numero.trim()}, ${entrega.localidad.trim()}`;
+        : `${entrega.calle.trim()} ${entrega.numero.trim()}${
+          entrega.piso.trim() ? `, Piso ${entrega.piso.trim()}` : ''
+        }${entrega.departamento.trim() ? `, Depto. ${entrega.departamento.trim()}` : ''}, ${entrega.localidad.trim()}${
+          entrega.indicaciones.trim() ? ` — ${entrega.indicaciones.trim()}` : ''
+        }`;
 
   const cerrar = () => {
     setPaso('carrito');
     setCompraSimulada(null);
     setErrorCompra(null);
-    setEntrega({metodo: 'envio', busqueda: 'codigoPostal', calle: '', numero: '', localidad: '', codigoPostal: ''});
+    setEntrega({
+      metodo: 'envio',
+      busqueda: 'codigoPostal',
+      calle: '',
+      numero: '',
+      localidad: '',
+      piso: '',
+      departamento: '',
+      indicaciones: '',
+      codigoPostal: ''
+    });
     onCerrar();
   };
 
@@ -238,6 +255,34 @@ function CartModal({
                         minLength={2}
                         maxLength={80}
                         required
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="checkout-piso">
+                      <Form.Label>Piso (opcional)</Form.Label>
+                      <Form.Control
+                        value={entrega.piso}
+                        onChange={cambiarEntrega('piso')}
+                        maxLength={10}
+                        autoComplete="address-level3"
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="checkout-departamento">
+                      <Form.Label>Departamento (opcional)</Form.Label>
+                      <Form.Control
+                        value={entrega.departamento}
+                        onChange={cambiarEntrega('departamento')}
+                        maxLength={12}
+                      />
+                    </Form.Group>
+                    <Form.Group className={styles.deliveryStreet} controlId="checkout-indicaciones">
+                      <Form.Label>Aclaraciones para la entrega (opcional)</Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        rows={2}
+                        value={entrega.indicaciones}
+                        onChange={cambiarEntrega('indicaciones')}
+                        maxLength={300}
+                        placeholder="Timbre, entre calles, horario u otra indicación"
                       />
                     </Form.Group>
                   </div>

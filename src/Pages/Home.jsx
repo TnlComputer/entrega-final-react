@@ -4,7 +4,7 @@ import ItemListContainer from '../components/ItemListContainer/ItemListContainer
 import styles from './Home.module.css';
 
 function Home() {
-  const {onAgregarAlCarrito} = useOutletContext();
+  const {onAgregarAlCarrito, catalogo} = useOutletContext();
 
   return (
     <section className="home-page">
@@ -29,7 +29,7 @@ function Home() {
         <span>Asesoramiento de pescador</span>
       </div>
 
-      <ItemListContainer onAgregarAlCarrito={onAgregarAlCarrito} />
+      <ItemListContainer catalogo={catalogo} onAgregarAlCarrito={onAgregarAlCarrito} />
     </section>
   );
 }
