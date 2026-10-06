@@ -15,10 +15,6 @@
   perspective: 1000px;
   position: relative;
 }
-.product-visual:focus-visible {
-  outline: 2px solid var(--violet);
-  outline-offset: 3px;
-}
 .product-visual-inner {
   height: 100%;
   position: relative;
@@ -26,8 +22,7 @@
   transition: transform 600ms ease;
   width: 100%;
 }
-.product-visual:hover .product-visual-inner,
-.product-visual:focus-visible .product-visual-inner {
+.product-visual.is-flipped .product-visual-inner {
   transform: rotateY(180deg);
 }
 .product-face {
@@ -131,10 +126,25 @@
   z-index: 1;
 }
 .flip-hint {
+  background: none;
+  border: 0;
   bottom: 17px;
+  cursor: pointer;
   left: 18px;
   opacity: 0.72;
+  padding: 4px 0;
   position: absolute;
+  transition: opacity 150ms ease;
+  z-index: 2;
+}
+.flip-hint:hover,
+.flip-hint:focus-visible {
+  opacity: 1;
+  text-decoration: underline;
+}
+.flip-hint:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 3px;
 }
 .product-lilac {
   background: #c9bbeb;

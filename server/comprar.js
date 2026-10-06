@@ -7,6 +7,7 @@ import {
 } from '../src/data/modeloAnuncio.js';
 import {
   UMBRAL_ENVIO_GRATIS,
+  celularValido,
   zonaParaCodigoPostal,
   zonaParaLocalidad
 } from '../src/data/modeloEnvios.js';
@@ -94,15 +95,12 @@ function validarPedido(cuerpo) {
     throw fallo(400, 'Elegí un método de entrega válido.');
   }
   if (entrega.metodo === 'retiro') return {items, entrega: {metodo: 'retiro'}};
-  if (!['codigoPostal', 'direccion'].includes(entrega.busqueda)) {
-    throw fallo(400, 'Elegí un método válido para calcular el envío.');
+  // Todo envío exige domicilio, código postal y celular
+  if (typeof entrega.codigoPostal !== 'string' || !/^\d{4}$/.test(entrega.codigoPostal)) {
+    throw fallo(400, 'Ingresá un código postal numérico de 4 dígitos.');
   }
-
-  if (entrega.busqueda === 'codigoPostal') {
-    if (typeof entrega.codigoPostal !== 'string' || !/^\d{4}$/.test(entrega.codigoPostal)) {
-      throw fallo(400, 'Ingresá un código postal numérico de 4 dígitos.');
-    }
-    return {items, entrega: {metodo: 'envio', busqueda: 'codigoPostal', codigoPostal: entrega.codigoPostal}};
+  if (!celularValido(entrega.celular)) {
+    throw fallo(400, 'Ingresá un celular con código de área (8 a 15 dígitos).');
   }
 
   const camposDireccion = ['calle', 'numero', 'localidad'];
@@ -125,7 +123,15 @@ function validarPedido(cuerpo) {
     }
     direccion[campo] = valor.trim();
   }
-  return {items, entrega: {metodo: 'envio', busqueda: 'direccion', ...direccion}};
+  return {
+    items,
+    entrega: {
+      metodo: 'envio',
+      ...direccion,
+      codigoPostal: entrega.codigoPostal,
+      celular: entrega.celular.trim()
+    }
+  };
 }
 
 function precioProducto(producto) {
@@ -229,26 +235,22 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
       const montoDescuento = Math.round((subtotal * descuento) / 100);
       const totalProductos = subtotal - montoDescuento;
 
+      // Superado el umbral el envío es gratis y no hace falta una zona con tarifa
+      const envioGratis =
+        pedido.entrega.metodo === 'envio' && totalProductos > UMBRAL_ENVIO_GRATIS;
+
       let zona = null;
-      if (pedido.entrega.metodo === 'envio') {
+      if (pedido.entrega.metodo === 'envio' && !envioGratis) {
         // firebase-admin: `exists` es una propiedad (en el SDK web es `exists()`).
         const zonas = validarZonas(snapshotEnvios.exists ? snapshotEnvios.data().zonas : []);
         zona =
-          pedido.entrega.busqueda === 'codigoPostal'
-            ? zonaParaCodigoPostal(zonas, pedido.entrega.codigoPostal)
-            : zonaParaLocalidad(zonas, pedido.entrega.localidad);
+          zonaParaCodigoPostal(zonas, pedido.entrega.codigoPostal) ??
+          zonaParaLocalidad(zonas, pedido.entrega.localidad);
         if (!zona) {
-          throw fallo(
-            400,
-            pedido.entrega.busqueda === 'codigoPostal'
-              ? 'No hay una tarifa configurada para ese código postal.'
-              : 'No hay una tarifa configurada para esa localidad.'
-          );
+          throw fallo(400, 'No hay una tarifa configurada para ese código postal ni para esa localidad.');
         }
       }
 
-      const envioGratis =
-        pedido.entrega.metodo === 'envio' && totalProductos > UMBRAL_ENVIO_GRATIS;
       const envio = pedido.entrega.metodo === 'retiro' || envioGratis ? 0 : zona.precio;
       const total = totalProductos + envio;
       if (!Number.isSafeInteger(total)) throw fallo(400, 'El total del pedido excede el límite permitido.');
@@ -275,15 +277,13 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
         direccion:
           pedido.entrega.metodo === 'retiro'
             ? 'Retiro en tienda — coordinar por contacto'
-            : pedido.entrega.busqueda === 'codigoPostal'
-              ? `Código postal ${pedido.entrega.codigoPostal}`
-              : `${pedido.entrega.calle} ${pedido.entrega.numero}${
-                  pedido.entrega.piso ? `, Piso ${pedido.entrega.piso}` : ''
-                }${
-                  pedido.entrega.departamento ? `, Depto. ${pedido.entrega.departamento}` : ''
-                }, ${pedido.entrega.localidad}${
-                  pedido.entrega.indicaciones ? ` — ${pedido.entrega.indicaciones}` : ''
-                }`,
+            : `${pedido.entrega.calle} ${pedido.entrega.numero}${
+                pedido.entrega.piso ? `, Piso ${pedido.entrega.piso}` : ''
+              }${
+                pedido.entrega.departamento ? `, Depto. ${pedido.entrega.departamento}` : ''
+              }, ${pedido.entrega.localidad} (CP ${pedido.entrega.codigoPostal}) · Cel. ${pedido.entrega.celular}${
+                pedido.entrega.indicaciones ? ` — ${pedido.entrega.indicaciones}` : ''
+              }`,
         total,
         stocks: nuevosStocks
       };

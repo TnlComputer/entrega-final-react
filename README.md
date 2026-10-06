@@ -15,9 +15,9 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 
 **Tienda**
 - Catálogo de productos agrupado por rubros (cañas y reels, señuelos, líneas y anzuelos, indumentaria), con precios de oferta y aviso de últimas unidades.
-- Buscador de productos y tarjetas que se dan vuelta para ver las características.
+- Buscador de productos y tarjetas que se dan vuelta al pasar por "Ver características" (o tocarlo en el celular); el resto de la foto queda libre para marcar favoritos.
 - Favoritos y carrito de compras: se puede sumar o restar cantidades respetando el stock; favoritos y carrito se guardan en el navegador. El checkout es una simulación (no cobra ni registra pagos), valida nuevamente el stock en el servidor y lo descuenta de forma atómica en Firestore.
-- Envío simulado por código postal o por localidad configurada, con tarifas fijas por zona desde `/admin/envios`; el retiro en tienda no tiene costo. Si el total de productos luego del descuento supera $300.000, el envío es gratis. Cuando aún no hay zonas guardadas, el panel muestra zonas y precios DEMO que deben revisarse y guardarse para usarse en el checkout.
+- Envío a domicilio simulado: siempre exige calle, número, localidad, código postal y celular (piso, departamento y observaciones para la entrega son opcionales). La tarifa sale de la zona del código postal o, si no tiene, de la localidad, con precios fijos por zona desde `/admin/envios`; el retiro en tienda no tiene costo. Si el total de productos luego del descuento supera $300.000, el envío es gratis y no hace falta que el destino tenga tarifa configurada. El servidor repite todas estas validaciones antes de descontar stock. Cuando aún no hay zonas guardadas, el panel muestra zonas y precios DEMO que deben revisarse y guardarse para usarse en el checkout.
 - Franja de anuncio arriba de todo (por ejemplo, un "free day"), con fechas de inicio y fin y un descuento opcional que se aplica al total del carrito.
 - Diseño adaptable: celular, tablet y escritorio hasta 1920 px; en pantallas más grandes aparece un fondo decorativo de pesca a los costados.
 
