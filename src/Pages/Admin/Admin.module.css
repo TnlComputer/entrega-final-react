@@ -1,5 +1,8 @@
 .admin-page {
-  padding-top: 56px;
+  background: rgba(255, 253, 250, 0.88);
+  backdrop-filter: blur(6px);
+  margin-top: 56px;
+  padding: 32px;
   text-align: left;
 }
 .admin-heading {

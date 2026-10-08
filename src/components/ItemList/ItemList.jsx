@@ -13,7 +13,7 @@ function ItemList({
     <div className={styles.productGrid}>
       {productos.map(producto => (
         <Item
-          // La key cambia tras cada compra: la card se recrea con el contador en 1 (o 0 sin stock)
+          // Cambia con cada compra para reiniciar el contador
           key={`${producto.id}-${comprasConfirmadas}`}
           producto={producto}
           esFavorito={Boolean(favoritos[producto.id])}

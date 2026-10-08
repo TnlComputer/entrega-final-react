@@ -2,7 +2,7 @@ import {useOutletContext} from 'react-router-dom';
 import {crearSlug} from '../data/modeloCatalogo';
 import {guardarCatalogo} from '../services/adminApi';
 
-// Solo los campos que se guardan (sin rubroNombre ni otros agregados de la tienda)
+// Solo los campos que se guardan
 const CAMPOS_PRODUCTO = [
   'id', 'nombre', 'marca', 'sku', 'descripcion', 'caracteristicas', 'rubro', 'subrubro',
   'precio', 'precioOferta', 'stock', 'imagen', 'clase', 'destacado', 'activo', 'orden', 'actualizadoEn'
@@ -13,7 +13,7 @@ function useAdminCatalogo() {
   const {catalogo} = useOutletContext();
   const {rubros, todosLosProductos: productos, cargando, error, reemplazarCatalogo} = catalogo;
 
-  // Guarda el catálogo en Firestore y, si salió bien, actualiza la tienda
+  // Guarda en Firestore y actualiza la tienda
   const guardar = async (nuevosRubros, nuevosProductos) => {
     const datos = {rubros: nuevosRubros, productos: nuevosProductos.map(limpiarProducto)};
     await guardarCatalogo(datos);
@@ -52,7 +52,7 @@ function useAdminCatalogo() {
 
     const nuevosRubros = rubros.map(rubro => (rubro.id === id ? {...datos, id} : rubro));
 
-    // Si el rubro se queda sin subrubros, sus productos pasan a no tener subrubro
+    // Sin subrubros, sus productos quedan sin subrubro
     if (datos.subrubros.length === 0) {
       await guardar(
         nuevosRubros,
@@ -61,7 +61,7 @@ function useAdminCatalogo() {
       return;
     }
 
-    // Si se quitó un subrubro en uso, los productos quedarían huérfanos: se avisa antes
+    // Avisa si se quita un subrubro en uso
     const enUso = productos.filter(
       producto => producto.rubro === id && producto.subrubro && !datos.subrubros.includes(producto.subrubro)
     );
@@ -70,7 +70,7 @@ function useAdminCatalogo() {
       throw new Error(`No podés quitar "${subrubros}": lo usan ${enUso.length} producto(s). Cambiales el subrubro primero.`);
     }
 
-    // Si el rubro recién ahora tiene subrubros, sus productos toman el primero
+    // Si ahora tiene subrubros, sus productos toman el primero
     const primero = datos.subrubros[0];
     const sinSubrubro = productos.filter(producto => producto.rubro === id && !producto.subrubro).length;
     await guardar(

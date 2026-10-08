@@ -99,7 +99,7 @@ function validarPedido(cuerpo) {
 
   if (!emailValido(cuerpo.email)) throw fallo(400, 'Ingresá un email válido para enviarte el resumen.');
   const email = normalizarEmail(cuerpo.email);
-  // Solo llega el resumen del pago (marca y últimos 4 dígitos, nunca la tarjeta completa)
+  // Solo marca y últimos 4 dígitos
   const errorPago = errorResumenPago(cuerpo.pago);
   if (errorPago) throw fallo(400, errorPago);
   const pago = limpiarResumenPago(cuerpo.pago);
@@ -109,7 +109,6 @@ function validarPedido(cuerpo) {
     throw fallo(400, 'Elegí un método de entrega válido.');
   }
   if (entrega.metodo === 'retiro') return {items, email, pago, entrega: {metodo: 'retiro'}};
-  // Todo envío exige domicilio, código postal y celular
   if (typeof entrega.codigoPostal !== 'string' || !/^\d{4}$/.test(entrega.codigoPostal)) {
     throw fallo(400, 'Ingresá un código postal numérico de 4 dígitos.');
   }
@@ -251,13 +250,12 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
       const montoDescuento = Math.round((subtotal * descuento) / 100);
       const totalProductos = subtotal - montoDescuento;
 
-      // Superado el umbral el envío es gratis y no hace falta una zona con tarifa
+      // Envío gratis desde el umbral
       const envioGratis =
         pedido.entrega.metodo === 'envio' && totalProductos > UMBRAL_ENVIO_GRATIS;
 
       let zona = null;
       if (pedido.entrega.metodo === 'envio' && !envioGratis) {
-        // firebase-admin: `exists` es una propiedad (en el SDK web es `exists()`).
         const zonas = validarZonas(snapshotEnvios.exists ? snapshotEnvios.data().zonas : []);
         zona =
           zonaParaCodigoPostal(zonas, pedido.entrega.codigoPostal) ??
@@ -275,7 +273,7 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
       renglones.forEach(item => transaction.update(item.ref, {stock: item.stock - item.cantidad}));
 
       return {
-        // Número de pedido de demostración (no se guarda el pedido)
+        // El pedido no se guarda
         numero: `DEMO-${Date.now().toString(36).toUpperCase()}`,
         cantidad: renglones.reduce((sum, item) => sum + item.cantidad, 0),
         items: renglones.map(({id, nombre, cantidad, unitario, totalLinea}) => ({

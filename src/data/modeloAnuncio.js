@@ -1,9 +1,4 @@
-// Modelo del anuncio que se muestra arriba de toda la página (free day, envío gratis…),
-// compartido por la tienda, el panel admin y el script de datos iniciales (scripts/cargarDatos.js).
-// Vive en Firestore, en el documento config/anuncio:
-//   {activo, texto, desde, hasta, descuento}
-//   desde / hasta: 'AAAA-MM-DD' o '' (sin fecha = sin límite)
-//   descuento: % entero sobre el total del carrito mientras el anuncio se muestra (0 = sin descuento)
+// Anuncio superior (Firestore: config/anuncio)
 
 export const LIMITE_TEXTO_ANUNCIO = 160;
 export const DESCUENTO_MAXIMO = 90;
@@ -18,7 +13,7 @@ export const ANUNCIO_VACIO = {
 
 const FORMATO_FECHA = /^\d{4}-\d{2}-\d{2}$/;
 
-// Fecha local en formato AAAA-MM-DD (así se comparan como texto)
+// Fecha de hoy en formato AAAA-MM-DD
 export const fechaDeHoy = () => {
   const partes = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'America/Argentina/Buenos_Aires',
@@ -51,7 +46,7 @@ export function prepararAnuncio(formulario) {
   };
 }
 
-// Devuelve {campo: 'mensaje'}; vacío si está todo bien.
+// Devuelve los errores por campo
 export function validarAnuncio(anuncio) {
   const errores = {};
 
@@ -77,7 +72,7 @@ export function validarAnuncio(anuncio) {
   return errores;
 }
 
-// 'visible' | 'programado' (todavía no empezó) | 'vencido' | 'oculto'
+// visible, programado, vencido u oculto
 export function estadoAnuncio(anuncio, hoy = fechaDeHoy()) {
   if (!anuncio?.activo || !anuncio.texto) return 'oculto';
   if (anuncio.desde && hoy < anuncio.desde) return 'programado';
@@ -85,6 +80,6 @@ export function estadoAnuncio(anuncio, hoy = fechaDeHoy()) {
   return 'visible';
 }
 
-// % de descuento que corresponde hoy: el del anuncio solo si se está mostrando
+// Descuento vigente hoy
 export const descuentoVigente = (anuncio, hoy = fechaDeHoy()) =>
   estadoAnuncio(anuncio, hoy) === 'visible' ? anuncio.descuento || 0 : 0;

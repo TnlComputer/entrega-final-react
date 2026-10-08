@@ -1,16 +1,4 @@
-// Modelo de datos del catálogo, compartido por la tienda, el panel admin
-// y el script que carga los datos iniciales (scripts/cargarDatos.js).
-// Vive en Firestore: colección "rubros" (id = slug) y colección "productos" (id = número como texto).
-//
-// Rubro (id = slug del nombre):
-//   {id, nombre, detalle, orden, subrubros: ['Cañas', 'Reels']}
-//   subrubros es opcional: [] si el rubro no se divide.
-//
-// Producto (id numérico):
-//   {id, nombre, marca, sku, descripcion, caracteristicas: [],
-//    rubro (id del rubro), subrubro ('' si el rubro no tiene), precio, precioOferta (o null), stock,
-//    imagen (link https://…, normalmente de ImgBB), clase (color de fondo), destacado,
-//    activo, orden, actualizadoEn}
+// Catálogo (Firestore: colecciones rubros y productos)
 
 export const LIMITES = {
   nombre: 80,
@@ -67,7 +55,7 @@ export function crearSlug(texto) {
 
 const esEnteroNoNegativo = valor => Number.isSafeInteger(valor) && valor >= 0;
 
-// Convierte lo que viene del formulario (todo texto) al formato que se guarda.
+// Pasa los datos del formulario al formato que se guarda
 export function prepararProducto(formulario) {
   const aNumero = valor => (valor === '' || valor === null ? null : Number(valor));
 
@@ -90,7 +78,7 @@ export function prepararProducto(formulario) {
   };
 }
 
-// Devuelve {campo: 'mensaje'}; vacío si está todo bien.
+// Devuelve los errores por campo
 export function validarProducto(producto, {rubros = [], productos = [], id = null} = {}) {
   const errores = {};
 
@@ -211,7 +199,7 @@ export function validarRubro(rubro, {rubros = [], id = null} = {}) {
   return errores;
 }
 
-// Orden de la tienda: rubro → orden del producto → subrubro → nombre
+// Orden: rubro, orden del producto, subrubro y nombre
 export function ordenarProductos(productos, rubros) {
   const ordenRubro = new Map(rubros.map(rubro => [rubro.id, rubro.orden]));
 
@@ -224,8 +212,7 @@ export function ordenarProductos(productos, rubros) {
   );
 }
 
-// Lo que llega de Firestore, listo para mostrar: rubros ordenados y
-// productos en el orden de la tienda, con el nombre de su rubro
+// Ordena rubros y productos y agrega el nombre del rubro
 export function prepararCatalogo({rubros = [], productos = []}) {
   const rubrosOrdenados = [...rubros].sort((a, b) => a.orden - b.orden);
   const nombreRubro = new Map(rubrosOrdenados.map(rubro => [rubro.id, rubro.nombre]));
@@ -239,5 +226,5 @@ export function prepararCatalogo({rubros = [], productos = []}) {
   };
 }
 
-// Lo que se cobra: la oferta si hay, si no el precio normal
+// Precio final: la oferta si hay
 export const precioFinal = producto => producto.precioOferta ?? producto.precio;

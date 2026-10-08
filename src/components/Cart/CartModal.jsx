@@ -42,7 +42,7 @@ const PAGO_VACIO = {
   emailMercadoPago: ''
 };
 
-// Agrupa el número de a 4 dígitos mientras se escribe
+// Número de tarjeta de a 4 dígitos
 const formatearNumeroTarjeta = valor =>
   valor
     .replace(/\D/g, '')
@@ -83,18 +83,17 @@ function CartModal({
   const [errorCompra, setErrorCompra] = useState(null);
   const [confirmando, setConfirmando] = useState(false);
   const [entrega, setEntrega] = useState(ENTREGA_VACIA);
-  // Email para enviar el resumen de la compra (obligatorio también en retiro)
   const [email, setEmail] = useState('');
-  // Los datos completos de la tarjeta quedan en el navegador; al servidor va resumenPago(pago)
+  // La tarjeta completa no sale del navegador
   const [pago, setPago] = useState(PAGO_VACIO);
   const subtotal = productos.reduce((total, item) => total + precioFinal(item.producto) * item.cantidad, 0);
-  // Descuento del anuncio (free day…): se aplica sobre todo el carrito
+  // Descuento del anuncio sobre el total
   const montoDescuento = Math.round((subtotal * descuento) / 100);
   const totalProductos = subtotal - montoDescuento;
-  // Superado el umbral el envío es gratis y no hace falta una zona con tarifa
+  // Envío gratis desde el umbral
   const envioGratisPorMonto = totalProductos > UMBRAL_ENVIO_GRATIS;
   const envioGratis = entrega.metodo === 'envio' && envioGratisPorMonto;
-  // La tarifa sale del código postal; si no tiene zona, de la localidad
+  // Tarifa por código postal o, si no hay, por localidad
   const zonaEnvio = envioGratisPorMonto
     ? null
     : (zonaParaCodigoPostal(envios.zonas, entrega.codigoPostal) ??
@@ -122,7 +121,6 @@ function CartModal({
     setPago(actual => ({
       ...actual,
       metodo,
-      // Mercado Pago arranca con el email de contacto
       emailMercadoPago: actual.emailMercadoPago || normalizarEmail(email)
     }));
   const textoEntrega =
@@ -155,7 +153,7 @@ function CartModal({
         email: normalizarEmail(email),
         pago: resumenPago(pago)
       });
-      // Ya no se necesitan: se borran los datos de la tarjeta de la memoria del formulario
+      // Se borran los datos de la tarjeta
       setPago(PAGO_VACIO);
       setCompraSimulada(resultado);
       setPaso('confirmacion');
@@ -519,8 +517,7 @@ function CartModal({
                     </Form.Group>
                     <Form.Group controlId="pago-cvv">
                       <Form.Label>Código de seguridad *</Form.Label>
-                      {/* No usar type="password": el navegador toma email + CVV como un login,
-                          ofrece guardarlo y después autocompleta el email en el buscador */}
+                      {/* Con type="password" el navegador lo toma como login */}
                       <Form.Control
                         type="text"
                         value={pago.cvv}

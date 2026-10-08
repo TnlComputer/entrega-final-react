@@ -1,6 +1,4 @@
-// POST /api/imagenes  (cuerpo: el archivo; Authorization: Bearer <token de Firebase>) → {url}
-// Sube la imagen a ImgBB con la clave del servidor (IMGBB_KEY), que nunca llega al navegador.
-// La usan la Netlify Function (netlify/functions/imagenes.js) y `npm run dev` (server/imagenesDev.js).
+// Sube la imagen a ImgBB (solo admins)
 
 const TAMANIO_MAXIMO_IMAGEN = 5 * 1024 * 1024; // 5 MB
 const TIPOS_IMAGEN = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -9,7 +7,7 @@ const URL_IMGBB = 'https://api.imgbb.com/1/upload';
 const responder = (estado, datos) =>
   new Response(JSON.stringify(datos), {status: estado, headers: {'Content-Type': 'application/json; charset=utf-8'}});
 
-// Revisa los primeros bytes: el tipo que manda el navegador se puede falsear
+// Valida la imagen por sus primeros bytes
 function esImagenReal(contenido, tipo) {
   const inicio = contenido.subarray(0, 12);
   if (tipo === 'image/jpeg') return inicio[0] === 0xff && inicio[1] === 0xd8 && inicio[2] === 0xff;
@@ -19,9 +17,7 @@ function esImagenReal(contenido, tipo) {
   return false;
 }
 
-// Es admin si puede leer su documento admins/{uid} en Firestore con su propio token.
-// Firestore verifica el token (firma, vencimiento y proyecto) y las reglas solo dejan
-// leer ese documento a su dueño: si responde 200, el token es válido y la cuenta es admin.
+// Es admin si puede leer su documento admins/{uid}
 async function esAdmin(token, proyecto) {
   let uid;
   try {

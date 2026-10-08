@@ -31,7 +31,6 @@ function Login() {
     setEnviando(true);
 
     try {
-      // Al confirmarse la sesión, el <Navigate> de arriba lleva a destino
       await iniciarSesion(emailLimpio, contrasenia);
     } catch (errorCapturado) {
       setError(errorCapturado.message);

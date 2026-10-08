@@ -1,4 +1,4 @@
-// Datos de contacto y pago de la compra, validados igual en el carrito y en server/comprar.js
+// Datos de la compra (los usan el carrito y el servidor)
 export const MAX_EMAIL = 254;
 
 export function normalizarEmail(email) {
@@ -10,8 +10,7 @@ export function emailValido(email) {
   return valor.length <= MAX_EMAIL && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(valor);
 }
 
-// Pago simulado: no se cobra nada. Los datos completos de la tarjeta se validan solo en el
-// navegador; al servidor llegan la marca, los últimos 4 dígitos y las cuotas (ver resumenPago).
+// Pago simulado: no se cobra nada
 export const METODOS_PAGO = [
   {id: 'tarjetaCredito', nombre: 'Tarjeta de crédito'},
   {id: 'tarjetaDebito', nombre: 'Tarjeta de débito'},
@@ -37,7 +36,7 @@ export function marcaTarjeta(numero) {
   return 'Tarjeta';
 }
 
-// Algoritmo de Luhn: detecta errores de tipeo en el número
+// Algoritmo de Luhn
 export function numeroTarjetaValido(numero) {
   const digitos = String(numero).replace(/[\s-]/g, '');
   if (!/^\d{13,19}$/.test(digitos)) return false;
@@ -53,7 +52,7 @@ export function numeroTarjetaValido(numero) {
   return suma % 10 === 0;
 }
 
-// MM/AA, vigente hasta el último día de ese mes
+// MM/AA, vale hasta fin de ese mes
 export function vencimientoValido(vencimiento, hoy = new Date()) {
   const partes = /^(\d{2})\/(\d{2})$/.exec(String(vencimiento));
   if (!partes) return false;
@@ -75,7 +74,7 @@ export function titularValido(titular) {
 
 const esTarjeta = metodo => metodo === 'tarjetaCredito' || metodo === 'tarjetaDebito';
 
-// Validación completa en el carrito (incluye número, vencimiento y CVV)
+// Validación completa en el carrito
 export function pagoCompleto(pago) {
   if (esTarjeta(pago.metodo)) {
     const marca = marcaTarjeta(pago.numero);
@@ -92,7 +91,7 @@ export function pagoCompleto(pago) {
   return false;
 }
 
-// Lo único del pago que viaja al servidor
+// Lo que se manda al servidor
 export function resumenPago(pago) {
   if (esTarjeta(pago.metodo)) {
     return {
@@ -107,7 +106,7 @@ export function resumenPago(pago) {
   return {metodo: 'mercadoPago', email: normalizarEmail(pago.emailMercadoPago)};
 }
 
-// Revisa el resumen recibido por el servidor; devuelve un mensaje de error o null
+// Devuelve el error o null
 export function errorResumenPago(resumen) {
   if (!resumen || !METODOS_PAGO.some(({id}) => id === resumen.metodo)) return 'Elegí una forma de pago válida.';
   if (esTarjeta(resumen.metodo)) {
@@ -124,7 +123,6 @@ export function errorResumenPago(resumen) {
   return emailValido(resumen.email) ? null : 'Revisá el email de tu cuenta de Mercado Pago.';
 }
 
-// Copia solo los campos esperados de un resumen ya validado con errorResumenPago
 export function limpiarResumenPago(resumen) {
   if (esTarjeta(resumen.metodo)) {
     return {

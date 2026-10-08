@@ -1,4 +1,3 @@
-# Configuración de Netlify (se lee sola al importar el repo)
 [build]
   command = "npm run build"
   publish = "dist"
@@ -6,15 +5,14 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# /api/* → Netlify Functions (netlify/functions). Va antes que la regla de React.
+# /api va a las funciones
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
   force = true
 
-# Las rutas de React (/login, /admin…) cargan la app.
-# Los archivos que existen (data/*.json, assets) se sirven igual: Netlify no los pisa.
+# El resto lo resuelve React Router
 [[redirects]]
   from = "/*"
   to = "/index.html"

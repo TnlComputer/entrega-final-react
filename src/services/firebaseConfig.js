@@ -1,7 +1,4 @@
-// Configuración web de Firebase (Consola → Configuración del proyecto → Tus apps).
-// No es secreta: identifica al proyecto y termina igual en el JavaScript publicado.
-// Lo que protege los datos son las reglas de Firestore (firestore.rules).
-// La usan la app, el script de datos iniciales y la función de imágenes.
+// No es secreta: lo que protege los datos son las reglas de Firestore
 const firebaseConfig = {
   apiKey: 'AIzaSyD4SKH3iHsFEaNerJHo4b4E85tL30zMFRI',
   authDomain: 'el-anzuelo-1c2e0.firebaseapp.com',

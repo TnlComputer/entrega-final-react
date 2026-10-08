@@ -1,4 +1,3 @@
-// Conexión con Firebase: Firestore guarda el catálogo y el anuncio; Auth maneja el login del panel.
 import {initializeApp} from 'firebase/app';
 import {getAuth} from 'firebase/auth';
 import {getFirestore} from 'firebase/firestore';

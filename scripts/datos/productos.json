@@ -33,6 +33,23 @@
       "detalle": "Salí cómodo y protegido",
       "orden": 4,
       "subrubros": []
+    },
+    {
+      "id": "accesorios",
+      "nombre": "Accesorios",
+      "detalle": "Todo ordenado y a mano",
+      "orden": 5,
+      "subrubros": [
+        "Cajas y bolsos",
+        "Herramientas"
+      ]
+    },
+    {
+      "id": "camping",
+      "nombre": "Camping",
+      "detalle": "Para quedarte toda la noche",
+      "orden": 6,
+      "subrubros": []
     }
   ],
   "productos": [
@@ -54,9 +71,10 @@
       "stock": 6,
       "imagen": "https://i.ibb.co/hxdwD9XS/1.jpg",
       "clase": "product-lilac",
-      "destacado": false,
+      "destacado": true,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 2,
@@ -78,7 +96,8 @@
       "clase": "product-sand",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 3,
@@ -98,9 +117,10 @@
       "stock": 12,
       "imagen": "https://i.ibb.co/mrkDxQ2j/3.jpg",
       "clase": "product-ink",
-      "destacado": false,
+      "destacado": true,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 4,
@@ -122,7 +142,8 @@
       "clase": "product-water",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 5,
@@ -144,7 +165,8 @@
       "clase": "product-rust",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 6,
@@ -166,7 +188,8 @@
       "clase": "product-olive",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 7,
@@ -188,7 +211,8 @@
       "clase": "product-water",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 8,
@@ -208,9 +232,10 @@
       "stock": 5,
       "imagen": "https://i.ibb.co/jYKhQ94/8.jpg",
       "clase": "product-sand",
-      "destacado": false,
+      "destacado": true,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 9,
@@ -232,7 +257,8 @@
       "clase": "product-lilac",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 10,
@@ -254,7 +280,8 @@
       "clase": "product-ink",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 11,
@@ -276,7 +303,8 @@
       "clase": "product-olive",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 12,
@@ -298,7 +326,8 @@
       "clase": "product-rust",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 13,
@@ -320,7 +349,8 @@
       "clase": "product-sand",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 14,
@@ -342,7 +372,8 @@
       "clase": "product-water",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 15,
@@ -364,7 +395,8 @@
       "clase": "product-ink",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
     },
     {
       "id": 16,
@@ -384,9 +416,1390 @@
       "stock": 6,
       "imagen": "https://i.ibb.co/gM1SkGHM/16.jpg",
       "clase": "product-olive",
+      "destacado": true,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 17,
+      "nombre": "Caña Spinning 2,10 m",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Versátil para señuelos livianos en río y laguna.",
+      "caracteristicas": [
+        "2,10 m de largo",
+        "Acción rápida",
+        "2 tramos"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Cañas",
+      "precio": 69900,
+      "precioOferta": null,
+      "stock": 7,
+      "imagen": "https://images.pexels.com/photos/294674/pexels-photo-294674.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-sand",
       "destacado": false,
       "activo": true,
-      "orden": 0
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 18,
+      "nombre": "Caña Telescópica 3,60 m",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Se guarda en el baúl y se arma en segundos.",
+      "caracteristicas": [
+        "3,60 m de largo",
+        "Telescópica",
+        "Fibra de vidrio"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Cañas",
+      "precio": 45800,
+      "precioOferta": 39900,
+      "stock": 10,
+      "imagen": "https://images.pexels.com/photos/6478249/pexels-photo-6478249.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 19,
+      "nombre": "Caña Surfcasting 4,20 m",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Lances largos desde la playa para pesca variada.",
+      "caracteristicas": [
+        "4,20 m de largo",
+        "Acción pesada",
+        "3 tramos"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Cañas",
+      "precio": 112000,
+      "precioOferta": null,
+      "stock": 3,
+      "imagen": "https://images.pexels.com/photos/4405362/pexels-photo-4405362.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-lilac",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 20,
+      "nombre": "Caña Fly 9 pies",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Para mosca en arroyos patagónicos.",
+      "caracteristicas": [
+        "Línea #5",
+        "4 tramos",
+        "Incluye funda"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Cañas",
+      "precio": 156000,
+      "precioOferta": null,
+      "stock": 2,
+      "imagen": "https://images.pexels.com/photos/8983970/pexels-photo-8983970.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 21,
+      "nombre": "Caña Variada 2,70 m",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Todo terreno para la pesca de fin de semana.",
+      "caracteristicas": [
+        "2,70 m de largo",
+        "Acción media",
+        "2 tramos"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Cañas",
+      "precio": 52400,
+      "precioOferta": null,
+      "stock": 9,
+      "imagen": "https://images.pexels.com/photos/14339529/pexels-photo-14339529.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-rust",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 22,
+      "nombre": "Reel Frontal Shimano Sienna 2500",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Frontal liviano con freno suave y parejo.",
+      "caracteristicas": [
+        "4 rulemanes",
+        "Freno delantero",
+        "Recuperación 5.0:1"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Reels",
+      "precio": 81900,
+      "precioOferta": null,
+      "stock": 6,
+      "imagen": "https://images.pexels.com/photos/2473502/pexels-photo-2473502.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 23,
+      "nombre": "Reel Frontal Okuma 4000",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Robusto para variada de costa y muelle.",
+      "caracteristicas": [
+        "5 rulemanes",
+        "Carretel de aluminio",
+        "Recuperación 4.8:1"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Reels",
+      "precio": 69500,
+      "precioOferta": 62000,
+      "stock": 5,
+      "imagen": "https://images.pexels.com/photos/13048947/pexels-photo-13048947.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 24,
+      "nombre": "Reel Rotativo Penn 15",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Para embarcado y piezas grandes.",
+      "caracteristicas": [
+        "Carretel de bronce",
+        "Freno de estrella",
+        "Mano derecha"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Reels",
+      "precio": 128000,
+      "precioOferta": null,
+      "stock": 3,
+      "imagen": "https://images.pexels.com/photos/1687242/pexels-photo-1687242.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-water",
+      "destacado": true,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 25,
+      "nombre": "Reel Frontal Daiwa 1000",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Chico y liviano para pejerrey y trucha.",
+      "caracteristicas": [
+        "3 rulemanes",
+        "Freno delantero",
+        "Recuperación 5.2:1"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Reels",
+      "precio": 58700,
+      "precioOferta": null,
+      "stock": 8,
+      "imagen": "https://images.pexels.com/photos/6478241/pexels-photo-6478241.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-lilac",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 26,
+      "nombre": "Reel Baitcast Abu Garcia Black Max",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Perfil bajo para lances precisos con señuelos.",
+      "caracteristicas": [
+        "Freno magnético",
+        "4 rulemanes",
+        "Mano derecha"
+      ],
+      "rubro": "canas-y-reels",
+      "subrubro": "Reels",
+      "precio": 119500,
+      "precioOferta": null,
+      "stock": 0,
+      "imagen": "https://images.pexels.com/photos/4828162/pexels-photo-4828162.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 27,
+      "nombre": "Señuelo Rapala Shad Rap",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Nado de profundidad media que no falla.",
+      "caracteristicas": [
+        "Color perca",
+        "Hundimiento lento",
+        "Profundidad 2,5 m"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 34500,
+      "precioOferta": null,
+      "stock": 9,
+      "imagen": "https://images.pexels.com/photos/6478090/pexels-photo-6478090.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-rust",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 28,
+      "nombre": "Cucharita Mepps N° 2",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Giratoria chica para truchas de arroyo.",
+      "caracteristicas": [
+        "Paleta dorada",
+        "5 gramos",
+        "Anzuelo triple"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 7200,
+      "precioOferta": null,
+      "stock": 22,
+      "imagen": "https://images.pexels.com/photos/4822302/pexels-photo-4822302.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 29,
+      "nombre": "Popper de superficie",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Hace ruido en la superficie y provoca el ataque.",
+      "caracteristicas": [
+        "9 cm",
+        "Flotante",
+        "Color rana"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 15800,
+      "precioOferta": null,
+      "stock": 11,
+      "imagen": "https://images.pexels.com/photos/6478131/pexels-photo-6478131.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 30,
+      "nombre": "Spinnerbait 14 g",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Atraviesa la vegetación sin engancharse.",
+      "caracteristicas": [
+        "14 gramos",
+        "Doble paleta",
+        "Faldón de silicona"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 12900,
+      "precioOferta": 10900,
+      "stock": 13,
+      "imagen": "https://images.pexels.com/photos/6478116/pexels-photo-6478116.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 31,
+      "nombre": "Jig de plomo 20 g",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Para pescar al fondo desde el kayak o la lancha.",
+      "caracteristicas": [
+        "20 gramos",
+        "Anzuelo reforzado",
+        "Color plata"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 6900,
+      "precioOferta": null,
+      "stock": 30,
+      "imagen": "https://images.pexels.com/photos/6478129/pexels-photo-6478129.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-lilac",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 32,
+      "nombre": "Pack vinilos Shad x 10",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Colas vibrantes para armar con cabeza plomada.",
+      "caracteristicas": [
+        "Pack x 10",
+        "7 cm",
+        "Colores surtidos"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 9800,
+      "precioOferta": null,
+      "stock": 18,
+      "imagen": "https://images.pexels.com/photos/6478113/pexels-photo-6478113.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 33,
+      "nombre": "Señuelo articulado Swimbait",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Dos cuerpos para un nado bien realista.",
+      "caracteristicas": [
+        "12 cm",
+        "Hundimiento lento",
+        "Color dorado"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 27400,
+      "precioOferta": null,
+      "stock": 4,
+      "imagen": "https://images.pexels.com/photos/29718708/pexels-photo-29718708.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-rust",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 34,
+      "nombre": "Cucharita ondulante 15 g",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Lanza lejos y brilla bajo el agua.",
+      "caracteristicas": [
+        "15 gramos",
+        "Acero inoxidable",
+        "Anzuelo simple"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 6400,
+      "precioOferta": null,
+      "stock": 25,
+      "imagen": "https://images.pexels.com/photos/10076104/pexels-photo-10076104.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 35,
+      "nombre": "Mosca seca pack x 6",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Selección de moscas para trucha en verano.",
+      "caracteristicas": [
+        "Pack x 6",
+        "Anzuelos N° 12 al 16",
+        "Caja incluida"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 11500,
+      "precioOferta": null,
+      "stock": 0,
+      "imagen": "https://images.pexels.com/photos/5396318/pexels-photo-5396318.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 36,
+      "nombre": "Crankbait Strike Pro",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Babero largo para llegar al fondo rápido.",
+      "caracteristicas": [
+        "8 cm",
+        "Flotante",
+        "Profundidad 3 m"
+      ],
+      "rubro": "senuelos",
+      "subrubro": "",
+      "precio": 21900,
+      "precioOferta": null,
+      "stock": 7,
+      "imagen": "https://images.pexels.com/photos/6478132/pexels-photo-6478132.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 37,
+      "nombre": "Multifilamento 0,20 mm",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Fino y resistente para señuelos livianos.",
+      "caracteristicas": [
+        "150 metros",
+        "Resistencia 12 lb",
+        "Color gris"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Líneas",
+      "precio": 16900,
+      "precioOferta": null,
+      "stock": 12,
+      "imagen": "https://images.pexels.com/photos/26893888/pexels-photo-26893888.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-lilac",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 38,
+      "nombre": "Multifilamento 0,40 mm",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Para embarcado y peces de gran porte.",
+      "caracteristicas": [
+        "300 metros",
+        "Resistencia 40 lb",
+        "Color amarillo"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Líneas",
+      "precio": 31500,
+      "precioOferta": 27900,
+      "stock": 6,
+      "imagen": "https://images.pexels.com/photos/4302361/pexels-photo-4302361.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 39,
+      "nombre": "Monofilamento 0,25 mm",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Nylon suave para pejerrey y variada liviana.",
+      "caracteristicas": [
+        "300 metros",
+        "Resistencia 12 lb",
+        "Transparente"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Líneas",
+      "precio": 9900,
+      "precioOferta": null,
+      "stock": 20,
+      "imagen": "https://images.pexels.com/photos/28207751/pexels-photo-28207751.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-rust",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 40,
+      "nombre": "Fluorocarbono 0,45 mm",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Invisible bajo el agua, ideal para leader.",
+      "caracteristicas": [
+        "50 metros",
+        "Resistencia 30 lb",
+        "Baja memoria"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Líneas",
+      "precio": 14800,
+      "precioOferta": null,
+      "stock": 10,
+      "imagen": "https://images.pexels.com/photos/17778450/pexels-photo-17778450.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-ink",
+      "destacado": true,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 41,
+      "nombre": "Línea de mosca flotante",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Para pesca con mosca seca en arroyos.",
+      "caracteristicas": [
+        "WF5F",
+        "27 metros",
+        "Color verde"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Líneas",
+      "precio": 38900,
+      "precioOferta": null,
+      "stock": 3,
+      "imagen": "https://images.pexels.com/photos/14438489/pexels-photo-14438489.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 42,
+      "nombre": "Anzuelos Mustad N° 4",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Clásicos para variada de costa.",
+      "caracteristicas": [
+        "Caja de 50 unidades",
+        "Acero bronceado",
+        "Tamaño 4"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Anzuelos",
+      "precio": 5400,
+      "precioOferta": null,
+      "stock": 30,
+      "imagen": "https://images.pexels.com/photos/4822301/pexels-photo-4822301.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 43,
+      "nombre": "Anzuelos circulares Gamakatsu",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Clavan en la comisura y facilitan la devolución.",
+      "caracteristicas": [
+        "Sobre de 8",
+        "Acero carbono",
+        "Tamaño 2/0"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Anzuelos",
+      "precio": 9900,
+      "precioOferta": null,
+      "stock": 16,
+      "imagen": "https://images.pexels.com/photos/5537869/pexels-photo-5537869.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-lilac",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 44,
+      "nombre": "Anzuelos para pejerrey N° 8",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Finos y filosos para la boca chica del pejerrey.",
+      "caracteristicas": [
+        "Sobre de 25",
+        "Acero fino",
+        "Tamaño 8"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Anzuelos",
+      "precio": 4300,
+      "precioOferta": null,
+      "stock": 40,
+      "imagen": "https://images.pexels.com/photos/17542536/pexels-photo-17542536.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 45,
+      "nombre": "Kit de anzuelos triples",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Repuestos para cambiar en los señuelos.",
+      "caracteristicas": [
+        "Caja de 20 unidades",
+        "Tamaños 2 al 6",
+        "Acero negro"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Anzuelos",
+      "precio": 8700,
+      "precioOferta": 7400,
+      "stock": 12,
+      "imagen": "https://images.pexels.com/photos/6478096/pexels-photo-6478096.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-rust",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 46,
+      "nombre": "Brazoladas armadas x 5",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Listas para usar con anzuelo y destorcedor.",
+      "caracteristicas": [
+        "Pack x 5",
+        "Acero trenzado",
+        "Largo 30 cm"
+      ],
+      "rubro": "lineas-y-anzuelos",
+      "subrubro": "Anzuelos",
+      "precio": 6900,
+      "precioOferta": null,
+      "stock": 22,
+      "imagen": "https://images.pexels.com/photos/35625612/pexels-photo-35625612.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 47,
+      "nombre": "Botas de neoprene",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Mantienen los pies secos y abrigados en el agua.",
+      "caracteristicas": [
+        "Neoprene 5 mm",
+        "Suela antideslizante",
+        "Talles 38 al 45"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 74900,
+      "precioOferta": null,
+      "stock": 5,
+      "imagen": "https://images.pexels.com/photos/4828230/pexels-photo-4828230.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 48,
+      "nombre": "Waders respirables",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Para entrar al río sin mojarte.",
+      "caracteristicas": [
+        "Tela respirable",
+        "Botas incluidas",
+        "Talles S al XL"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 189000,
+      "precioOferta": 169000,
+      "stock": 2,
+      "imagen": "https://images.pexels.com/photos/27257105/pexels-photo-27257105.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 49,
+      "nombre": "Remera manga larga UV",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Fresca y con protección para días de sol fuerte.",
+      "caracteristicas": [
+        "Protección UV 50+",
+        "Secado rápido",
+        "Talles S al XXL"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 24900,
+      "precioOferta": null,
+      "stock": 14,
+      "imagen": "https://images.pexels.com/photos/28587137/pexels-photo-28587137.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-lilac",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 50,
+      "nombre": "Buff térmico",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Cubre cuello y cara del frío y del sol.",
+      "caracteristicas": [
+        "Microfibra",
+        "Uso múltiple",
+        "Talle único"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 8900,
+      "precioOferta": null,
+      "stock": 25,
+      "imagen": "https://images.pexels.com/photos/17491829/pexels-photo-17491829.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 51,
+      "nombre": "Guantes de neoprene",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Abrigo en invierno sin perder sensibilidad.",
+      "caracteristicas": [
+        "Dedos rebatibles",
+        "Neoprene 2 mm",
+        "Talles M y L"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 15600,
+      "precioOferta": null,
+      "stock": 10,
+      "imagen": "https://images.pexels.com/photos/6830952/pexels-photo-6830952.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-rust",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 52,
+      "nombre": "Pantalón cargo desmontable",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Se convierte en bermuda en un segundo.",
+      "caracteristicas": [
+        "Secado rápido",
+        "6 bolsillos",
+        "Talles 38 al 50"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 46800,
+      "precioOferta": null,
+      "stock": 7,
+      "imagen": "https://images.pexels.com/photos/13125260/pexels-photo-13125260.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 53,
+      "nombre": "Piloto impermeable",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Para pescar bajo la lluvia sin problemas.",
+      "caracteristicas": [
+        "Capucha incorporada",
+        "Costuras selladas",
+        "Talles S al XXL"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 58900,
+      "precioOferta": null,
+      "stock": 4,
+      "imagen": "https://images.pexels.com/photos/2569819/pexels-photo-2569819.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 54,
+      "nombre": "Sombrero australiano",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Ala ancha para cuidar cara y nuca.",
+      "caracteristicas": [
+        "Protección UV 50+",
+        "Cordón regulable",
+        "Talle único"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 21500,
+      "precioOferta": 18900,
+      "stock": 11,
+      "imagen": "https://images.pexels.com/photos/8728521/pexels-photo-8728521.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 55,
+      "nombre": "Medias térmicas x 2",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Abrigan bien adentro de las botas.",
+      "caracteristicas": [
+        "Pack x 2 pares",
+        "Lana merino",
+        "Talles 39 al 44"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 12300,
+      "precioOferta": null,
+      "stock": 0,
+      "imagen": "https://images.pexels.com/photos/251454/pexels-photo-251454.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-lilac",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 56,
+      "nombre": "Polar de abrigo",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Liviano y calentito para la madrugada.",
+      "caracteristicas": [
+        "Micropolar",
+        "Cierre medio",
+        "Talles S al XXL"
+      ],
+      "rubro": "indumentaria",
+      "subrubro": "",
+      "precio": 39900,
+      "precioOferta": null,
+      "stock": 8,
+      "imagen": "https://images.pexels.com/photos/30372298/pexels-photo-30372298.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 57,
+      "nombre": "Caja de pesca 3 bandejas",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Ordena señuelos, plomos y anzuelos.",
+      "caracteristicas": [
+        "3 bandejas extensibles",
+        "Plástico reforzado",
+        "Manija plegable"
+      ],
+      "rubro": "accesorios",
+      "subrubro": "Cajas y bolsos",
+      "precio": 28900,
+      "precioOferta": null,
+      "stock": 8,
+      "imagen": "https://images.pexels.com/photos/14339533/pexels-photo-14339533.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-rust",
+      "destacado": true,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 58,
+      "nombre": "Bolso porta cañas",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Lleva hasta 4 cañas armadas con sus reels.",
+      "caracteristicas": [
+        "Largo 1,30 m",
+        "Acolchado",
+        "Correa al hombro"
+      ],
+      "rubro": "accesorios",
+      "subrubro": "Cajas y bolsos",
+      "precio": 41500,
+      "precioOferta": 36900,
+      "stock": 5,
+      "imagen": "https://images.pexels.com/photos/7060666/pexels-photo-7060666.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 59,
+      "nombre": "Caja organizadora chica",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Separadores móviles para señuelos chicos.",
+      "caracteristicas": [
+        "14 divisiones",
+        "Tapa transparente",
+        "20 x 12 cm"
+      ],
+      "rubro": "accesorios",
+      "subrubro": "Cajas y bolsos",
+      "precio": 6900,
+      "precioOferta": null,
+      "stock": 20,
+      "imagen": "https://images.pexels.com/photos/6478089/pexels-photo-6478089.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 60,
+      "nombre": "Mochila de pesca",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Con cajas incluidas y muchos bolsillos.",
+      "caracteristicas": [
+        "4 cajas incluidas",
+        "Tela impermeable",
+        "30 litros"
+      ],
+      "rubro": "accesorios",
+      "subrubro": "Cajas y bolsos",
+      "precio": 64800,
+      "precioOferta": null,
+      "stock": 4,
+      "imagen": "https://images.pexels.com/photos/1178525/pexels-photo-1178525.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 61,
+      "nombre": "Bolso térmico para carnada",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Mantiene la carnada fresca toda la jornada.",
+      "caracteristicas": [
+        "8 litros",
+        "Interior térmico",
+        "Correa regulable"
+      ],
+      "rubro": "accesorios",
+      "subrubro": "Cajas y bolsos",
+      "precio": 18700,
+      "precioOferta": null,
+      "stock": 9,
+      "imagen": "https://images.pexels.com/photos/27528407/pexels-photo-27528407.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-lilac",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 62,
+      "nombre": "Pinza multiuso",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Saca anzuelos, corta línea y aprieta plomos.",
+      "caracteristicas": [
+        "Acero inoxidable",
+        "Corta multifilamento",
+        "Con funda"
+      ],
+      "rubro": "accesorios",
+      "subrubro": "Herramientas",
+      "precio": 16400,
+      "precioOferta": null,
+      "stock": 12,
+      "imagen": "https://images.pexels.com/photos/13615157/pexels-photo-13615157.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 63,
+      "nombre": "Balanza digital 50 kg",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Para pesar la pieza antes de devolverla.",
+      "caracteristicas": [
+        "Hasta 50 kg",
+        "Pantalla LCD",
+        "Cinta métrica"
+      ],
+      "rubro": "accesorios",
+      "subrubro": "Herramientas",
+      "precio": 13900,
+      "precioOferta": 11900,
+      "stock": 10,
+      "imagen": "https://images.pexels.com/photos/12119943/pexels-photo-12119943.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-rust",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 64,
+      "nombre": "Copo plegable",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Ayuda a sacar la pieza sin cortar la línea.",
+      "caracteristicas": [
+        "Mango de 1,50 m",
+        "Red de goma",
+        "Plegable"
+      ],
+      "rubro": "accesorios",
+      "subrubro": "Herramientas",
+      "precio": 34600,
+      "precioOferta": null,
+      "stock": 3,
+      "imagen": "https://images.pexels.com/photos/13861437/pexels-photo-13861437.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 65,
+      "nombre": "Cuchillo fileteador",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Hoja flexible para limpiar el pescado.",
+      "caracteristicas": [
+        "Hoja de 15 cm",
+        "Acero inoxidable",
+        "Con funda"
+      ],
+      "rubro": "accesorios",
+      "subrubro": "Herramientas",
+      "precio": 19800,
+      "precioOferta": null,
+      "stock": 7,
+      "imagen": "https://images.pexels.com/photos/3296395/pexels-photo-3296395.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 66,
+      "nombre": "Kit de plomos surtidos",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Pesos variados para cada tipo de pesca.",
+      "caracteristicas": [
+        "60 piezas",
+        "Plomo y oliva",
+        "Caja incluida"
+      ],
+      "rubro": "accesorios",
+      "subrubro": "Herramientas",
+      "precio": 8200,
+      "precioOferta": null,
+      "stock": 0,
+      "imagen": "https://images.pexels.com/photos/6478093/pexels-photo-6478093.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 67,
+      "nombre": "Conservadora 30 litros",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Mantiene el frío hasta dos días.",
+      "caracteristicas": [
+        "30 litros",
+        "Manijas laterales",
+        "Tapa con traba"
+      ],
+      "rubro": "camping",
+      "subrubro": "",
+      "precio": 79900,
+      "precioOferta": 71500,
+      "stock": 4,
+      "imagen": "https://images.pexels.com/photos/6831110/pexels-photo-6831110.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-lilac",
+      "destacado": true,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 68,
+      "nombre": "Silla plegable con portacaña",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Para esperar el pique cómodo.",
+      "caracteristicas": [
+        "Portacaña incluido",
+        "Soporta 110 kg",
+        "Bolso de guardado"
+      ],
+      "rubro": "camping",
+      "subrubro": "",
+      "precio": 36800,
+      "precioOferta": null,
+      "stock": 6,
+      "imagen": "https://images.pexels.com/photos/6271625/pexels-photo-6271625.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 69,
+      "nombre": "Linterna frontal LED",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Manos libres para armar líneas de noche.",
+      "caracteristicas": [
+        "300 lúmenes",
+        "Recargable USB",
+        "Luz roja"
+      ],
+      "rubro": "camping",
+      "subrubro": "",
+      "precio": 14900,
+      "precioOferta": null,
+      "stock": 15,
+      "imagen": "https://images.pexels.com/photos/6831131/pexels-photo-6831131.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-rust",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 70,
+      "nombre": "Carpa 3 personas",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Se arma en minutos al lado del agua.",
+      "caracteristicas": [
+        "3 personas",
+        "Doble techo",
+        "Bolso incluido"
+      ],
+      "rubro": "camping",
+      "subrubro": "",
+      "precio": 119000,
+      "precioOferta": null,
+      "stock": 3,
+      "imagen": "https://images.pexels.com/photos/176381/pexels-photo-176381.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 71,
+      "nombre": "Bolsa de dormir",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Abriga en las noches frescas de pesca.",
+      "caracteristicas": [
+        "Confort 5 °C",
+        "Tipo sarcófago",
+        "Bolsa compresora"
+      ],
+      "rubro": "camping",
+      "subrubro": "",
+      "precio": 52900,
+      "precioOferta": null,
+      "stock": 5,
+      "imagen": "https://images.pexels.com/photos/9166687/pexels-photo-9166687.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-sand",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 72,
+      "nombre": "Farol LED recargable",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Ilumina todo el campamento.",
+      "caracteristicas": [
+        "500 lúmenes",
+        "Batería 12 h",
+        "Gancho colgante"
+      ],
+      "rubro": "camping",
+      "subrubro": "",
+      "precio": 21400,
+      "precioOferta": null,
+      "stock": 9,
+      "imagen": "https://images.pexels.com/photos/6271688/pexels-photo-6271688.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-water",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 73,
+      "nombre": "Termo de acero 1 litro",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Mate caliente durante toda la salida.",
+      "caracteristicas": [
+        "1 litro",
+        "Acero inoxidable",
+        "Pico cebador"
+      ],
+      "rubro": "camping",
+      "subrubro": "",
+      "precio": 33500,
+      "precioOferta": 29900,
+      "stock": 10,
+      "imagen": "https://images.pexels.com/photos/34449869/pexels-photo-34449869.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-lilac",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 74,
+      "nombre": "Anafe portátil",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Para calentar agua y cocinar en la costa.",
+      "caracteristicas": [
+        "A cartucho",
+        "Encendido automático",
+        "Valija de guardado"
+      ],
+      "rubro": "camping",
+      "subrubro": "",
+      "precio": 27600,
+      "precioOferta": null,
+      "stock": 0,
+      "imagen": "https://images.pexels.com/photos/6271316/pexels-photo-6271316.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-olive",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 75,
+      "nombre": "Reposera de playa",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Liviana y baja para la orilla.",
+      "caracteristicas": [
+        "Aluminio",
+        "5 posiciones",
+        "Soporta 100 kg"
+      ],
+      "rubro": "camping",
+      "subrubro": "",
+      "precio": 24800,
+      "precioOferta": null,
+      "stock": 7,
+      "imagen": "https://images.pexels.com/photos/17286704/pexels-photo-17286704.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-rust",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
+    },
+    {
+      "id": 76,
+      "nombre": "Mesa plegable de aluminio",
+      "marca": "",
+      "sku": "",
+      "descripcion": "Para limpiar el pescado o comer.",
+      "caracteristicas": [
+        "70 x 70 cm",
+        "Altura regulable",
+        "Plegable"
+      ],
+      "rubro": "camping",
+      "subrubro": "",
+      "precio": 44900,
+      "precioOferta": null,
+      "stock": 4,
+      "imagen": "https://images.pexels.com/photos/6271638/pexels-photo-6271638.jpeg?auto=compress&cs=tinysrgb&w=900",
+      "clase": "product-ink",
+      "destacado": false,
+      "activo": true,
+      "orden": 0,
+      "actualizadoEn": null
     }
   ]
 }

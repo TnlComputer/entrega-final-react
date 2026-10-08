@@ -12,6 +12,7 @@ import AdminRubros from './Pages/Admin/AdminRubros';
 import ProductoForm from './Pages/Admin/ProductoForm';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
+import Productos from './Pages/Productos';
 import "./styles.css";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Routes>
           <Route element={<Layout productos={productos} catalogo={catalogo} />}>
             <Route path="/" element={<Home />} />
+            <Route path="/productos" element={<Productos />} />
             <Route path="/login" element={<Login />} />
             <Route
               path="/admin"

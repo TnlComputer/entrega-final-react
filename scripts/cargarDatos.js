@@ -1,8 +1,4 @@
-// Carga en Firestore el catálogo y el anuncio iniciales (scripts/datos/*.json).
-// Uso: npm run cargar-datos            (solo si la base está vacía)
-//      npm run cargar-datos -- --forzar (pisa lo que haya)
-// Entra con ADMIN_EMAIL y ADMIN_PASSWORD de .env.local: esa cuenta tiene que existir en
-// Firebase Auth y tener su documento admins/{uid} (si no, las reglas rechazan la escritura).
+// Carga los datos iniciales en Firestore (--forzar pisa lo que haya)
 import {readFile} from 'node:fs/promises';
 import {initializeApp} from 'firebase/app';
 import {getAuth, signInWithEmailAndPassword, signOut} from 'firebase/auth';
@@ -24,7 +20,7 @@ try {
   const {rubros, productos} = await leerJson('productos.json');
   const anuncio = await leerJson('anuncio.json');
 
-  // Mismas reglas que el panel, para no cargar datos que después no se puedan editar
+  // Mismas validaciones que el panel
   for (const rubro of rubros) {
     const errores = validarRubro(rubro, {rubros, id: rubro.id});
     if (Object.keys(errores).length) throw new Error(`Rubro "${rubro.nombre}": ${Object.values(errores)[0]}`);

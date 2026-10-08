@@ -4,7 +4,6 @@ import {prepararCatalogo} from '../data/modeloCatalogo';
 import {db} from '../services/firebase';
 import {actualizarProductos, cargarProductos} from '../services/productosApi';
 
-// Catálogo para el carrito y el panel admin (la tienda lo carga en ItemListContainer)
 function useCatalogo() {
   const [catalogo, setCatalogo] = useState({rubros: [], productos: []});
   const [cargando, setCargando] = useState(true);
@@ -52,13 +51,13 @@ function useCatalogo() {
 
   return {
     rubros,
-    // Para el panel: todos, incluso los ocultos
+    // Todos, incluso los ocultos
     todosLosProductos: todos,
-    // Para el carrito: solo los activos
+    // Solo los activos
     productos: todos.filter(producto => producto.activo),
     cargando,
     error,
-    // Lo usa el panel después de guardar en Firestore
+    // Se usa al guardar en el panel
     reemplazarCatalogo: datos => {
       catalogoRef.current = datos;
       actualizarProductos(datos);

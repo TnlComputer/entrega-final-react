@@ -9,7 +9,7 @@ function Header({cantidadCarrito = 0, onAbrirCarrito}) {
           El<span>.</span>Anzuelo
         </a>
         <p>Casa de pesca</p>
-        {/* Arriba de todo: el carrito se ve acá si tiene productos (al bajar, lo muestra la barra fija) */}
+        {/* Carrito, si tiene productos */}
         {cantidadCarrito > 0 && (
           <Button
             className={styles.headerCart}

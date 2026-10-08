@@ -8,7 +8,7 @@ import {guardarImagenGaleria, listarImagenesGaleria, subirImagen} from '../../se
 import itemStyles from '../../components/Item/Item.module.css';
 import styles from './Admin.module.css';
 
-// El formulario trabaja con texto; las características van una por línea
+// Las características van una por línea
 function productoAFormulario(producto) {
   return {
     ...PRODUCTO_VACIO,
@@ -66,7 +66,7 @@ function FormularioProducto({inicial, id, catalogo}) {
 
   const datos = formularioADatos(formulario);
   const errores = validarProducto(datos, {rubros, productos, id});
-  // Los errores se muestran recién después del primer intento de guardar
+  // Los errores se muestran al intentar guardar
   const error = campo => (intentoEnviar ? errores[campo] : undefined);
 
   const rubroElegido = rubros.find(rubro => rubro.id === formulario.rubro);
@@ -109,7 +109,7 @@ function FormularioProducto({inicial, id, catalogo}) {
     setFormulario(actual => ({
       ...actual,
       rubro: evento.target.value,
-      // Si el subrubro no existe en el rubro nuevo, se elige el primero ('' si no tiene)
+      // Si el subrubro no existe en el rubro nuevo, se elige el primero
       subrubro: nuevo?.subrubros.includes(actual.subrubro) ? actual.subrubro : (nuevo?.subrubros[0] ?? '')
     }));
   };
@@ -258,7 +258,7 @@ function FormularioProducto({inicial, id, catalogo}) {
             </Form.Select>
             <Form.Control.Feedback type="invalid">{error('rubro')}</Form.Control.Feedback>
           </Form.Group>
-          {/* Solo si el rubro elegido se divide en subrubros */}
+          {/* Solo si el rubro tiene subrubros */}
           {subrubros.length > 0 && (
             <Form.Group as={Col} md={6} controlId="producto-subrubro">
               <Form.Label>Subrubro *</Form.Label>
