@@ -228,3 +228,9 @@ export function prepararCatalogo({rubros = [], productos = []}) {
 
 // Precio final: la oferta si hay
 export const precioFinal = producto => producto.precioOferta ?? producto.precio;
+
+// ImgBB es lento: en Netlify las fotos pasan por su CDN, achicadas
+export function urlImagen(url, ancho = 600) {
+  if (!import.meta.env?.PROD || !url?.startsWith('https://i.ibb.co/')) return url;
+  return `/.netlify/images?url=${encodeURIComponent(url)}&w=${ancho}`;
+}

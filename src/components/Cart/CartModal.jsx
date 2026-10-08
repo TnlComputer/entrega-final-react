@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {Alert, Button, Form, Modal} from 'react-bootstrap';
-import {precioFinal} from '../../data/modeloCatalogo';
+import {precioFinal, urlImagen} from '../../data/modeloCatalogo';
 import {
   CUOTAS,
   DATOS_TRANSFERENCIA,
@@ -659,7 +659,7 @@ function CartModal({
             <div className={styles.cartItems}>
               {productos.map(({producto, cantidad}) => (
                 <div className={styles.cartItem} key={producto.id}>
-                  <img src={producto.imagen} alt="" />
+                  <img src={urlImagen(producto.imagen, 160)} alt="" />
                   <div className={styles.cartItemInfo}>
                     <strong>{producto.nombre}</strong>
                     <div className={styles.cartQuantity} aria-label={`Cantidad de ${producto.nombre}`}>

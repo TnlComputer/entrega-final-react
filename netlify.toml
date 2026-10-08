@@ -5,6 +5,10 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Fotos de ImgBB por el CDN de Netlify
+[images]
+  remote_images = ["https://i\\.ibb\\.co/.*"]
+
 # /api va a las funciones
 [[redirects]]
   from = "/api/*"

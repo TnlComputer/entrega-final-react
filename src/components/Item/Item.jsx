@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {Button} from 'react-bootstrap';
 import heroImage from '../../assets/hero.jpg';
+import {urlImagen} from '../../data/modeloCatalogo';
 import styles from './Item.module.css';
 
 function Item({producto, esFavorito, onAlternarFavorito, onAgregarAlCarrito, formatoPrecio}) {
@@ -32,7 +33,7 @@ function Item({producto, esFavorito, onAlternarFavorito, onAgregarAlCarrito, for
             </button>
             {producto.destacado && <span className={styles.destacado}>★ Destacado</span>}
             <img
-              src={producto.imagen}
+              src={urlImagen(producto.imagen)}
               alt={`Imagen de ${producto.nombre}`}
               loading="lazy"
               onError={event => {
