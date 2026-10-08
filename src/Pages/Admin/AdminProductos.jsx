@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {Alert, Badge, Button, Form, Table} from 'react-bootstrap';
 import {Link, useLocation} from 'react-router-dom';
+import {urlImagen} from '../../data/modeloCatalogo';
 import useAdminCatalogo from '../../hooks/useAdminCatalogo';
 import styles from './Admin.module.css';
 
@@ -157,7 +158,7 @@ function AdminProductos() {
               <tr key={producto.id} className={producto.activo ? '' : styles.filaOculta}>
                 <td>
                   <div className={styles.celdaProducto}>
-                    <img src={producto.imagen} alt="" loading="lazy" />
+                    <img src={urlImagen(producto.imagen, 160)} alt="" loading="lazy" />
                     <div>
                       <strong>{producto.nombre}</strong>
                       <small>
