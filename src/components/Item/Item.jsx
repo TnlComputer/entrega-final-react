@@ -6,7 +6,7 @@ import styles from './Item.module.css';
 function Item({producto, esFavorito, onAlternarFavorito, onAgregarAlCarrito, formatoPrecio}) {
   const sinStock = producto.stock === 0;
   const [cantidad, setCantidad] = useState(sinStock ? 0 : 1);
-  // Gira solo desde "Ver características", así el favorito se puede marcar sin voltear la card
+  // Gira solo desde "Ver características"
   const [volteada, setVolteada] = useState(false);
 
   const alternarFavorito = () => onAlternarFavorito(producto.id);
@@ -30,6 +30,7 @@ function Item({producto, esFavorito, onAlternarFavorito, onAgregarAlCarrito, for
               onClick={alternarFavorito}>
               {esFavorito ? '♥' : '♡'}
             </button>
+            {producto.destacado && <span className={styles.destacado}>★ Destacado</span>}
             <img
               src={producto.imagen}
               alt={`Imagen de ${producto.nombre}`}
@@ -75,7 +76,6 @@ function Item({producto, esFavorito, onAlternarFavorito, onAgregarAlCarrito, for
         </span>
         <h4 title={producto.nombre}>{producto.nombre}</h4>
         <p className={styles.productDescripcion}>{producto.descripcion}</p>
-        {/* Fila de alto fijo: aviso de stock a la izquierda y precio a la derecha, igual en todas las cards */}
         <div className={styles.productPrecioFila}>
           {sinStock ? (
             <p className={`${styles.stockHint} ${styles.stockAgotado}`}>Sin stock por el momento.</p>

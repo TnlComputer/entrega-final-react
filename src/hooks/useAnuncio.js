@@ -13,7 +13,7 @@ function useAnuncio() {
       .then(datos => {
         if (!cancelado) setAnuncio(datos);
       })
-      // Si no se puede leer, la tienda sigue igual, sin anuncio
+      // Si falla, sigue sin anuncio
       .catch(() => {})
       .finally(() => {
         if (!cancelado) setCargando(false);
@@ -27,7 +27,7 @@ function useAnuncio() {
   return {
     anuncio,
     cargando,
-    // Lo usa el panel después de guardar en Firestore
+    // Se usa al guardar en el panel
     reemplazarAnuncio: setAnuncio
   };
 }

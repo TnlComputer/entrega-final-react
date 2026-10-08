@@ -1,9 +1,4 @@
-// Operaciones del panel admin contra Firebase.
-//   Login: Firebase Auth (email y contraseña). Es admin quien tenga un documento admins/{uid}.
-//   Catálogo: colecciones "rubros" (id = slug) y "productos" (id = número como texto).
-//   Anuncio: documento config/anuncio.
-//   Imágenes: /api/imagenes (Netlify Function), que sube a ImgBB con la clave oculta.
-// Quién puede escribir lo deciden las reglas de Firestore (firestore.rules), no este archivo.
+// API del panel admin (Firebase)
 import {onAuthStateChanged, signInWithEmailAndPassword, signOut} from 'firebase/auth';
 import {collection, doc, getDoc, getDocs, query, setDoc, where, writeBatch} from 'firebase/firestore';
 import {auth, db} from './firebase';
@@ -17,7 +12,7 @@ const MENSAJES_FIREBASE = {
   unavailable: 'No hay conexión con la base de datos. Revisá internet.'
 };
 
-// Pasa los errores de Firebase a un mensaje para mostrar
+// Mensajes de error de Firebase
 const traducir = error => new Error(MENSAJES_FIREBASE[error.code] || error.message || 'Algo salió mal.', {cause: error});
 
 async function esAdmin(usuario) {
@@ -28,8 +23,7 @@ async function esAdmin(usuario) {
   }
 }
 
-// Avisa cada vez que cambia la sesión: callback(email) o callback(null).
-// Firebase recuerda la sesión al recargar la página. Devuelve la función para dejar de escuchar.
+// Avisa cuando cambia la sesión
 export function observarSesion(callback) {
   return onAuthStateChanged(auth, async usuario => {
     callback(usuario && (await esAdmin(usuario)) ? usuario.email : null);
@@ -55,8 +49,7 @@ export function cerrarSesion() {
   return signOut(auth);
 }
 
-// Recibe el catálogo completo (como lo arma useAdminCatalogo) y deja Firestore igual:
-// escribe cada rubro y producto, y borra los que ya no están. Todo junto o nada.
+// Guarda el catálogo completo y borra lo que ya no está
 export async function guardarCatalogo({rubros, productos}) {
   try {
     const lote = writeBatch(db);
@@ -79,7 +72,7 @@ export async function guardarCatalogo({rubros, productos}) {
   }
 }
 
-// Devuelve el anuncio tal como quedó guardado
+// Devuelve el anuncio guardado
 export async function guardarAnuncio(anuncio) {
   try {
     await setDoc(doc(db, 'config', 'anuncio'), anuncio);

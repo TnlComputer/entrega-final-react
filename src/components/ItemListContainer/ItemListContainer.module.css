@@ -5,7 +5,11 @@
   align-items: end;
   display: flex;
   justify-content: space-between;
+  background: rgba(255, 253, 250, 0.88);
+  backdrop-filter: blur(6px);
   margin-bottom: 28px;
+  padding: 20px 24px;
+  text-align: left;
 }
 .section-heading :global(.eyebrow) {
   margin-bottom: 10px;
@@ -55,6 +59,66 @@
 .availability {
   color: var(--muted);
   font-size: 12px;
+}
+.bloque {
+  margin-bottom: 56px;
+  scroll-margin-top: 90px;
+}
+.ver-todos {
+  margin-top: 32px;
+  text-align: center;
+}
+.ver-todos a {
+  background: var(--violet);
+  border-radius: 999px;
+  color: var(--white);
+  display: inline-block;
+  font-size: 14px;
+  padding: 12px 28px;
+  text-decoration: none;
+  transition: opacity 180ms ease;
+}
+.ver-todos a:hover {
+  opacity: 0.85;
+}
+.filtros,
+.paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.filtros {
+  margin-bottom: 24px;
+}
+.paginacion {
+  justify-content: center;
+  margin-top: 32px;
+}
+.filtros button,
+.paginacion button {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 13px;
+  min-width: 40px;
+  padding: 8px 16px;
+  transition: border-color 180ms ease;
+}
+.filtros button:hover,
+.paginacion button:hover:not(:disabled) {
+  border-color: var(--violet);
+}
+.filtros .activo,
+.paginacion .activo {
+  background: var(--violet);
+  border-color: var(--violet);
+  color: var(--white);
+}
+.paginacion button:disabled {
+  cursor: default;
+  opacity: 0.4;
 }
 
 @media (max-width: 600px) {

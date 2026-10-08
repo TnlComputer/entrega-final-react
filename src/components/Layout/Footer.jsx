@@ -89,6 +89,13 @@ function Footer() {
           <span>
             © 2026 El Anzuelo · <Link to="/admin">Administración</Link>
           </span>
+          <span>
+            Foto de fondo:{' '}
+            <a href="https://commons.wikimedia.org/w/index.php?curid=24774351" target="_blank" rel="noreferrer">
+              Ritiks
+            </a>{' '}
+            (CC BY-SA 3.0)
+          </span>
           <span>Prepará la caja y salí a pescar.</span>
         </div>
       </Container>

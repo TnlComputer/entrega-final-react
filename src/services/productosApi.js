@@ -2,8 +2,7 @@ import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
 import {ANUNCIO_VACIO} from '../data/modeloAnuncio';
 import {db} from './firebase';
 
-// El catálogo se pide una sola vez a Firestore: la tienda (ItemListContainer), el carrito
-// y el panel admin comparten la misma respuesta.
+// Se pide una sola vez y se comparte
 let pedido = null;
 
 const leerColeccion = async nombre => (await getDocs(collection(db, nombre))).docs.map(documento => documento.data());
@@ -16,7 +15,7 @@ export function cargarProductos() {
         throw new Error('No se pudo obtener el catálogo', {cause: error});
       });
 
-    // Si falla, el próximo intento lo vuelve a pedir
+    // Si falla, se vuelve a pedir
     nuevo.catch(() => {
       if (pedido === nuevo) pedido = null;
     });
@@ -26,12 +25,11 @@ export function cargarProductos() {
   return pedido;
 }
 
-// El panel lo llama después de guardar, para que la tienda muestre lo nuevo
+// Recarga después de guardar en el panel
 export function actualizarProductos(datos) {
   pedido = Promise.resolve(datos);
 }
 
-// El anuncio es un único documento: config/anuncio
 export async function cargarAnuncio() {
   const documento = await getDoc(doc(db, 'config', 'anuncio'));
   return documento.exists() ? {...ANUNCIO_VACIO, ...documento.data()} : ANUNCIO_VACIO;

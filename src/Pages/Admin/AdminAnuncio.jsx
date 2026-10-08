@@ -27,7 +27,6 @@ const ESTADOS = {
 
 function AdminAnuncio() {
   const {anuncio: {anuncio, cargando, reemplazarAnuncio}} = useOutletContext();
-  // Vive acá y no en el formulario, que se reinicia después de guardar
   const [guardadoOk, setGuardadoOk] = useState(false);
 
   if (cargando) return <p>Cargando anuncio…</p>;
@@ -39,7 +38,6 @@ function AdminAnuncio() {
           Guardamos el anuncio. La página ya muestra los cambios.
         </Alert>
       )}
-      {/* key: si el anuncio guardado cambia, el formulario arranca de nuevo con esos datos */}
       <FormularioAnuncio
         key={JSON.stringify(anuncio)}
         guardado={anuncio}

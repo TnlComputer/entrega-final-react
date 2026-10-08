@@ -1,36 +1,60 @@
 .nav-centinela {
+  background: rgba(23, 21, 28, 0.78);
   height: 1px;
 }
 .site-nav {
   align-items: center;
-  background: var(--ink);
-  border-top: 1px solid #37333d;
+  backdrop-filter: blur(10px);
+  background: rgba(23, 21, 28, 0.78);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   gap: 34px;
   justify-content: center;
   padding: 16px 24px;
   position: sticky;
-  top: 0;
+  top: var(--alto-anuncio, 0px);
   z-index: 1030;
 }
 .site-nav a {
-  color: #bebac2;
-  font-size: 13px;
+  color: #d6d2da;
+  font-size: 12px;
+  letter-spacing: 1.6px;
+  position: relative;
   text-decoration: none;
+  text-transform: uppercase;
   transition: color 180ms ease;
 }
-.site-nav a:first-child,
-.site-nav a:hover {
+.site-nav a:hover,
+.site-nav a:global(.active) {
   color: var(--lime);
+}
+/* Subrayado del enlace activo */
+.site-nav :global(.nav-link)::after {
+  background: var(--lime);
+  bottom: 2px;
+  content: '';
+  height: 2px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  transition: width 200ms ease;
+  width: 0;
+}
+.site-nav :global(.nav-link):hover::after,
+.site-nav :global(.nav-link.active)::after {
+  width: 60%;
 }
 .nav-container {
   align-items: center;
   display: flex;
 }
-.nav-brand {
+.site-nav .nav-brand {
   color: var(--white);
   font-size: 15px;
   font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
   margin-right: 28px;
   text-decoration: none;
 }

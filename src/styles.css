@@ -24,13 +24,21 @@ body {
   min-width: 320px;
   background: var(--paper);
 }
-/* La página acompaña el ancho de la pantalla hasta 1920 px
-   (reemplaza el ancho fijo de 1126 px que venía en index.css) */
 #root {
   width: 100%;
-  max-width: 1920px;
   border-inline: 0;
-  background: var(--paper);
+  isolation: isolate;
+  position: relative;
+}
+/* Fondo fijo */
+#root::before {
+  background:
+    linear-gradient(rgba(246, 244, 240, 0.12), rgba(246, 244, 240, 0.12)),
+    url('./assets/fondo-mar.jpg') center / cover no-repeat;
+  content: '';
+  inset: 0;
+  position: fixed;
+  z-index: -1;
 }
 a {
   color: inherit;
@@ -47,20 +55,8 @@ main {
   padding: 0 48px 96px;
 }
 
-/* Pantallas de más de 1920 px: la página queda centrada y a los costados
-   se ve "agua profunda" con peces y anzuelos */
-@media (min-width: 1921px) {
-  body {
-    background:
-      url('./assets/fondo-pesca.svg') center top / 320px repeat fixed,
-      linear-gradient(180deg, var(--violet), #0b3f4d 55%, var(--ink)) fixed;
-  }
-  #root {
-    box-shadow: 0 0 60px rgba(23, 21, 28, 0.45);
-  }
-}
 
-/* Compartida por Home e ItemListContainer */
+/* Usada en Home e ItemListContainer */
 .eyebrow {
   color: var(--violet);
   display: block;

@@ -6,7 +6,7 @@ import firebaseConfig from './src/services/firebaseConfig.js'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  // El prefijo '' lee también las variables sin VITE_ (solo quedan en el servidor)
+  // '' para leer también las variables sin VITE_
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
@@ -21,7 +21,6 @@ export default defineConfig(({ mode }) => {
     ],
     css: {
       modules: {
-        // .team-card se usa como styles.teamCard (y también styles['team-card'])
         localsConvention: 'camelCase'
       }
     },

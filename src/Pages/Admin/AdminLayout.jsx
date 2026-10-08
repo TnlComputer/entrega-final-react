@@ -9,14 +9,14 @@ function AdminLayout() {
   const navegar = useNavigate();
   const {pathname} = useLocation();
 
-  // Primero sale de /admin: si se cerrara antes la sesión, RutaPrivada mandaría a /login
+  // Primero sale de /admin para no caer en /login
   const salir = async () => {
     navegar('/', {replace: true});
     await cerrarSesion();
   };
 
   const claseTab = ({isActive}) => `${styles.tab} ${isActive ? styles.tabActiva : ''}`;
-  // "Productos" también queda marcada al crear o editar uno
+  // Productos queda activa también al crear o editar
   const claseTabProductos = ({isActive}) => claseTab({isActive: isActive || pathname.startsWith('/admin/productos')});
 
   return (
@@ -47,7 +47,6 @@ function AdminLayout() {
         </NavLink>
       </nav>
 
-      {/* Se pasa el mismo contexto (catálogo y carrito) a las pantallas del panel */}
       <Outlet context={contexto} />
     </section>
   );

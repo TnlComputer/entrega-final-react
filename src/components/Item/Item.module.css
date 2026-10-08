@@ -107,6 +107,18 @@
   background: var(--white);
   color: #d45f51;
 }
+.destacado {
+  background: var(--coral);
+  border-radius: 999px;
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 5px 10px;
+  position: relative;
+  text-transform: uppercase;
+  z-index: 2;
+}
 .back-favorite {
   position: absolute;
   right: 18px;
@@ -125,7 +137,6 @@
   width: 190px;
   z-index: 1;
 }
-/* Más específico que `.product-visual button` (el favorito redondo) para conservar el texto chico */
 .product-visual .flip-hint {
   background: none;
   border: 0;
@@ -172,16 +183,18 @@
   background: #b3bd8a;
 }
 .product-card {
+  background: rgba(255, 253, 250, 0.75);
+  backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding-bottom: 14px;
 }
-/* #root centra el texto (index.css); en la card todo va alineado a la izquierda */
 .product-info {
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 15px 2px 12px;
+  padding: 15px 14px 12px;
   text-align: left;
 }
 .product-info h4 {
@@ -191,7 +204,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* Siempre ocupa 2 líneas, así precio y botones quedan a la misma altura en toda la fila */
+/* Siempre 2 líneas */
 .product-descripcion {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -243,6 +256,7 @@
   border-top: 1px solid var(--line);
   display: flex;
   justify-content: space-between;
+  margin: 0 14px;
   padding: 12px 0 0;
 }
 .quantity-control {

@@ -2,11 +2,8 @@ import {useEffect, useState} from 'react';
 import * as adminApi from '../services/adminApi';
 import AuthContext from './AuthContext';
 
-// La contraseña la valida Firebase Auth, nunca este código. Además de iniciar sesión,
-// la cuenta tiene que estar en la colección "admins" de Firestore (ver services/adminApi.js).
 function AuthProvider({children}) {
   const [usuario, setUsuario] = useState(null);
-  // Hasta que Firebase diga si hay una sesión guardada
   const [cargando, setCargando] = useState(true);
 
   useEffect(

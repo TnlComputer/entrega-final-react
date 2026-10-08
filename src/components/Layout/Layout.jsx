@@ -33,7 +33,6 @@ function Layout({productos = [], catalogo}) {
   const [carrito, setCarrito] = useState(leerCarritoGuardado);
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
   const [aviso, setAviso] = useState(null);
-  // Cambia con cada compra para que las cards de la tienda reinicien su contador
   const [comprasConfirmadas, setComprasConfirmadas] = useState(0);
   const anuncio = useAnuncio();
   const envios = useEnvios();

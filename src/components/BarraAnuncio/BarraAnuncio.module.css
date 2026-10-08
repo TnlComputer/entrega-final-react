@@ -1,19 +1,26 @@
 .barra-anuncio {
   align-items: center;
-  background: var(--lime);
+  background: linear-gradient(90deg, #f1ca4f, #f7dc80 50%, #f1ca4f);
+  box-shadow: inset 0 -1px 0 rgba(23, 21, 28, 0.12);
   color: var(--ink);
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
-  padding: 10px 48px;
+  padding: 9px 48px;
   text-align: center;
 }
 .barra-anuncio p {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: 1.4px;
   margin: 0;
+  text-transform: uppercase;
   overflow-wrap: anywhere;
+}
+.fija {
+  position: sticky;
+  top: 0;
+  z-index: 1031;
 }
 .descuento {
   background: var(--ink);

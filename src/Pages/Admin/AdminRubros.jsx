@@ -6,7 +6,7 @@ import styles from './Admin.module.css';
 
 function AdminRubros() {
   const {rubros, productos, cargando, error, guardarRubro, eliminarRubro} = useAdminCatalogo();
-  // null = modal cerrado; {id: null} = nuevo; {id: 'canas'} = editar
+  // null: modal cerrado
   const [editando, setEditando] = useState(null);
   const [aviso, setAviso] = useState(null);
 

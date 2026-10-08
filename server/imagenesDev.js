@@ -1,4 +1,4 @@
-// Plugin de Vite: las rutas /api/* usan los mismos handlers que las Netlify Functions.
+// /api en npm run dev, igual que en Netlify
 import {Readable} from 'node:stream';
 import subirImagen from './subirImagen.js';
 import comprar from './comprar.js';
