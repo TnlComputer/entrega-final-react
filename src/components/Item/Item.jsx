@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {Button} from 'react-bootstrap';
+import {Link} from 'react-router-dom';
 import heroImage from '../../assets/hero.jpg';
 import {urlImagen} from '../../data/modeloCatalogo';
 import styles from './Item.module.css';
@@ -75,7 +76,11 @@ function Item({producto, esFavorito, onAlternarFavorito, onAgregarAlCarrito, for
           {producto.subrubro || producto.rubroNombre}
           {producto.marca && ` · ${producto.marca}`}
         </span>
-        <h4 title={producto.nombre}>{producto.nombre}</h4>
+        <h4 title={producto.nombre}>
+          <Link className={styles.linkDetalle} to={`/productos/${producto.id}`}>
+            {producto.nombre}
+          </Link>
+        </h4>
         <p className={styles.productDescripcion}>{producto.descripcion}</p>
         <div className={styles.productPrecioFila}>
           {sinStock ? (

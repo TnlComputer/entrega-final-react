@@ -204,6 +204,14 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.link-detalle {
+  color: inherit;
+  text-decoration: none;
+}
+.link-detalle:hover,
+.link-detalle:focus-visible {
+  text-decoration: underline;
+}
 /* Siempre 2 líneas */
 .product-descripcion {
   -webkit-box-orient: vertical;
