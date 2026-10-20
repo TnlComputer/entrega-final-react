@@ -1,5 +1,6 @@
-import {useEffect, useRef, useState} from 'react';
+import {useRef, useState} from 'react';
 import {Link} from 'react-router-dom';
+import useFavoritos from '../../hooks/useFavoritos';
 import ItemList from '../ItemList/ItemList';
 import styles from './ItemListContainer.module.css';
 
@@ -9,41 +10,16 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
   maximumFractionDigits: 0
 });
 
-const CLAVE_FAVORITOS = 'favoritos';
 const PRODUCTOS_POR_PAGINA = 12;
 
 const conCeros = numero => String(numero).padStart(2, '0');
 
-function leerFavoritosGuardados() {
-  try {
-    return JSON.parse(localStorage.getItem(CLAVE_FAVORITOS)) || {};
-  } catch {
-    return {};
-  }
-}
-
 function ItemListContainer({catalogo, onAgregarAlCarrito, comprasConfirmadas, soloDestacados = false}) {
   const [busqueda, setBusqueda] = useState('');
-  const [favoritos, setFavoritos] = useState(leerFavoritosGuardados);
+  const {favoritos, alternarFavorito} = useFavoritos();
   const [rubroElegido, setRubroElegido] = useState('todos');
   const [pagina, setPagina] = useState(1);
   const listaRef = useRef(null);
-
-  useEffect(() => {
-    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favoritos));
-  }, [favoritos]);
-
-  const alternarFavorito = id => {
-    setFavoritos(favoritosActuales => {
-      const favoritosNuevos = {...favoritosActuales};
-      if (favoritosNuevos[id]) {
-        delete favoritosNuevos[id];
-      } else {
-        favoritosNuevos[id] = true;
-      }
-      return favoritosNuevos;
-    });
-  };
 
   const {rubros: todosLosRubros = [], productos = [], cargando, error} = catalogo;
   const destacados = productos.filter(producto => producto.destacado);

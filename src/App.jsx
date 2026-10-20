@@ -1,4 +1,5 @@
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import ItemDetalle from './components/ItemDetalle/ItemDetalle';
 import Layout from './components/Layout/Layout';
 import RutaPrivada from './components/RutaPrivada/RutaPrivada';
 import ScrollAlInicio from './components/ScrollAlInicio/ScrollAlInicio';
@@ -27,6 +28,7 @@ function App() {
           <Route element={<Layout productos={productos} catalogo={catalogo} />}>
             <Route path="/" element={<Home />} />
             <Route path="/productos" element={<Productos />} />
+            <Route path="/productos/:id" element={<ItemDetalle />} />
             <Route path="/login" element={<Login />} />
             <Route
               path="/admin"
