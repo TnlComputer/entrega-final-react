@@ -9,10 +9,9 @@ import {
   prepararAnuncio,
   validarAnuncio
 } from '../../data/modeloAnuncio';
+import {formatoFecha} from '../../data/fechas';
 import {guardarAnuncio} from '../../services/adminApi';
 import styles from './Admin.module.css';
-
-const formatoFecha = fecha => fecha.split('-').reverse().join('/');
 
 const ESTADOS = {
   visible: {

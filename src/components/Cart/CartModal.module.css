@@ -85,6 +85,34 @@
 .cart-item-price strong {
   font-size: 13px;
 }
+.cart-item-price del {
+  color: var(--muted);
+  font-size: 11px;
+}
+.cart-unitario,
+.cart-oferta {
+  color: var(--muted);
+  font-size: 12px;
+}
+.cart-oferta {
+  align-items: center;
+  color: #c45d4f;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 6px;
+}
+.cart-oferta del {
+  color: var(--muted);
+}
+.etiqueta-oferta {
+  background: #c45d4f;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  text-transform: uppercase;
+}
 .remove-item {
   color: #c45d4f !important;
   font-size: 17px !important;
@@ -268,6 +296,14 @@
 }
 .review-item strong {
   color: var(--ink);
+  white-space: nowrap;
+}
+.precio-linea {
+  display: grid;
+  justify-items: end;
+}
+.precio-linea del {
+  font-size: 11px;
   white-space: nowrap;
 }
 .cart-modal :global(.modal-footer) {

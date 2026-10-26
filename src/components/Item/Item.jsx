@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {Button} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
 import heroImage from '../../assets/hero.jpg';
-import {urlImagen} from '../../data/modeloCatalogo';
+import {ofertaVigente, urlImagen} from '../../data/modeloCatalogo';
 import useCarrito from '../../hooks/useCarrito';
 import styles from './Item.module.css';
 
@@ -92,7 +92,7 @@ function Item({producto, esFavorito, onAlternarFavorito, formatoPrecio}) {
           ) : (
             <span />
           )}
-          {producto.precioOferta ? (
+          {ofertaVigente(producto) ? (
             <div className={styles.precioOferta}>
               <del aria-label="Precio anterior">{formatoPrecio.format(producto.precio)}</del>
               <strong>{formatoPrecio.format(producto.precioOferta)}</strong>

@@ -2,7 +2,8 @@ import {useState} from 'react';
 import {Button} from 'react-bootstrap';
 import {Link, useOutletContext, useParams} from 'react-router-dom';
 import heroImage from '../../assets/hero.jpg';
-import {urlImagen} from '../../data/modeloCatalogo';
+import {formatoFecha} from '../../data/fechas';
+import {ofertaVigente, urlImagen} from '../../data/modeloCatalogo';
 import useCarrito from '../../hooks/useCarrito';
 import useFavoritos from '../../hooks/useFavoritos';
 import styles from './ItemDetalle.module.css';
@@ -88,10 +89,13 @@ function ItemDetalle() {
           )}
 
           <div className={styles.precio}>
-            {producto.precioOferta ? (
+            {ofertaVigente(producto) ? (
               <>
                 <del aria-label="Precio anterior">{formatoPrecio.format(producto.precio)}</del>
                 <strong className={styles.oferta}>{formatoPrecio.format(producto.precioOferta)}</strong>
+                {producto.ofertaHasta && (
+                  <small className={styles.ofertaHasta}>Oferta válida hasta el {formatoFecha(producto.ofertaHasta)}</small>
+                )}
               </>
             ) : (
               <strong>{formatoPrecio.format(producto.precio)}</strong>

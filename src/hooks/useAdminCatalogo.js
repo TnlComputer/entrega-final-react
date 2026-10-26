@@ -5,7 +5,7 @@ import {guardarCatalogo} from '../services/adminApi';
 // Solo los campos que se guardan
 const CAMPOS_PRODUCTO = [
   'id', 'nombre', 'marca', 'sku', 'descripcion', 'caracteristicas', 'rubro', 'subrubro',
-  'precio', 'precioOferta', 'stock', 'imagen', 'clase', 'destacado', 'activo', 'orden', 'actualizadoEn'
+  'precio', 'precioOferta', 'ofertaDesde', 'ofertaHasta', 'stock', 'imagen', 'clase', 'destacado', 'activo', 'orden', 'actualizadoEn'
 ];
 const limpiarProducto = producto => Object.fromEntries(CAMPOS_PRODUCTO.map(campo => [campo, producto[campo] ?? null]));
 
