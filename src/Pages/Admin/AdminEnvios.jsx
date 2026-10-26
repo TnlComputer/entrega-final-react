@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {Alert, Button, Form, Table} from 'react-bootstrap';
+import {PencilSquare, Trash3} from 'react-bootstrap-icons';
 import {useOutletContext} from 'react-router-dom';
 import {
   parsearLocalidades,
@@ -225,10 +226,10 @@ function EditorEnvios({guardadas, reemplazarZonas}) {
                   <td>
                     <div className={styles.acciones}>
                       <Button size="sm" variant="outline-dark" onClick={() => editarZona(zona)}>
-                        Editar
+                        <PencilSquare aria-hidden="true" /> Editar
                       </Button>
                       <Button size="sm" variant="outline-danger" onClick={() => quitarZona(zona)}>
-                        Quitar
+                        <Trash3 aria-hidden="true" /> Quitar
                       </Button>
                     </div>
                   </td>
