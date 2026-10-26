@@ -3,6 +3,7 @@ import {Button} from 'react-bootstrap';
 import {Link, useOutletContext, useParams} from 'react-router-dom';
 import heroImage from '../../assets/hero.jpg';
 import {urlImagen} from '../../data/modeloCatalogo';
+import useCarrito from '../../hooks/useCarrito';
 import useFavoritos from '../../hooks/useFavoritos';
 import styles from './ItemDetalle.module.css';
 
@@ -14,7 +15,8 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
 
 function ItemDetalle() {
   const {id} = useParams();
-  const {catalogo, onAgregarAlCarrito} = useOutletContext();
+  const {catalogo} = useOutletContext();
+  const {agregarAlCarrito} = useCarrito();
   const {productos = [], cargando, error} = catalogo;
   const [cantidad, setCantidad] = useState(1);
   const {favoritos, alternarFavorito} = useFavoritos();
@@ -125,7 +127,7 @@ function ItemDetalle() {
               variant="dark"
               type="button"
               disabled={sinStock}
-              onClick={() => onAgregarAlCarrito(producto.id, cantidad)}>
+              onClick={() => agregarAlCarrito(producto.id, cantidad)}>
               {sinStock ? 'Sin stock' : 'Agregar al carrito'}
             </Button>
           </div>

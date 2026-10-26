@@ -1,14 +1,10 @@
+import useCarrito from '../../hooks/useCarrito';
 import Item from '../Item/Item';
 import styles from './ItemList.module.css';
 
-function ItemList({
-  productos,
-  favoritos,
-  onAlternarFavorito,
-  onAgregarAlCarrito,
-  formatoPrecio,
-  comprasConfirmadas = 0
-}) {
+function ItemList({productos, favoritos, onAlternarFavorito, formatoPrecio}) {
+  const {comprasConfirmadas} = useCarrito();
+
   return (
     <div className={styles.productGrid}>
       {productos.map(producto => (
@@ -18,7 +14,6 @@ function ItemList({
           producto={producto}
           esFavorito={Boolean(favoritos[producto.id])}
           onAlternarFavorito={onAlternarFavorito}
-          onAgregarAlCarrito={onAgregarAlCarrito}
           formatoPrecio={formatoPrecio}
         />
       ))}

@@ -14,7 +14,7 @@ const PRODUCTOS_POR_PAGINA = 12;
 
 const conCeros = numero => String(numero).padStart(2, '0');
 
-function ItemListContainer({catalogo, onAgregarAlCarrito, comprasConfirmadas, soloDestacados = false}) {
+function ItemListContainer({catalogo, soloDestacados = false}) {
   const [busqueda, setBusqueda] = useState('');
   const {favoritos, alternarFavorito} = useFavoritos();
   const [rubroElegido, setRubroElegido] = useState('todos');
@@ -60,9 +60,7 @@ function ItemListContainer({catalogo, onAgregarAlCarrito, comprasConfirmadas, so
   const propsLista = {
     favoritos,
     onAlternarFavorito: alternarFavorito,
-    onAgregarAlCarrito,
-    formatoPrecio,
-    comprasConfirmadas
+    formatoPrecio
   };
 
   const buscador = (
