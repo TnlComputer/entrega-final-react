@@ -1,10 +1,8 @@
 import {cert, getApps, initializeApp} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
-import {
-  estadoAnuncio,
-  fechaDeHoy,
-  validarAnuncio
-} from '../src/data/modeloAnuncio.js';
+import {estadoAnuncio, validarAnuncio} from '../src/data/modeloAnuncio.js';
+import {estadoOferta} from '../src/data/modeloCatalogo.js';
+import {fechaDeHoy} from '../src/data/fechas.js';
 import {
   emailValido,
   errorResumenPago,
@@ -149,7 +147,7 @@ function validarPedido(cuerpo) {
   };
 }
 
-function precioProducto(producto) {
+function precioProducto(producto, hoy) {
   const precio = producto.precio;
   if (!Number.isSafeInteger(precio) || precio < 1 || precio > MAX_PRECIO) {
     throw fallo(500, 'Hay un precio de producto inválido en el catálogo. Revisalo desde el panel.');
@@ -160,7 +158,12 @@ function precioProducto(producto) {
   if (!Number.isSafeInteger(oferta) || oferta < 1 || oferta >= precio) {
     throw fallo(500, 'Hay un precio de oferta inválido en el catálogo. Revisalo desde el panel.');
   }
-  return oferta;
+  // La oferta solo cuenta dentro de sus fechas
+  const estado = estadoOferta(producto, hoy);
+  if (estado === 'invalida') {
+    throw fallo(500, 'Hay fechas de oferta inválidas en el catálogo. Revisalas desde el panel.');
+  }
+  return estado === 'vigente' ? oferta : precio;
 }
 
 function descuentoActivo(anuncio) {
@@ -172,8 +175,7 @@ function descuentoActivo(anuncio) {
   if (Object.keys(errores).length) {
     throw fallo(500, 'La configuración del descuento es inválida. Revisala desde el panel.');
   }
-  const hoy = fechaDeHoy();
-  if (estadoAnuncio(anuncio, hoy) !== 'visible') return 0;
+  if (estadoAnuncio(anuncio, fechaDeHoy()) !== 'visible') return 0;
   return anuncio.descuento;
 }
 
@@ -203,6 +205,7 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
     const refEnvios = db.collection('config').doc('envios');
     const refAnuncio = db.collection('config').doc('anuncio');
 
+    const hoy = fechaDeHoy();
     const resultado = await db.runTransaction(async transaction => {
       const [snapshotsProductos, snapshotEnvios, snapshotAnuncio] = await Promise.all([
         Promise.all(refsProductos.map(ref => transaction.get(ref))),
@@ -228,7 +231,7 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
         if (producto.stock < item.cantidad) {
           throw fallo(409, `Stock insuficiente para “${producto.nombre}”. Quedan ${producto.stock}.`, {stocks});
         }
-        const unitario = precioProducto(producto);
+        const unitario = precioProducto(producto, hoy);
         const totalLinea = unitario * item.cantidad;
         if (!Number.isSafeInteger(totalLinea)) throw fallo(400, 'El total del pedido excede el límite permitido.');
         return {

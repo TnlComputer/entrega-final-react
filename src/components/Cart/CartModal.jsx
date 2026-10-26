@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {Alert, Button, Form, Modal} from 'react-bootstrap';
-import {precioFinal, urlImagen} from '../../data/modeloCatalogo';
+import {ofertaVigente, precioFinal, urlImagen} from '../../data/modeloCatalogo';
 import {
   CUOTAS,
   DATOS_TRANSFERENCIA,
@@ -612,7 +612,12 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
                       <span>
                         {cantidad} × {producto.nombre}
                       </span>
-                      <strong>{formatoPrecio.format(precioFinal(producto) * cantidad)}</strong>
+                      <span className={styles.precioLinea}>
+                        {ofertaVigente(producto) && (
+                          <del aria-label="Precio anterior">{formatoPrecio.format(producto.precio * cantidad)}</del>
+                        )}
+                        <strong>{formatoPrecio.format(precioFinal(producto) * cantidad)}</strong>
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -661,6 +666,15 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
                   <img src={urlImagen(producto.imagen, 160)} alt="" />
                   <div className={styles.cartItemInfo}>
                     <strong>{producto.nombre}</strong>
+                    {ofertaVigente(producto) ? (
+                      <small className={styles.cartOferta}>
+                        <span className={styles.etiquetaOferta}>Oferta</span>
+                        <del aria-label="Precio anterior">{formatoPrecio.format(producto.precio)}</del>{' '}
+                        {formatoPrecio.format(producto.precioOferta)} c/u
+                      </small>
+                    ) : (
+                      <small className={styles.cartUnitario}>{formatoPrecio.format(producto.precio)} c/u</small>
+                    )}
                     <div className={styles.cartQuantity} aria-label={`Cantidad de ${producto.nombre}`}>
                       <button
                         type="button"
@@ -678,6 +692,9 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
                     </div>
                   </div>
                   <div className={styles.cartItemPrice}>
+                    {ofertaVigente(producto) && (
+                      <del aria-label="Precio anterior">{formatoPrecio.format(producto.precio * cantidad)}</del>
+                    )}
                     <strong>{formatoPrecio.format(precioFinal(producto) * cantidad)}</strong>
                     <Button
                       className={styles.removeItem}

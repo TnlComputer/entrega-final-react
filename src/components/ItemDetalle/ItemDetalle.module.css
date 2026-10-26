@@ -100,7 +100,8 @@
 .precio {
   align-items: baseline;
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 4px 12px;
   margin-top: auto;
 }
 .precio del {
@@ -112,6 +113,11 @@
 }
 .precio .oferta {
   color: #c45d4f;
+}
+.precio .oferta-hasta {
+  color: var(--muted);
+  flex-basis: 100%;
+  font-size: 13px;
 }
 .stock {
   color: var(--coral);

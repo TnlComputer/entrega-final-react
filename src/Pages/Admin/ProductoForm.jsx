@@ -2,7 +2,15 @@ import {useEffect, useState} from 'react';
 import {Alert, Button, Col, Form, InputGroup, Row} from 'react-bootstrap';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import heroImage from '../../assets/hero.jpg';
-import {COLORES, LIMITES, PRODUCTO_VACIO, prepararProducto, validarProducto} from '../../data/modeloCatalogo';
+import {formatoFecha} from '../../data/fechas';
+import {
+  COLORES,
+  LIMITES,
+  PRODUCTO_VACIO,
+  estadoOferta,
+  prepararProducto,
+  validarProducto
+} from '../../data/modeloCatalogo';
 import useAdminCatalogo from '../../hooks/useAdminCatalogo';
 import {guardarImagenGaleria, listarImagenesGaleria, subirImagen} from '../../services/adminApi';
 import itemStyles from '../../components/Item/Item.module.css';
@@ -14,12 +22,21 @@ function productoAFormulario(producto) {
     ...PRODUCTO_VACIO,
     ...producto,
     precio: String(producto.precio ?? ''),
-    precioOferta: producto.precioOferta === null ? '' : String(producto.precioOferta),
+    precioOferta: producto.precioOferta == null ? '' : String(producto.precioOferta),
+    ofertaDesde: producto.ofertaDesde ?? '',
+    ofertaHasta: producto.ofertaHasta ?? '',
     stock: String(producto.stock ?? ''),
     orden: String(producto.orden ?? 0),
     caracteristicas: (producto.caracteristicas ?? []).join('\n')
   };
 }
+
+// Cómo queda la oferta hoy con las fechas cargadas
+const TEXTO_ESTADO_OFERTA = {
+  vigente: datos => (datos.ofertaHasta ? `Vigente hasta el ${formatoFecha(datos.ofertaHasta)}.` : 'Vigente, sin vencimiento.'),
+  programada: datos => `Programada: empieza el ${formatoFecha(datos.ofertaDesde)}.`,
+  vencida: datos => `Vencida el ${formatoFecha(datos.ofertaHasta)}. En la tienda se ve el precio normal.`
+};
 
 const formularioADatos = formulario =>
   prepararProducto({...formulario, caracteristicas: formulario.caracteristicas.split('\n')});
@@ -158,6 +175,7 @@ function FormularioProducto({inicial, id, catalogo}) {
   };
 
   const cantidadErrores = Object.keys(errores).length;
+  const estadoOfertaActual = errores.ofertaDesde || errores.ofertaHasta ? null : estadoOferta(datos);
 
   return (
     <Form onSubmit={enviar} noValidate className={styles.formulario}>
@@ -332,6 +350,33 @@ function FormularioProducto({inicial, id, catalogo}) {
             <Form.Text>Con 0 se muestra "Sin stock".</Form.Text>
             <Form.Control.Feedback type="invalid">{error('stock')}</Form.Control.Feedback>
           </Form.Group>
+          <Form.Group as={Col} md={4} controlId="producto-oferta-desde">
+            <Form.Label>Oferta desde</Form.Label>
+            <Form.Control
+              type="date"
+              value={formulario.ofertaDesde}
+              onChange={cambiar('ofertaDesde')}
+              isInvalid={Boolean(error('ofertaDesde'))}
+            />
+            <Form.Control.Feedback type="invalid">{error('ofertaDesde')}</Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md={4} controlId="producto-oferta-hasta">
+            <Form.Label>Oferta hasta</Form.Label>
+            <Form.Control
+              type="date"
+              value={formulario.ofertaHasta}
+              min={formulario.ofertaDesde || undefined}
+              onChange={cambiar('ofertaHasta')}
+              isInvalid={Boolean(error('ofertaHasta'))}
+            />
+            <Form.Control.Feedback type="invalid">{error('ofertaHasta')}</Form.Control.Feedback>
+          </Form.Group>
+          <Col md={4} className="d-flex align-items-end">
+            <Form.Text>
+              {TEXTO_ESTADO_OFERTA[estadoOfertaActual]?.(datos) ??
+                'Fechas opcionales. Sin fechas, la oferta dura hasta que borres el precio de oferta.'}
+            </Form.Text>
+          </Col>
         </Row>
       </fieldset>
 

@@ -1,5 +1,7 @@
 // Catálogo (Firestore: colecciones rubros y productos)
 
+import {fechaDeHoy, fechaValida} from './fechas.js';
+
 export const LIMITES = {
   nombre: 80,
   marca: 40,
@@ -28,6 +30,8 @@ export const PRODUCTO_VACIO = {
   subrubro: '',
   precio: '',
   precioOferta: '',
+  ofertaDesde: '',
+  ofertaHasta: '',
   stock: '',
   imagen: '',
   clase: COLORES[0].clase,
@@ -69,6 +73,8 @@ export function prepararProducto(formulario) {
     subrubro: formulario.subrubro.trim(),
     precio: aNumero(formulario.precio),
     precioOferta: aNumero(formulario.precioOferta),
+    ofertaDesde: formulario.ofertaDesde || '',
+    ofertaHasta: formulario.ofertaHasta || '',
     stock: aNumero(formulario.stock),
     imagen: formulario.imagen.trim(),
     clase: formulario.clase,
@@ -143,6 +149,19 @@ export function validarProducto(producto, {rubros = [], productos = [], id = nul
     } else if (!errores.precio && producto.precioOferta >= producto.precio) {
       errores.precioOferta = 'Tiene que ser menor al precio normal.';
     }
+  }
+
+  // Las fechas son opcionales: sin fechas la oferta no vence
+  if (typeof producto.ofertaDesde !== 'string' || (producto.ofertaDesde && !fechaValida(producto.ofertaDesde))) {
+    errores.ofertaDesde = 'Fecha inválida.';
+  }
+  if (typeof producto.ofertaHasta !== 'string' || (producto.ofertaHasta && !fechaValida(producto.ofertaHasta))) {
+    errores.ofertaHasta = 'Fecha inválida.';
+  } else if (producto.ofertaDesde && producto.ofertaHasta && producto.ofertaHasta < producto.ofertaDesde) {
+    errores.ofertaHasta = 'Tiene que ser igual o posterior a la fecha "desde".';
+  }
+  if ((producto.ofertaDesde || producto.ofertaHasta) && producto.precioOferta === null && !errores.precioOferta) {
+    errores.precioOferta = 'Cargá el precio de oferta para usar fechas.';
   }
 
   if (!esEnteroNoNegativo(producto.stock)) errores.stock = 'El stock es un número entero (0 o más).';
@@ -226,8 +245,21 @@ export function prepararCatalogo({rubros = [], productos = []}) {
   };
 }
 
-// Precio final: la oferta si hay
-export const precioFinal = producto => producto.precioOferta ?? producto.precio;
+// sin-oferta, programada, vigente, vencida o invalida
+export function estadoOferta(producto, hoy = fechaDeHoy()) {
+  if (producto.precioOferta === null || producto.precioOferta === undefined) return 'sin-oferta';
+  const desde = producto.ofertaDesde || '';
+  const hasta = producto.ofertaHasta || '';
+  if ((desde && !fechaValida(desde)) || (hasta && !fechaValida(hasta))) return 'invalida';
+  if (desde && hoy < desde) return 'programada';
+  if (hasta && hoy > hasta) return 'vencida';
+  return 'vigente';
+}
+
+export const ofertaVigente = (producto, hoy) => estadoOferta(producto, hoy) === 'vigente';
+
+// Precio final: la oferta si está vigente
+export const precioFinal = (producto, hoy) => (ofertaVigente(producto, hoy) ? producto.precioOferta : producto.precio);
 
 // ImgBB es lento: en Netlify las fotos pasan por su CDN, achicadas
 export function urlImagen(url, ancho = 600) {

@@ -14,7 +14,7 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 ## Funcionalidades
 
 **Tienda**
-- Catálogo de productos agrupado por rubros (cañas y reels, señuelos, líneas y anzuelos, indumentaria), con precios de oferta y aviso de últimas unidades.
+- Catálogo de productos agrupado por rubros (cañas y reels, señuelos, líneas y anzuelos, indumentaria), con precios de oferta y aviso de últimas unidades. Cada oferta puede tener fechas de inicio y fin: fuera de ese período se cobra el precio normal. En el carrito se ve el precio anterior tachado junto al de oferta.
 - Buscador de productos y tarjetas que se dan vuelta al pasar por "Ver características" (o tocarlo en el celular); el resto de la foto queda libre para marcar favoritos.
 - Favoritos y carrito de compras: se puede sumar o restar cantidades respetando el stock; favoritos y carrito se guardan en el navegador. El checkout es una simulación en cuatro pasos (contacto, entrega, pago y revisión): no cobra ni registra pedidos, valida nuevamente el stock en el servidor y lo descuenta de forma atómica en Firestore. Al terminar muestra el resumen completo en pantalla.
 - Formas de pago simuladas: tarjeta de crédito (1 o 3 cuotas sin interés), tarjeta de débito, transferencia bancaria (con alias y CBU de demostración) y Mercado Pago; cada una pide sus datos. El número, vencimiento y código de la tarjeta se validan solo en el navegador (con el algoritmo de Luhn) y nunca se envían al servidor: solo viajan la marca, los últimos 4 dígitos y las cuotas. Para probar sirve la tarjeta 4111 1111 1111 1111 con cualquier vencimiento futuro.
@@ -25,6 +25,7 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 
 **Panel de administración** (`/admin`, con login)
 - Alta, edición, baja y ocultamiento de productos, con carga de imágenes a ImgBB o por URL.
+- Precio de oferta por producto, con fechas opcionales para programarla o hacerla vencer sola. El listado permite filtrar las ofertas vigentes y las programadas.
 - Galería de imágenes por rubro: permite elegir imágenes ya usadas en productos del rubro o guardadas en la galería. Al reemplazar una imagen, la anterior se conserva para volver a usarla.
 - Gestión de rubros y subrubros.
 - Configuración de zonas de envío por rangos inclusivos de CP numéricos de 4 dígitos y/o localidades, sin rangos superpuestos ni localidades duplicadas. Incluye tarifas fijas en ARS y retiro en tienda sin costo.

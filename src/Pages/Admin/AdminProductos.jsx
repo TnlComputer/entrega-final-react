@@ -1,7 +1,8 @@
 import {useState} from 'react';
 import {Alert, Badge, Button, Form, Table} from 'react-bootstrap';
 import {Link, useLocation} from 'react-router-dom';
-import {urlImagen} from '../../data/modeloCatalogo';
+import {formatoFecha} from '../../data/fechas';
+import {estadoOferta, urlImagen} from '../../data/modeloCatalogo';
 import useAdminCatalogo from '../../hooks/useAdminCatalogo';
 import styles from './Admin.module.css';
 
@@ -16,7 +17,8 @@ const FILTROS_ESTADO = {
   activos: {nombre: 'Visibles', cumple: producto => producto.activo},
   ocultos: {nombre: 'Ocultos', cumple: producto => !producto.activo},
   destacados: {nombre: 'Destacados', cumple: producto => producto.destacado},
-  oferta: {nombre: 'En oferta', cumple: producto => producto.precioOferta !== null},
+  oferta: {nombre: 'En oferta', cumple: producto => estadoOferta(producto) === 'vigente'},
+  ofertaProgramada: {nombre: 'Oferta programada', cumple: producto => estadoOferta(producto) === 'programada'},
   pocoStock: {nombre: 'Stock bajo (≤ 5)', cumple: producto => producto.stock <= 5}
 };
 
@@ -172,13 +174,24 @@ function AdminProductos() {
                   <small className="d-block text-muted">{producto.subrubro}</small>
                 </td>
                 <td className="text-end text-nowrap">
-                  {producto.precioOferta !== null ? (
+                  {estadoOferta(producto) === 'vigente' ? (
                     <>
                       <del className="d-block text-muted small">{formatoPrecio.format(producto.precio)}</del>
                       {formatoPrecio.format(producto.precioOferta)}
+                      {producto.ofertaHasta && (
+                        <small className="d-block text-muted">hasta {formatoFecha(producto.ofertaHasta)}</small>
+                      )}
                     </>
                   ) : (
-                    formatoPrecio.format(producto.precio)
+                    <>
+                      {formatoPrecio.format(producto.precio)}
+                      {estadoOferta(producto) === 'programada' && (
+                        <small className="d-block text-muted">
+                          oferta {formatoPrecio.format(producto.precioOferta)} desde {formatoFecha(producto.ofertaDesde)}
+                        </small>
+                      )}
+                      {estadoOferta(producto) === 'vencida' && <small className="d-block text-muted">oferta vencida</small>}
+                    </>
                   )}
                 </td>
                 <td className={`text-end ${producto.stock <= 5 ? styles.stockBajo : ''}`}>{producto.stock}</td>
