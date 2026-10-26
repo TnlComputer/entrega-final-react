@@ -125,6 +125,12 @@
   gap: 6px;
   justify-content: flex-end;
 }
+.acciones :global(.btn) {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+  white-space: nowrap;
+}
 
 .formulario {
   max-width: 900px;

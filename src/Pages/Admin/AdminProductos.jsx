@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {Alert, Badge, Button, Form, Table} from 'react-bootstrap';
+import {Eye, EyeSlash, PencilSquare, Trash3} from 'react-bootstrap-icons';
 import {Link, useLocation} from 'react-router-dom';
 import {formatoFecha} from '../../data/fechas';
 import {estadoOferta, urlImagen} from '../../data/modeloCatalogo';
@@ -208,14 +209,22 @@ function AdminProductos() {
                 <td>
                   <div className={styles.acciones}>
                     <Button as={Link} to={`/admin/productos/${producto.id}`} size="sm" variant="outline-dark">
-                      Editar
+                      <PencilSquare aria-hidden="true" /> Editar
                     </Button>
                     <Button
                       size="sm"
                       variant="outline-secondary"
                       disabled={ocupado !== null}
                       onClick={() => alternar(producto)}>
-                      {producto.activo ? 'Ocultar' : 'Mostrar'}
+                      {producto.activo ? (
+                        <>
+                          <EyeSlash aria-hidden="true" /> Ocultar
+                        </>
+                      ) : (
+                        <>
+                          <Eye aria-hidden="true" /> Mostrar
+                        </>
+                      )}
                     </Button>
                     <Button
                       size="sm"
@@ -223,7 +232,7 @@ function AdminProductos() {
                       disabled={ocupado !== null}
                       aria-label={`Eliminar ${producto.nombre}`}
                       onClick={() => borrar(producto)}>
-                      Eliminar
+                      <Trash3 aria-hidden="true" /> Eliminar
                     </Button>
                   </div>
                 </td>

@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {Alert, Button, Form, Modal, Table} from 'react-bootstrap';
+import {PencilSquare, Trash3} from 'react-bootstrap-icons';
 import {RUBRO_VACIO, prepararRubro, validarRubro} from '../../data/modeloCatalogo';
 import useAdminCatalogo from '../../hooks/useAdminCatalogo';
 import styles from './Admin.module.css';
@@ -71,14 +72,14 @@ function AdminRubros() {
               <td>
                 <div className={styles.acciones}>
                   <Button size="sm" variant="outline-dark" onClick={() => setEditando({id: rubro.id})}>
-                    Editar
+                    <PencilSquare aria-hidden="true" /> Editar
                   </Button>
                   <Button
                     size="sm"
                     variant="outline-danger"
                     aria-label={`Eliminar ${rubro.nombre}`}
                     onClick={() => borrar(rubro)}>
-                    Eliminar
+                    <Trash3 aria-hidden="true" /> Eliminar
                   </Button>
                 </div>
               </td>
