@@ -39,7 +39,8 @@ Las imágenes se alojan en ImgBB; Firestore conserva sus URL y las relaciona con
 
 - [React 19](https://react.dev/) con [Vite](https://vite.dev/) y React Compiler
 - [React Router](https://reactrouter.com/) para la navegación
-- [React Bootstrap](https://react-bootstrap.github.io/) y CSS Modules para los estilos
+- Context API para el estado compartido: `CartProvider` + `useCarrito` para el carrito y `AuthProvider` + `useAuth` para la sesión, sin pasar props de componente en componente
+- [React Bootstrap](https://react-bootstrap.github.io/) y CSS Modules para los estilos, con [React Bootstrap Icons](https://github.com/ismamz/react-bootstrap-icons) en las acciones del panel
 - [Firebase](https://firebase.google.com/): Firestore para productos, rubros, anuncio y galería de imágenes; Authentication para el login del panel
 - [ImgBB](https://imgbb.com/) para alojar las imágenes. Se suben mediante una Netlify Function en producción y un plugin de Vite en desarrollo; la clave se mantiene del lado del servidor
 - El equipo se lee de `public/data/equipo.json`
