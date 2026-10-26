@@ -1,7 +1,10 @@
 import {Badge, Button, Container} from 'react-bootstrap';
+import useCarrito from '../../hooks/useCarrito';
 import styles from './Header.module.css';
 
-function Header({cantidadCarrito = 0, onAbrirCarrito}) {
+function Header() {
+  const {cantidadCarrito, abrirCarrito} = useCarrito();
+
   return (
     <header className={styles.siteHeader}>
       <Container fluid className={styles.headerContainer}>
@@ -17,7 +20,7 @@ function Header({cantidadCarrito = 0, onAbrirCarrito}) {
             type="button"
             aria-label="Abrir carrito de compra"
             title="Abrir carrito de compra"
-            onClick={onAbrirCarrito}>
+            onClick={abrirCarrito}>
             <span className={styles.cartIcon} aria-hidden="true">
               🛒
             </span>

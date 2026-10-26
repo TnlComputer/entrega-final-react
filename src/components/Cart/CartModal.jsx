@@ -23,6 +23,7 @@ import {
   zonaParaCodigoPostal,
   zonaParaLocalidad
 } from '../../data/modeloEnvios';
+import useCarrito from '../../hooks/useCarrito';
 import styles from './CartModal.module.css';
 
 const PASOS_CHECKOUT = [
@@ -66,18 +67,16 @@ const ENTREGA_VACIA = {
   indicaciones: ''
 };
 
-function CartModal({
-  mostrar,
-  productos,
-  onCerrar,
-  onQuitar,
-  onCambiarCantidad,
-  onPagoSimulado,
-  onActualizarStocks,
-  formatoPrecio,
-  descuento = 0,
-  envios = {zonas: [], cargando: false, error: null}
-}) {
+function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando: false, error: null}}) {
+  const {
+    mostrarCarrito,
+    productosEnCarrito: productos,
+    cerrarCarrito,
+    quitarDelCarrito,
+    cambiarCantidadCarrito,
+    procesarCompraSimulada,
+    actualizarStocks
+  } = useCarrito();
   const [paso, setPaso] = useState('carrito');
   const [compraSimulada, setCompraSimulada] = useState(null);
   const [errorCompra, setErrorCompra] = useState(null);
@@ -139,7 +138,7 @@ function CartModal({
     setEntrega(ENTREGA_VACIA);
     setEmail('');
     setPago(PAGO_VACIO);
-    onCerrar();
+    cerrarCarrito();
   };
 
   const confirmarPagoSimulado = async () => {
@@ -147,7 +146,7 @@ function CartModal({
     setErrorCompra(null);
     setConfirmando(true);
     try {
-      const resultado = await onPagoSimulado({
+      const resultado = await procesarCompraSimulada({
         items: productos.map(({producto, cantidad}) => ({id: producto.id, cantidad})),
         entrega,
         email: normalizarEmail(email),
@@ -158,7 +157,7 @@ function CartModal({
       setCompraSimulada(resultado);
       setPaso('confirmacion');
     } catch (error) {
-      if (error.stocks) onActualizarStocks?.(error.stocks);
+      if (error.stocks) actualizarStocks(error.stocks);
       setErrorCompra(error.message);
     } finally {
       setConfirmando(false);
@@ -169,7 +168,7 @@ function CartModal({
     setEntrega(actual => ({...actual, [campo]: evento.target.value}));
 
   return (
-    <Modal show={mostrar} onHide={cerrar} centered className={styles.cartModal}>
+    <Modal show={mostrarCarrito} onHide={cerrar} centered className={styles.cartModal}>
       <Modal.Header closeButton>
         <Modal.Title>
           {paso === 'contacto'
@@ -666,14 +665,14 @@ function CartModal({
                       <button
                         type="button"
                         aria-label={`Disminuir cantidad de ${producto.nombre}`}
-                        onClick={() => onCambiarCantidad(producto.id, -1)}>
+                        onClick={() => cambiarCantidadCarrito(producto.id, -1)}>
                         −
                       </button>
                       <span>{cantidad}</span>
                       <button
                         type="button"
                         aria-label={`Aumentar cantidad de ${producto.nombre}`}
-                        onClick={() => onCambiarCantidad(producto.id, 1)}>
+                        onClick={() => cambiarCantidadCarrito(producto.id, 1)}>
                         +
                       </button>
                     </div>
@@ -686,7 +685,7 @@ function CartModal({
                       type="button"
                       aria-label={`Quitar ${producto.nombre} del carrito`}
                       title="Quitar del carrito"
-                      onClick={() => onQuitar(producto.id)}>
+                      onClick={() => quitarDelCarrito(producto.id)}>
                       <span aria-hidden="true">🗑</span>
                     </Button>
                   </div>

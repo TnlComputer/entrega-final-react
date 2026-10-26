@@ -4,7 +4,7 @@ import ItemListContainer from '../components/ItemListContainer/ItemListContainer
 import styles from './Home.module.css';
 
 function Home() {
-  const {onAgregarAlCarrito, catalogo, comprasConfirmadas} = useOutletContext();
+  const {catalogo} = useOutletContext();
 
   return (
     <section className="home-page">
@@ -36,12 +36,7 @@ function Home() {
         </div>
       </div>
 
-      <ItemListContainer
-        catalogo={catalogo}
-        onAgregarAlCarrito={onAgregarAlCarrito}
-        comprasConfirmadas={comprasConfirmadas}
-        soloDestacados
-      />
+      <ItemListContainer catalogo={catalogo} soloDestacados />
     </section>
   );
 }

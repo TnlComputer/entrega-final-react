@@ -2,15 +2,9 @@ import {useOutletContext} from 'react-router-dom';
 import ItemListContainer from '../components/ItemListContainer/ItemListContainer';
 
 function Productos() {
-  const {onAgregarAlCarrito, catalogo, comprasConfirmadas} = useOutletContext();
+  const {catalogo} = useOutletContext();
 
-  return (
-    <ItemListContainer
-      catalogo={catalogo}
-      onAgregarAlCarrito={onAgregarAlCarrito}
-      comprasConfirmadas={comprasConfirmadas}
-    />
-  );
+  return <ItemListContainer catalogo={catalogo} />;
 }
 
 export default Productos;

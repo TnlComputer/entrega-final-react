@@ -1,9 +1,11 @@
 import {useEffect, useRef, useState} from 'react';
 import {Badge, Button, Container, Nav, Navbar} from 'react-bootstrap';
 import {Link, useLocation} from 'react-router-dom';
+import useCarrito from '../../hooks/useCarrito';
 import styles from './NavBar.module.css';
 
-function NavBar({cantidadCarrito, onAbrirCarrito}) {
+function NavBar() {
+  const {cantidadCarrito, abrirCarrito} = useCarrito();
   const [pegado, setPegado] = useState(false);
   const centinelaRef = useRef(null);
   const {pathname, hash} = useLocation();
@@ -63,7 +65,7 @@ function NavBar({cantidadCarrito, onAbrirCarrito}) {
               type="button"
               aria-label="Abrir carrito de compra"
               title="Abrir carrito de compra"
-              onClick={onAbrirCarrito}>
+              onClick={abrirCarrito}>
               <span className={styles.cartIcon} aria-hidden="true">
                 🛒
               </span>

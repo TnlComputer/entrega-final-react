@@ -3,9 +3,11 @@ import {Button} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
 import heroImage from '../../assets/hero.jpg';
 import {urlImagen} from '../../data/modeloCatalogo';
+import useCarrito from '../../hooks/useCarrito';
 import styles from './Item.module.css';
 
-function Item({producto, esFavorito, onAlternarFavorito, onAgregarAlCarrito, formatoPrecio}) {
+function Item({producto, esFavorito, onAlternarFavorito, formatoPrecio}) {
+  const {agregarAlCarrito} = useCarrito();
   const sinStock = producto.stock === 0;
   const [cantidad, setCantidad] = useState(sinStock ? 0 : 1);
   // Gira solo desde "Ver características"
@@ -123,7 +125,7 @@ function Item({producto, esFavorito, onAlternarFavorito, onAgregarAlCarrito, for
           variant="dark"
           type="button"
           disabled={sinStock || cantidad === 0}
-          onClick={() => onAgregarAlCarrito(producto.id, cantidad)}>
+          onClick={() => agregarAlCarrito(producto.id, cantidad)}>
           {sinStock ? 'Sin stock' : 'Agregar'}
         </Button>
       </div>
