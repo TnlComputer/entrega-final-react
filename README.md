@@ -3,7 +3,7 @@
 > **Proyecto académico** hecho para el curso **React JS de Talento Tech (comisión C26243)**, como entrega final.
 > "El Anzuelo" es una tienda **ficticia**: los productos, precios, el equipo y los datos de contacto son de ejemplo.
 
-**Sitio publicado:** https://react-final-eccomerce.netlify.app/
+**Sitio publicado:** <https://react-final-eccomerce.netlify.app/>
 
 ![Captura de la página de inicio de El.Anzuelo](docs/captura.png)
 
@@ -13,7 +13,8 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 
 ## Funcionalidades
 
-**Tienda**
+### Tienda
+
 - Catálogo de productos agrupado por rubros (cañas y reels, señuelos, líneas y anzuelos, indumentaria), con precios de oferta y aviso de últimas unidades. Cada oferta puede tener fechas de inicio y fin: fuera de ese período se cobra el precio normal. En el carrito se ve el precio anterior tachado junto al de oferta.
 - Buscador de productos y tarjetas que se dan vuelta al pasar por "Ver características" (o tocarlo en el celular); el resto de la foto queda libre para marcar favoritos.
 - Favoritos y carrito de compras: se puede sumar o restar cantidades respetando el stock; favoritos y carrito se guardan en el navegador. El checkout es una simulación en cuatro pasos (contacto, entrega, pago y revisión): no cobra ni registra pedidos, valida nuevamente el stock en el servidor y lo descuenta de forma atómica en Firestore. Al terminar muestra el resumen completo en pantalla.
@@ -23,7 +24,8 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 - Franja de anuncio arriba de todo (por ejemplo, un "free day"), con fechas de inicio y fin y un descuento opcional que se aplica al total del carrito.
 - Diseño adaptable: celular, tablet y escritorio hasta 1920 px; en pantallas más grandes aparece un fondo decorativo de pesca a los costados.
 
-**Panel de administración** (`/admin`, con login)
+### Panel de administración (`/admin`, con login)
+
 - Alta, edición, baja y ocultamiento de productos, con carga de imágenes a ImgBB o por URL.
 - Precio de oferta por producto, con fechas opcionales para programarla o hacerla vencer sola. El listado permite filtrar las ofertas vigentes y las programadas.
 - Galería de imágenes por rubro: permite elegir imágenes ya usadas en productos del rubro o guardadas en la galería. Al reemplazar una imagen, la anterior se conserva para volver a usarla.
@@ -55,7 +57,7 @@ npm install
 npm run dev
 ```
 
-Se abre en http://localhost:5173/
+Se abre en <http://localhost:5173/>
 
 Copiá `.env.example` como `.env.local` y completalo. `.env.local` no se sube al repositorio.
 
