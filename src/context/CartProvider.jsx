@@ -55,7 +55,15 @@ function CartProvider({catalogo, children}) {
       ...carritoActual,
       [id]: yaEnCarrito + cantidad
     }));
-    setAviso({tipo: 'exito', mensaje: `Agregamos ${cantidad} × ${producto.nombre} al carrito.`});
+    const total = yaEnCarrito + cantidad;
+    // Si ya había unidades, avisamos cuántas quedan en total
+    setAviso({
+      tipo: 'exito',
+      mensaje:
+        yaEnCarrito > 0
+          ? `Agregamos ${cantidad} × ${producto.nombre}. Ya tenés ${total} en el carrito.`
+          : `Agregamos ${cantidad} × ${producto.nombre} al carrito.`
+    });
   };
 
   const cantidadCarrito = Object.values(carrito).reduce((total, cantidad) => total + cantidad, 0);
