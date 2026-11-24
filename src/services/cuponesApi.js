@@ -1,8 +1,9 @@
 import {collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, where} from 'firebase/firestore';
 import {crearCupon} from '../data/modeloCupones';
-import {obtenerToken} from './authApi';
+import {cabeceraSesion} from './authApi';
 import traducir from './erroresFirebase';
 import {db} from './firebase';
+import {obtenerVisitante} from './visitante';
 
 const refCupones = collection(db, 'cupones');
 
@@ -19,10 +20,11 @@ export const observarCuponesDe = (uid, alCambiar, alFallar) =>
   observar(query(refCupones, where('uid', '==', uid)), alCambiar, alFallar);
 
 // El servidor decide si toca cupón
-export async function registrarEntrada() {
+export async function registrarEntrada(nueva) {
   const respuesta = await fetch('/api/cupones', {
     method: 'POST',
-    headers: {Authorization: `Bearer ${await obtenerToken()}`}
+    headers: {'Content-Type': 'application/json', ...(await cabeceraSesion())},
+    body: JSON.stringify({visitante: obtenerVisitante(), nueva})
   });
   const datos = await respuesta.json().catch(() => ({}));
   if (!respuesta.ok) throw new Error(datos.error || 'No se pudo registrar la entrada.');

@@ -1,14 +1,15 @@
-import {obtenerToken} from './authApi';
+import {cabeceraSesion} from './authApi';
+import {obtenerVisitante} from './visitante';
 
 export async function confirmarCompraSimulada(compra) {
-  // La sesión solo hace falta para usar un cupón
-  const token = compra.cupon ? await obtenerToken() : null;
+  // La sesión o el visitante prueban de quién es el cupón
+  const sesion = compra.cupon ? await cabeceraSesion() : {};
   let respuesta;
   try {
     respuesta = await fetch('/api/compras', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json', ...(token && {Authorization: `Bearer ${token}`})},
-      body: JSON.stringify(compra)
+      headers: {'Content-Type': 'application/json', ...sesion},
+      body: JSON.stringify({...compra, visitante: obtenerVisitante()})
     });
   } catch (error) {
     throw new Error('No hay conexión con el servidor para confirmar el stock.', {cause: error});

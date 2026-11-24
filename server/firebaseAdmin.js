@@ -2,6 +2,8 @@
 import {cert, getApps, initializeApp} from 'firebase-admin/app';
 import firebaseConfig from '../src/services/firebaseConfig.js';
 
+const MAX_BYTES = 16 * 1024;
+
 export const HOST_AUTH = process.env.FIREBASE_AUTH_EMULATOR_HOST
   ? `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com`
   : 'https://identitytoolkit.googleapis.com';
@@ -17,6 +19,21 @@ export function fallo(estado, mensaje, datos = {}) {
   error.estado = estado;
   error.datos = datos;
   return error;
+}
+
+export async function leerJson(peticion) {
+  if (!peticion.headers.get('content-type')?.toLowerCase().includes('application/json')) {
+    throw fallo(415, 'El contenido de la solicitud debe ser JSON.');
+  }
+  const longitud = Number(peticion.headers.get('content-length') || 0);
+  if (longitud > MAX_BYTES) throw fallo(413, 'La solicitud supera el tamaño permitido.');
+  const texto = await peticion.text();
+  if (Buffer.byteLength(texto, 'utf8') > MAX_BYTES) throw fallo(413, 'La solicitud supera el tamaño permitido.');
+  try {
+    return JSON.parse(texto);
+  } catch {
+    throw fallo(400, 'La solicitud no contiene JSON válido.');
+  }
 }
 
 export function obtenerApp(serviceAccountJson, projectId) {

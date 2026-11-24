@@ -1,7 +1,7 @@
 import {getFirestore} from 'firebase-admin/firestore';
 import {estadoAnuncio, validarAnuncio} from '../src/data/modeloAnuncio.js';
 import {estadoOferta} from '../src/data/modeloCatalogo.js';
-import {codigoValido, descuentoCupon, estadoCupon} from '../src/data/modeloCupones.js';
+import {codigoValido, descuentoCupon, estadoCupon, visitanteValido} from '../src/data/modeloCupones.js';
 import {fechaDeHoy} from '../src/data/fechas.js';
 import {
   emailValido,
@@ -16,27 +16,11 @@ import {
   zonaParaCodigoPostal,
   zonaParaLocalidad
 } from '../src/data/modeloEnvios.js';
-import {fallo, obtenerApp, responder, verificarUsuario} from './firebaseAdmin.js';
+import {fallo, leerJson, obtenerApp, responder, verificarUsuario} from './firebaseAdmin.js';
 
-const MAX_BYTES = 16 * 1024;
 const MAX_ITEMS = 30;
 const MAX_CANTIDAD = 99;
 const MAX_PRECIO = 1_000_000_000;
-
-async function leerJson(peticion) {
-  if (!peticion.headers.get('content-type')?.toLowerCase().includes('application/json')) {
-    throw fallo(415, 'El contenido de la solicitud debe ser JSON.');
-  }
-  const longitud = Number(peticion.headers.get('content-length') || 0);
-  if (longitud > MAX_BYTES) throw fallo(413, 'La solicitud supera el tamaño permitido.');
-  const texto = await peticion.text();
-  if (Buffer.byteLength(texto, 'utf8') > MAX_BYTES) throw fallo(413, 'La solicitud supera el tamaño permitido.');
-  try {
-    return JSON.parse(texto);
-  } catch {
-    throw fallo(400, 'La solicitud no contiene JSON válido.');
-  }
-}
 
 function validarPedido(cuerpo) {
   if (!cuerpo || typeof cuerpo !== 'object' || Array.isArray(cuerpo)) {
@@ -68,11 +52,13 @@ function validarPedido(cuerpo) {
   const cupon = cuerpo.cupon ?? null;
   if (cupon !== null && !codigoValido(cupon)) throw fallo(400, 'El cupón no es válido.');
 
+  const visitante = visitanteValido(cuerpo.visitante) ? cuerpo.visitante : null;
+
   const entrega = cuerpo.entrega;
   if (!entrega || !['envio', 'retiro'].includes(entrega.metodo)) {
     throw fallo(400, 'Elegí un método de entrega válido.');
   }
-  if (entrega.metodo === 'retiro') return {items, email, pago, cupon, entrega: {metodo: 'retiro'}};
+  if (entrega.metodo === 'retiro') return {items, email, pago, cupon, visitante, entrega: {metodo: 'retiro'}};
   if (typeof entrega.codigoPostal !== 'string' || !/^\d{4}$/.test(entrega.codigoPostal)) {
     throw fallo(400, 'Ingresá un código postal numérico de 4 dígitos.');
   }
@@ -105,6 +91,7 @@ function validarPedido(cuerpo) {
     email,
     pago,
     cupon,
+    visitante,
     entrega: {
       metodo: 'envio',
       ...direccion,
@@ -146,10 +133,11 @@ function descuentoActivo(anuncio) {
   return anuncio.descuento;
 }
 
-function validarCuponGuardado(snapshot, uid) {
+function validarCuponGuardado(snapshot, {uid, visitante}) {
+  const cupon = snapshot.exists ? snapshot.data() : null;
+  const esPropio = cupon && (cupon.uid ? cupon.uid === uid : Boolean(visitante) && cupon.visitante === visitante);
   // Un cupón ajeno se trata como inexistente
-  if (!snapshot.exists || snapshot.data().uid !== uid) throw fallo(409, 'El cupón no existe o no es tuyo.');
-  const cupon = snapshot.data();
+  if (!esPropio) throw fallo(409, 'El cupón no existe o no es tuyo.');
   const estado = estadoCupon(cupon);
   if (estado === 'usado') throw fallo(409, 'El cupón ya fue usado.');
   if (estado === 'vencido') throw fallo(409, 'El cupón venció. Revisá el total y confirmá de nuevo.');
@@ -179,7 +167,8 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
     const pedido = validarPedido(await leerJson(peticion));
     const app = obtenerApp(serviceAccountJson, projectId);
     const db = getFirestore(app);
-    const usuario = pedido.cupon ? await verificarUsuario(peticion) : null;
+    const conSesion = pedido.cupon && peticion.headers.get('authorization');
+    const uid = conSesion ? (await verificarUsuario(peticion)).uid : null;
     const refsProductos = pedido.items.map(item => db.collection('productos').doc(item.id));
     const refEnvios = db.collection('config').doc('envios');
     const refAnuncio = db.collection('config').doc('anuncio');
@@ -233,7 +222,7 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
       const descuento = descuentoActivo(anuncio);
       const montoDescuento = Math.round((subtotal * descuento) / 100);
       // El cupón va sobre el total ya rebajado
-      const cupon = snapshotCupon ? validarCuponGuardado(snapshotCupon, usuario.uid) : null;
+      const cupon = snapshotCupon ? validarCuponGuardado(snapshotCupon, {uid, visitante: pedido.visitante}) : null;
       const montoCupon = descuentoCupon(subtotal - montoDescuento, cupon);
       const totalProductos = subtotal - montoDescuento - montoCupon;
 
@@ -264,6 +253,8 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
       if (cupon) {
         transaction.update(refCupon, {
           usado: true,
+          // El visitante queda identificado por el email de la compra
+          email: cupon.email ?? pedido.email,
           usadoEn: new Date().toISOString(),
           pedido: numero,
           montoDescuento: montoCupon

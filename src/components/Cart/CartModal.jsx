@@ -83,7 +83,7 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
     actualizarStocks
   } = useCarrito();
   const {usuario} = useAuth();
-  const {cuponAplicado} = useCupones();
+  const {cuponAplicado, marcarUsado} = useCupones();
   const [paso, setPaso] = useState('carrito');
   const [compraSimulada, setCompraSimulada] = useState(null);
   const [errorCompra, setErrorCompra] = useState(null);
@@ -177,6 +177,7 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
         pago: resumenPago(pago),
         cupon: cuponAplicado?.codigo ?? null
       });
+      if (resultado.cupon) marcarUsado(resultado.cupon.codigo);
       // Se borran los datos de la tarjeta
       setPago(PAGO_VACIO);
       setCompraSimulada(resultado);

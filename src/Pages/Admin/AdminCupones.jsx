@@ -43,7 +43,7 @@ function AdminCupones() {
   const lista = cupones.filter(
     cupon =>
       (!estado || estadoCupon(cupon, ahora) === estado) &&
-      [cupon.codigo, cupon.email, nombres.get(cupon.uid)].join(' ').toLowerCase().includes(termino)
+      [cupon.codigo, cupon.email, cupon.uid ? nombres.get(cupon.uid) : 'Visitante'].join(' ').toLowerCase().includes(termino)
   );
 
   const ejecutar = async accion => {
@@ -73,7 +73,7 @@ function AdminCupones() {
   };
 
   const borrar = cupon => {
-    if (!window.confirm(`¿Eliminar el cupón ${cupon.codigo} de ${cupon.email}? No se puede deshacer.`)) return;
+    if (!window.confirm(`¿Eliminar el cupón ${cupon.codigo} de ${cupon.email ?? 'un visitante'}? No se puede deshacer.`)) return;
     ejecutar(async () => {
       await eliminarCupon(cupon.codigo);
       return `Eliminamos el cupón ${cupon.codigo}.`;
@@ -178,7 +178,7 @@ function AdminCupones() {
                     </small>
                   </td>
                   <td>
-                    {nombres.get(cupon.uid)}
+                    {cupon.uid ? nombres.get(cupon.uid) : 'Visitante'}
                     <small className="d-block text-muted">{cupon.email}</small>
                   </td>
                   <td className="text-nowrap">{fechaHora(cupon.creadoEn)}</td>

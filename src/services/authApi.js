@@ -66,6 +66,11 @@ export function cerrarSesion() {
   return signOut(auth);
 }
 
+// Cabecera con la sesión, si hay
+export async function cabeceraSesion() {
+  return auth.currentUser ? {Authorization: `Bearer ${await auth.currentUser.getIdToken()}`} : {};
+}
+
 // Token para las funciones del servidor
 export async function obtenerToken() {
   if (!auth.currentUser) throw new Error('Iniciá sesión de nuevo.');

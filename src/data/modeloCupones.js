@@ -26,13 +26,19 @@ function generarCodigo() {
   return `ANZ-${Array.from(bytes, byte => LETRAS[byte % LETRAS.length]).join('')}`;
 }
 
-export function crearCupon({uid, email, porcentaje = PORCENTAJE_CUPON, origen}) {
+const FORMATO_VISITANTE = /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/;
+
+export const visitanteValido = visitante => typeof visitante === 'string' && FORMATO_VISITANTE.test(visitante);
+
+// Sin cuenta, el cupón queda atado al navegador del visitante
+export function crearCupon({uid = null, email = null, visitante = null, porcentaje = PORCENTAJE_CUPON, origen}) {
   const ahora = Date.now();
 
   return {
     codigo: generarCodigo(),
     uid,
     email,
+    visitante,
     porcentaje,
     origen,
     creadoEn: new Date(ahora).toISOString(),

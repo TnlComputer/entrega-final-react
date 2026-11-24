@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {estadoCupon} from '../data/modeloCupones';
 import useAuth from '../hooks/useAuth';
 import {observarCuponesDe, registrarEntrada} from '../services/cuponesApi';
@@ -11,6 +11,9 @@ const SIN_CUPONES = {uid: null, cupones: [], error: null};
 function CuponesProvider({children}) {
   const {usuario, esAdmin, cargando: cargandoSesion} = useAuth();
   const uid = usuario?.uid ?? null;
+  const quien = uid ?? 'visitante';
+  const ultimoRef = useRef(null);
+  const [delVisitante, setDelVisitante] = useState([]);
   const [guardados, setGuardados] = useState(SIN_CUPONES);
   const [codigoElegido, setCodigoElegido] = useState(null);
   const [entrada, setEntrada] = useState(null);
@@ -34,26 +37,30 @@ function CuponesProvider({children}) {
     return () => clearInterval(id);
   }, []);
 
-  // Una entrada por inicio de sesión
+  // Cada sesión del navegador cuenta como una entrada
   useEffect(() => {
-    if (cargandoSesion) return;
-    if (!uid) {
-      sessionStorage.removeItem(CLAVE_ENTRADA);
-      return;
-    }
-    if (esAdmin || sessionStorage.getItem(CLAVE_ENTRADA) === uid) return;
+    if (cargandoSesion || ultimoRef.current === quien) return;
+    ultimoRef.current = quien;
 
-    sessionStorage.setItem(CLAVE_ENTRADA, uid);
-    registrarEntrada()
+    const nueva = !esAdmin && !sessionStorage.getItem(CLAVE_ENTRADA);
+    if (nueva) sessionStorage.setItem(CLAVE_ENTRADA, '1');
+    registrarEntrada(nueva)
       .then(datos => {
-        if (datos.cupon) setEntrada({uid, ...datos});
+        if (ultimoRef.current !== quien) return;
+        if (!uid) setDelVisitante(datos.activos);
+        if (datos.cupon) setEntrada({quien, ...datos});
       })
       // Si falla, se reintenta en la próxima carga
-      .catch(() => sessionStorage.removeItem(CLAVE_ENTRADA));
-  }, [uid, esAdmin, cargandoSesion]);
+      .catch(() => {
+        if (nueva) sessionStorage.removeItem(CLAVE_ENTRADA);
+      });
+  }, [quien, uid, esAdmin, cargandoSesion]);
+
+  const marcarUsado = codigo =>
+    setDelVisitante(actuales => actuales.filter(cupon => cupon.codigo !== codigo));
 
   const propios = guardados.uid === uid ? guardados : SIN_CUPONES;
-  const cupones = [...propios.cupones].sort((a, b) => b.creadoEn.localeCompare(a.creadoEn));
+  const cupones = [...(uid ? propios.cupones : delVisitante)].sort((a, b) => b.creadoEn.localeCompare(a.creadoEn));
   const activos = cupones.filter(cupon => estadoCupon(cupon, ahora) === 'activo');
 
   return (
@@ -66,8 +73,9 @@ function CuponesProvider({children}) {
         error: propios.error,
         cuponAplicado: activos.find(cupon => cupon.codigo === codigoElegido) ?? null,
         aplicarCupon: setCodigoElegido,
+        marcarUsado,
         quitarCupon: () => setCodigoElegido(null),
-        entrada: entrada?.uid === uid ? entrada : null,
+        entrada: entrada?.quien === quien ? entrada : null,
         cerrarEntrada: () => setEntrada(null)
       }}>
       {children}

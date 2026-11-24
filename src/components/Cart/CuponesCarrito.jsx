@@ -9,7 +9,7 @@ function CuponesCarrito({onIrALogin}) {
   const {usuario} = useAuth();
   const {activos, cuponAplicado, aplicarCupon, quitarCupon} = useCupones();
 
-  if (!usuario) {
+  if (!usuario && activos.length === 0) {
     return (
       <p className={styles.cuponAviso}>
         ¿Tenés un cupón?{' '}
