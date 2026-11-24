@@ -1,6 +1,10 @@
 // Lo que comparten las funciones del servidor
 import {cert, getApps, initializeApp} from 'firebase-admin/app';
-import {getAuth} from 'firebase-admin/auth';
+import firebaseConfig from '../src/services/firebaseConfig.js';
+
+const HOST_AUTH = process.env.FIREBASE_AUTH_EMULATOR_HOST
+  ? `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com`
+  : 'https://identitytoolkit.googleapis.com';
 
 export const responder = (estado, datos) =>
   new Response(JSON.stringify(datos), {
@@ -40,15 +44,18 @@ export function obtenerApp(serviceAccountJson, projectId) {
 }
 
 // Valida la sesión con el token de Firebase
-export async function verificarUsuario(peticion, app) {
+export async function verificarUsuario(peticion) {
   const token = (peticion.headers.get('authorization') || '').replace(/^Bearer /, '');
-  if (!token) throw fallo(401, 'Iniciá sesión para usar cupones.');
+  if (!token) throw fallo(401, 'Iniciá sesión para continuar.');
 
-  try {
-    const {uid, email = ''} = await getAuth(app).verifyIdToken(token);
-    return {uid, email};
-  } catch (error) {
-    if (!error.code?.startsWith('auth/')) throw error;
-    throw fallo(401, 'La sesión venció. Iniciá sesión de nuevo.');
-  }
+  const respuesta = await fetch(`${HOST_AUTH}/v1/accounts:lookup?key=${firebaseConfig.apiKey}`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({idToken: token})
+  });
+  if (respuesta.status >= 500) throw fallo(502, 'No se pudo validar la sesión. Probá de nuevo.');
+
+  const cuenta = (await respuesta.json().catch(() => ({}))).users?.[0];
+  if (!respuesta.ok || !cuenta) throw fallo(401, 'La sesión venció. Iniciá sesión de nuevo.');
+  return {uid: cuenta.localId, email: cuenta.email ?? ''};
 }

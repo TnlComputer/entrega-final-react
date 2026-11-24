@@ -179,7 +179,7 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
     const pedido = validarPedido(await leerJson(peticion));
     const app = obtenerApp(serviceAccountJson, projectId);
     const db = getFirestore(app);
-    const usuario = pedido.cupon ? await verificarUsuario(peticion, app) : null;
+    const usuario = pedido.cupon ? await verificarUsuario(peticion) : null;
     const refsProductos = pedido.items.map(item => db.collection('productos').doc(item.id));
     const refEnvios = db.collection('config').doc('envios');
     const refAnuncio = db.collection('config').doc('anuncio');

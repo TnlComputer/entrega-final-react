@@ -8,7 +8,7 @@ export default async function registrarEntrada(peticion, {serviceAccountJson, pr
     if (peticion.method !== 'POST') throw fallo(405, 'Usá POST.');
 
     const app = obtenerApp(serviceAccountJson, projectId);
-    const usuario = await verificarUsuario(peticion, app);
+    const usuario = await verificarUsuario(peticion);
     const db = getFirestore(app);
     const refContador = db.collection('contadores').doc('entradas');
     const refCupones = db.collection('cupones');
