@@ -42,6 +42,9 @@ function AdminLayout() {
         <NavLink to="/admin/anuncio" className={claseTab}>
           Anuncio
         </NavLink>
+        <NavLink to="/admin/cupones" className={claseTab}>
+          Cupones
+        </NavLink>
         <NavLink to="/admin/envios" className={claseTab}>
           Envíos
         </NavLink>

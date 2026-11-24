@@ -1,9 +1,13 @@
+import {obtenerToken} from './authApi';
+
 export async function confirmarCompraSimulada(compra) {
+  // La sesión solo hace falta para usar un cupón
+  const token = compra.cupon ? await obtenerToken() : null;
   let respuesta;
   try {
     respuesta = await fetch('/api/compras', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', ...(token && {Authorization: `Bearer ${token}`})},
       body: JSON.stringify(compra)
     });
   } catch (error) {

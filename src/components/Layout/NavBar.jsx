@@ -1,17 +1,19 @@
 import {useEffect, useRef, useState} from 'react';
 import {Badge, Button, Container, Nav, Navbar} from 'react-bootstrap';
 import {Link, useLocation} from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 import useCarrito from '../../hooks/useCarrito';
 import styles from './NavBar.module.css';
 
 function NavBar() {
   const {cantidadCarrito, abrirCarrito} = useCarrito();
+  const {usuario, esAdmin, cargando} = useAuth();
   const [pegado, setPegado] = useState(false);
   const centinelaRef = useRef(null);
   const {pathname, hash} = useLocation();
 
   // Enlace activo según la sección o la página
-  const seccion = hash === '#nosotros' || hash === '#contacto' ? hash : pathname;
+  const seccion = hash === '#contacto' ? hash : pathname;
 
   useEffect(() => {
     const centinela = centinelaRef.current;
@@ -50,12 +52,28 @@ function NavBar() {
               <Nav.Link as={Link} to="/productos" active={seccion === '/productos'}>
                 Catálogo
               </Nav.Link>
-              <Nav.Link href="#nosotros" active={seccion === '#nosotros'}>
-                La casa
+              <Nav.Link as={Link} to="/nosotros" active={seccion === '/nosotros'}>
+                Nosotros
               </Nav.Link>
               <Nav.Link href="#contacto" active={seccion === '#contacto'}>
                 Contacto
               </Nav.Link>
+              {esAdmin && (
+                <Nav.Link as={Link} to="/admin" active={seccion.startsWith('/admin')}>
+                  Administración
+                </Nav.Link>
+              )}
+              {usuario ? (
+                <Nav.Link as={Link} to="/perfil" active={seccion === '/perfil'}>
+                  Mi cuenta
+                </Nav.Link>
+              ) : (
+                !cargando && (
+                  <Nav.Link as={Link} to="/login" active={seccion === '/login' || seccion === '/registro'}>
+                    Ingresar
+                  </Nav.Link>
+                )
+              )}
             </Nav>
           </Navbar.Collapse>
           {pegado && (

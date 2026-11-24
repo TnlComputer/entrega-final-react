@@ -15,9 +15,12 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 
 ### Tienda
 
+- Inicio con los productos en oferta y los destacados, y sección *Nosotros* con el equipo, leído de Firestore.
+- Registro e ingreso de clientes con Firebase Authentication, y página *Mi cuenta* (`/perfil`, solo con sesión) con sus cupones.
+- Cupones de descuento: cada 3 ingresos de clientes a la tienda, al tercero se le muestra un cupón del 5% que vale 12 horas y una sola compra. Se aplica en el carrito o en el paso de pago, sobre el total ya rebajado por el anuncio. Cada cliente recibe como máximo un cupón automático cada 12 horas.
 - Catálogo de productos agrupado por rubros (cañas y reels, señuelos, líneas y anzuelos, indumentaria), con precios de oferta y aviso de últimas unidades. Cada oferta puede tener fechas de inicio y fin: fuera de ese período se cobra el precio normal. En el carrito se ve el precio anterior tachado junto al de oferta.
 - Buscador de productos y tarjetas que se dan vuelta al pasar por "Ver características" (o tocarlo en el celular); el resto de la foto queda libre para marcar favoritos.
-- Favoritos y carrito de compras: se puede sumar o restar cantidades respetando el stock; favoritos y carrito se guardan en el navegador. El checkout es una simulación en cuatro pasos (contacto, entrega, pago y revisión): no cobra ni registra pedidos, valida nuevamente el stock en el servidor y lo descuenta de forma atómica en Firestore. Al terminar muestra el resumen completo en pantalla.
+- Favoritos y carrito de compras: se puede sumar o restar cantidades respetando el stock; el carrito también se puede vaciar, y todo se guarda en el navegador. El checkout es una simulación en cuatro pasos (contacto, entrega, pago y revisión): no cobra ni registra pedidos, valida nuevamente el stock en el servidor y lo descuenta de forma atómica en Firestore. Al terminar muestra el resumen completo en pantalla.
 - Formas de pago simuladas: tarjeta de crédito (1 o 3 cuotas sin interés), tarjeta de débito, transferencia bancaria (con alias y CBU de demostración) y Mercado Pago; cada una pide sus datos. El número, vencimiento y código de la tarjeta se validan solo en el navegador (con el algoritmo de Luhn) y nunca se envían al servidor: solo viajan la marca, los últimos 4 dígitos y las cuotas. Para probar sirve la tarjeta 4111 1111 1111 1111 con cualquier vencimiento futuro.
 - El email de contacto es obligatorio y aparece en el resumen, pero como es una demo no se envía ningún correo.
 - Envío a domicilio simulado: siempre exige calle, número, localidad, código postal y celular (piso, departamento y observaciones para la entrega son opcionales). La tarifa sale de la zona del código postal o, si no tiene, de la localidad, con precios fijos por zona desde `/admin/envios`; el retiro en tienda no tiene costo. Si el total de productos luego del descuento supera $300.000, el envío es gratis y no hace falta que el destino tenga tarifa configurada. El servidor repite todas estas validaciones antes de descontar stock. Cuando aún no hay zonas guardadas, el panel muestra zonas y precios DEMO que deben revisarse y guardarse para usarse en el checkout.
@@ -32,8 +35,9 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 - Gestión de rubros y subrubros.
 - Configuración de zonas de envío por rangos inclusivos de CP numéricos de 4 dígitos y/o localidades, sin rangos superpuestos ni localidades duplicadas. Incluye tarifas fijas en ARS y retiro en tienda sin costo.
 - Edición del anuncio: texto, fechas, descuento y vista previa.
+- Cupones: listado con el usuario asignado, vencimiento, estado, fecha de uso y pedido; alta manual para un usuario y baja.
 
-El login se realiza con Firebase Authentication. El catálogo, los avisos, las tarifas de envío y los enlaces de la galería se guardan en Cloud Firestore. Solo pueden entrar al panel las cuentas autorizadas en `admins/{uid}`.
+El login se realiza con Firebase Authentication. El catálogo, el equipo, los cupones, los avisos, las tarifas de envío y los enlaces de la galería se guardan en Cloud Firestore. Solo pueden entrar al panel las cuentas autorizadas en `admins/{uid}`.
 
 Las imágenes se alojan en ImgBB; Firestore conserva sus URL y las relaciona con un rubro. Reemplazar una imagen no borra el archivo de ImgBB: la URL anterior queda disponible en la galería.
 
@@ -41,11 +45,10 @@ Las imágenes se alojan en ImgBB; Firestore conserva sus URL y las relaciona con
 
 - [React 19](https://react.dev/) con [Vite](https://vite.dev/) y React Compiler
 - [React Router](https://reactrouter.com/) para la navegación
-- Context API para el estado compartido: `CartProvider` + `useCarrito` para el carrito y `AuthProvider` + `useAuth` para la sesión, sin pasar props de componente en componente
+- Context API para el estado compartido: `CartProvider` + `useCarrito` para el carrito, `AuthProvider` + `useAuth` para la sesión y `CuponesProvider` + `useCupones` para los cupones, sin pasar props de componente en componente
 - [React Bootstrap](https://react-bootstrap.github.io/) y CSS Modules para los estilos, con [React Bootstrap Icons](https://github.com/ismamz/react-bootstrap-icons) en las acciones del panel
-- [Firebase](https://firebase.google.com/): Firestore para productos, rubros, anuncio y galería de imágenes; Authentication para el login del panel
+- [Firebase](https://firebase.google.com/): Firestore para productos, rubros, equipo, cupones, anuncio y galería de imágenes; Authentication para clientes y administradores
 - [ImgBB](https://imgbb.com/) para alojar las imágenes. Se suben mediante una Netlify Function en producción y un plugin de Vite en desarrollo; la clave se mantiene del lado del servidor
-- El equipo se lee de `public/data/equipo.json`
 - Netlify para alojar el sitio y publicar automáticamente los cambios que llegan a `main`
 
 ## Cómo correrlo en local
@@ -67,8 +70,8 @@ Copiá `.env.example` como `.env.local` y completalo. `.env.local` no se sube al
 2. **Firestore Database**: crearla y, en *Reglas*, pegar y publicar el contenido de [firestore.rules](firestore.rules). La colección `imagenes` se crea automáticamente al guardar una imagen en la galería; para permitir su lectura y escritura, las reglas publicadas deben incluir la regla correspondiente.
 3. **Authentication**: activar *Correo electrónico/contraseña* y crear el usuario admin (el mismo de `ADMIN_EMAIL` y `ADMIN_PASSWORD`).
 4. En Firestore, crear la colección `admins` con un documento cuyo ID sea el *UID* de ese usuario (se ve en Authentication). Puede quedar sin campos.
-5. `npm run cargar-datos` sube el catálogo y el anuncio iniciales de `scripts/datos/`.
-6. Para simular compras con descuento de stock, creá una cuenta de servicio de Firebase con acceso de edición a Firestore y guardá su JSON completo en `FIREBASE_SERVICE_ACCOUNT_JSON`. En local va en `.env.local`; en Netlify, en *Site configuration → Environment variables*. Es una credencial privada: no la subas a Git, no uses el prefijo `VITE_` y no la compartas por chat.
+5. `npm run cargar-datos` sube el catálogo y el anuncio iniciales de `scripts/datos/`, y `npm run cargar-equipo` el equipo.
+6. Para simular compras con descuento de stock y repartir cupones, creá una cuenta de servicio de Firebase con acceso de edición a Firestore y guardá su JSON completo en `FIREBASE_SERVICE_ACCOUNT_JSON`. En local va en `.env.local`; en Netlify, en *Site configuration → Environment variables*. Es una credencial privada: no la subas a Git, no uses el prefijo `VITE_` y no la compartas por chat.
 
 | Comando | Qué hace |
 | --- | --- |
@@ -77,11 +80,12 @@ Copiá `.env.example` como `.env.local` y completalo. `.env.local` no se sube al
 | `npm run preview` | Muestra la versión generada |
 | `npm run lint` | Revisa el código con ESLint |
 | `npm run cargar-datos` | Carga en Firestore el catálogo y el anuncio iniciales |
+| `npm run cargar-equipo` | Carga en Firestore el equipo de *Nosotros* |
 | `npm run cargar-envios-mock` | Carga las tarifas DEMO solo si `config/envios` está vacío |
 
 ## Publicación
 
-Cada `git push` a la rama `main` compila el sitio y lo publica en Netlify (configuración en [netlify.toml](netlify.toml)). En Netlify deben estar configuradas las variables `IMGBB_KEY` y `FIREBASE_SERVICE_ACCOUNT_JSON`. La segunda se usa exclusivamente en la función de compras para validar y actualizar stock dentro de una transacción; no se expone al navegador. El endpoint rechaza pedidos con productos inactivos, cantidades inválidas o stock insuficiente. La configuración web de Firebase está en `src/services/firebaseConfig.js`; las reglas de Firestore se publican en Firebase, no desde Netlify, y no deben abrir escritura pública de productos.
+Cada `git push` a la rama `main` compila el sitio y lo publica en Netlify (configuración en [netlify.toml](netlify.toml)). En Netlify deben estar configuradas las variables `IMGBB_KEY` y `FIREBASE_SERVICE_ACCOUNT_JSON`. La segunda se usa en las funciones de compras y cupones: valida y actualiza stock, cuenta los ingresos y marca los cupones usados dentro de transacciones; no se expone al navegador. El endpoint rechaza pedidos con productos inactivos, cantidades inválidas o stock insuficiente. La configuración web de Firebase está en `src/services/firebaseConfig.js`; las reglas de Firestore se publican en Firebase, no desde Netlify, y no deben abrir escritura pública de productos.
 
 La compra sigue siendo ficticia: no existe integración con pasarela, cobro ni registro de pedido. Por eso, en este proyecto de demostración, confirmar la simulación sí consume stock persistente. Las tarifas DEMO de envío pueden cargarse con `npm run cargar-envios-mock` si `config/envios` está vacío; el comando valida la sesión de administrador y verifica la escritura. Si ya existen tarifas, no las sobrescribe: gestioná cambios desde `/admin/envios`.
 

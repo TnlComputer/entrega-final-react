@@ -15,8 +15,8 @@ function Home() {
             <h2>Todo listo para salir a pescar.</h2>
             <p>Equipo confiable, buenos precios y asesoramiento de pescador a pescador. Prepará la caja y mandale.</p>
             <div className={styles.heroAcciones}>
-              <a className={styles.botonPrincipal} href="#destacados">
-                Ver destacados
+              <a className={styles.botonPrincipal} href="#ofertas">
+                Ver ofertas
               </a>
               <Link className={styles.botonSecundario} to="/productos">
                 Catálogo completo
@@ -36,7 +36,8 @@ function Home() {
         </div>
       </div>
 
-      <ItemListContainer catalogo={catalogo} soloDestacados />
+      <ItemListContainer catalogo={catalogo} seccion="ofertas" />
+      <ItemListContainer catalogo={catalogo} seccion="destacados" />
     </section>
   );
 }

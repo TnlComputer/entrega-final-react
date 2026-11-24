@@ -79,6 +79,8 @@ function CartProvider({catalogo, children}) {
     });
   };
 
+  const vaciarCarrito = () => setCarrito({});
+
   const cambiarCantidadCarrito = (id, cambio) => {
     const producto = productos.find(item => item.id === id);
     const cantidadNueva = (carrito[id] || 0) + cambio;
@@ -101,7 +103,7 @@ function CartProvider({catalogo, children}) {
   const procesarCompraSimulada = async compra => {
     const resultado = await confirmarCompraSimulada(compra);
     actualizarStocks(resultado.stocks);
-    setCarrito({});
+    vaciarCarrito();
     setComprasConfirmadas(total => total + 1);
     return resultado;
   };
@@ -113,6 +115,7 @@ function CartProvider({catalogo, children}) {
         cantidadCarrito,
         agregarAlCarrito,
         quitarDelCarrito,
+        vaciarCarrito,
         cambiarCantidadCarrito,
         procesarCompraSimulada,
         actualizarStocks,

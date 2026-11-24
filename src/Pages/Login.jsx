@@ -1,13 +1,13 @@
 import {useState} from 'react';
 import {Alert, Button, Form} from 'react-bootstrap';
-import {Navigate, useLocation} from 'react-router-dom';
+import {Link, Navigate, useLocation} from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import styles from './Login.module.css';
 
 function Login() {
-  const {usuario, cargando, iniciarSesion} = useAuth();
+  const {usuario, esAdmin, cargando, iniciarSesion} = useAuth();
   const ubicacion = useLocation();
-  const destino = ubicacion.state?.desde || '/admin';
+  const destino = ubicacion.state?.desde || (esAdmin ? '/admin' : '/');
 
   const [email, setEmail] = useState('');
   const [contrasenia, setContrasenia] = useState('');
@@ -41,7 +41,7 @@ function Login() {
   return (
     <section className={styles.loginPage}>
       <div className={styles.loginCard}>
-        <span className="eyebrow">Acceso administración</span>
+        <span className="eyebrow">Mi cuenta</span>
         <h2>Ingresar</h2>
 
         <Form onSubmit={enviar} noValidate>
@@ -78,6 +78,13 @@ function Login() {
             {enviando ? 'Ingresando…' : 'Ingresar'}
           </Button>
         </Form>
+
+        <p className={styles.alternativa}>
+          ¿No tenés cuenta?{' '}
+          <Link to="/registro" state={ubicacion.state}>
+            Registrate
+          </Link>
+        </p>
       </div>
     </section>
   );

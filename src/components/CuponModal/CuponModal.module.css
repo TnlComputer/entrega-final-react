@@ -1,0 +1,42 @@
+.cupon-modal :global(.modal-content) {
+  background: var(--white);
+  border: 0;
+  border-radius: 4px;
+  border-top: 5px solid var(--lime);
+  color: var(--ink);
+}
+.cupon-modal :global(.modal-header) {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.cupon-modal :global(.modal-body) {
+  padding: 0 26px 12px;
+  text-align: center;
+}
+.cupon-modal :global(.modal-footer) {
+  border-top: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 8px 26px 26px;
+}
+.cupon-modal h2 {
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: 34px;
+  font-weight: 400;
+}
+.cupon-modal p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.codigo {
+  border: 2px dashed var(--violet);
+  border-radius: 4px;
+  color: var(--violet);
+  display: inline-block;
+  font-size: 22px;
+  letter-spacing: 2px;
+  margin: 18px 0;
+  padding: 10px 20px;
+}

@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useSyncExternalStore} from 'react';
 
 const CLAVE_FAVORITOS = 'favoritos';
 
@@ -10,24 +10,29 @@ function leerFavoritosGuardados() {
   }
 }
 
+// Compartido entre todas las listas de la página
+let favoritosActuales = leerFavoritosGuardados();
+const suscriptos = new Set();
+
+function suscribir(avisar) {
+  suscriptos.add(avisar);
+  return () => suscriptos.delete(avisar);
+}
+
+function alternarFavorito(id) {
+  const favoritosNuevos = {...favoritosActuales};
+  if (favoritosNuevos[id]) {
+    delete favoritosNuevos[id];
+  } else {
+    favoritosNuevos[id] = true;
+  }
+  favoritosActuales = favoritosNuevos;
+  localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favoritosActuales));
+  suscriptos.forEach(avisar => avisar());
+}
+
 function useFavoritos() {
-  const [favoritos, setFavoritos] = useState(leerFavoritosGuardados);
-
-  useEffect(() => {
-    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify(favoritos));
-  }, [favoritos]);
-
-  const alternarFavorito = id => {
-    setFavoritos(favoritosActuales => {
-      const favoritosNuevos = {...favoritosActuales};
-      if (favoritosNuevos[id]) {
-        delete favoritosNuevos[id];
-      } else {
-        favoritosNuevos[id] = true;
-      }
-      return favoritosNuevos;
-    });
-  };
+  const favoritos = useSyncExternalStore(suscribir, () => favoritosActuales);
 
   return {favoritos, alternarFavorito};
 }

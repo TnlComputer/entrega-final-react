@@ -1,6 +1,7 @@
 {
   "equipo": [
     {
+      "orden": 1,
       "nombre": "Martín Ferreyra",
       "rol": "Fundador · Asesor de pesca",
       "detalle": "Más de 20 años pescando en el Delta. Te ayuda a elegir el equipo según la especie.",
@@ -8,6 +9,7 @@
       "avatar": "https://i.ibb.co/qY3d7sz9/martin-ferreyra.jpg"
     },
     {
+      "orden": 2,
       "nombre": "Lucía Benítez",
       "rol": "Atención al cliente",
       "detalle": "Responde consultas, arma pedidos y coordina los envíos a todo el país.",
@@ -15,6 +17,7 @@
       "avatar": "https://i.ibb.co/fYYknLYk/lucia-benitez.jpg"
     },
     {
+      "orden": 3,
       "nombre": "Diego Sosa",
       "rol": "Depósito y logística",
       "detalle": "Controla el stock y prepara cada paquete para que llegue a tiempo a la salida.",

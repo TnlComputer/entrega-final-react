@@ -2,6 +2,7 @@
 import {Readable} from 'node:stream';
 import subirImagen from './subirImagen.js';
 import comprar from './comprar.js';
+import registrarEntrada from './cupones.js';
 
 export default function imagenesDev(opciones) {
   return {
@@ -11,7 +12,8 @@ export default function imagenesDev(opciones) {
     configureServer(servidor) {
       const rutas = {
         '/api/imagenes': (request, config) => subirImagen(request, config),
-        '/api/compras': (request, config) => comprar(request, config)
+        '/api/compras': (request, config) => comprar(request, config),
+        '/api/cupones': (request, config) => registrarEntrada(request, config)
       };
 
       for (const [ruta, handler] of Object.entries(rutas)) {
@@ -34,7 +36,7 @@ export default function imagenesDev(opciones) {
 }
 
 function configFor(ruta, opciones) {
-  if (ruta === '/api/compras') {
+  if (ruta !== '/api/imagenes') {
     return {
       serviceAccountJson: opciones.cuentaServicioFirebase,
       projectId: opciones.proyectoFirebase

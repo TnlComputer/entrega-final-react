@@ -1,46 +1,13 @@
-import {useState} from 'react';
-import {Card, Container} from 'react-bootstrap';
+import {Container} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
-import useEquipo from '../../hooks/useEquipo';
 import styles from './Footer.module.css';
 
-function iniciales(nombre) {
-  return nombre
-    .split(' ')
-    .map((parte) => parte[0])
-    .join('');
-}
-
-function Avatar({persona}) {
-  const [fallo, setFallo] = useState(false);
-
-  if (!persona.avatar || fallo) {
-    return (
-      <span className={styles.teamAvatar} aria-hidden="true">
-        {iniciales(persona.nombre)}
-      </span>
-    );
-  }
-
-  return (
-    <img
-      className={styles.teamAvatar}
-      src={persona.avatar}
-      alt={`Foto de ${persona.nombre}`}
-      loading="lazy"
-      onError={() => setFallo(true)}
-    />
-  );
-}
-
 function Footer() {
-  const {equipo, cargando, error} = useEquipo();
-
   return (
     <footer className={styles.siteFooter}>
       <Container>
         <div className={styles.footerMain}>
-          <section className={styles.footerBrand} id="nosotros">
+          <section className={styles.footerBrand}>
             <span className={styles.footerKicker}>Casa de pesca · desde Buenos Aires</span>
             <h2>
               El<span>.</span>Anzuelo
@@ -65,25 +32,6 @@ function Footer() {
             </div>
           </section>
         </div>
-
-        <section className={styles.footerTeam} id="equipo">
-          <span className={styles.footerKicker}>Nuestro equipo</span>
-          {cargando && <p>Cargando equipo…</p>}
-          {error && <p role="alert">No pudimos cargar el equipo: {error}</p>}
-          <div className={styles.teamGrid}>
-            {equipo.map((persona) => (
-              <Card key={persona.email} className={styles.teamCard}>
-                <Card.Body>
-                  <Avatar persona={persona} />
-                  <Card.Title as="h3">{persona.nombre}</Card.Title>
-                  <Card.Subtitle>{persona.rol}</Card.Subtitle>
-                  <Card.Text>{persona.detalle}</Card.Text>
-                  <a href={`mailto:${persona.email}`}>{persona.email}</a>
-                </Card.Body>
-              </Card>
-            ))}
-          </div>
-        </section>
 
         <div className={styles.copyright}>
           <span>

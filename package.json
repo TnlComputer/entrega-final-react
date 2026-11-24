@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "cargar-datos": "node scripts/cargarDatos.js",
+    "cargar-equipo": "node scripts/cargarEquipo.js",
     "cargar-envios-mock": "node scripts/cargarEnviosMock.js"
   },
   "dependencies": {

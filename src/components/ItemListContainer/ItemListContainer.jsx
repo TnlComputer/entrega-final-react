@@ -1,5 +1,6 @@
 import {useRef, useState} from 'react';
 import {Link} from 'react-router-dom';
+import {ofertaVigente} from '../../data/modeloCatalogo';
 import useFavoritos from '../../hooks/useFavoritos';
 import ItemList from '../ItemList/ItemList';
 import styles from './ItemListContainer.module.css';
@@ -12,9 +13,27 @@ const formatoPrecio = new Intl.NumberFormat('es-AR', {
 
 const PRODUCTOS_POR_PAGINA = 12;
 
+// Secciones del inicio
+const SECCIONES = {
+  ofertas: {
+    detalle: 'Precios rebajados',
+    titulo: 'Productos en oferta',
+    contador: 'productos en oferta',
+    vacio: 'No hay ofertas por el momento.',
+    filtro: producto => ofertaVigente(producto)
+  },
+  destacados: {
+    detalle: 'Armá tu equipo',
+    titulo: 'Para tu próxima salida',
+    contador: 'productos destacados',
+    vacio: 'No hay productos destacados por el momento.',
+    filtro: producto => producto.destacado
+  }
+};
+
 const conCeros = numero => String(numero).padStart(2, '0');
 
-function ItemListContainer({catalogo, soloDestacados = false}) {
+function ItemListContainer({catalogo, seccion = null}) {
   const [busqueda, setBusqueda] = useState('');
   const {favoritos, alternarFavorito} = useFavoritos();
   const [rubroElegido, setRubroElegido] = useState('todos');
@@ -22,7 +41,6 @@ function ItemListContainer({catalogo, soloDestacados = false}) {
   const listaRef = useRef(null);
 
   const {rubros: todosLosRubros = [], productos = [], cargando, error} = catalogo;
-  const destacados = productos.filter(producto => producto.destacado);
   const rubros = todosLosRubros.filter(rubro => productos.some(producto => producto.rubro === rubro.id));
 
   const termino = busqueda.trim().toLowerCase();
@@ -121,27 +139,32 @@ function ItemListContainer({catalogo, soloDestacados = false}) {
     </>
   );
 
-  // Inicio: solo los destacados
-  if (soloDestacados) {
+  if (seccion) {
+    const {detalle, titulo, contador, vacio, filtro} = SECCIONES[seccion];
+    const elegidos = productos.filter(filtro);
+
     return (
-      <section className={styles.searchSection} id="destacados">
+      <section className={styles.searchSection} id={seccion}>
         <div className={styles.sectionHeading}>
           <div>
-            <span className="eyebrow">Armá tu equipo</span>
-            <h3>Para tu próxima salida</h3>
+            <span className="eyebrow">{detalle}</span>
+            <h3>{titulo}</h3>
           </div>
           {!cargando && !error && (
-            <span className={styles.availability}>{conCeros(destacados.length)} productos destacados</span>
+            <span className={styles.availability}>{conCeros(elegidos.length)} {contador}</span>
           )}
         </div>
 
         {estadoCarga}
 
-        {!cargando && !error && <ItemList productos={destacados} {...propsLista} />}
+        {!cargando && !error && elegidos.length === 0 && <p>{vacio}</p>}
+        {!cargando && !error && <ItemList productos={elegidos} {...propsLista} />}
 
-        <div className={styles.verTodos}>
-          <Link to="/productos">Ver catálogo completo →</Link>
-        </div>
+        {seccion === 'destacados' && (
+          <div className={styles.verTodos}>
+            <Link to="/productos">Ver catálogo completo →</Link>
+          </div>
+        )}
       </section>
     );
   }

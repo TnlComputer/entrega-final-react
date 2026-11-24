@@ -4,6 +4,7 @@ import NavBar from './NavBar';
 import Footer from './Footer';
 import BarraAnuncio from '../BarraAnuncio/BarraAnuncio';
 import CartModal from '../Cart/CartModal';
+import CuponModal from '../CuponModal/CuponModal';
 import useAnuncio from '../../hooks/useAnuncio';
 import useEnvios from '../../hooks/useEnvios';
 import {descuentoVigente} from '../../data/modeloAnuncio';
@@ -35,6 +36,7 @@ function Layout({catalogo}) {
       </main>
 
       <Footer />
+      <CuponModal />
       <CartModal
         formatoPrecio={formatoPrecio}
         descuento={descuentoVigente(anuncio.anuncio)}

@@ -1,7 +1,7 @@
-import {cert, getApps, initializeApp} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
 import {estadoAnuncio, validarAnuncio} from '../src/data/modeloAnuncio.js';
 import {estadoOferta} from '../src/data/modeloCatalogo.js';
+import {codigoValido, descuentoCupon, estadoCupon} from '../src/data/modeloCupones.js';
 import {fechaDeHoy} from '../src/data/fechas.js';
 import {
   emailValido,
@@ -16,49 +16,12 @@ import {
   zonaParaCodigoPostal,
   zonaParaLocalidad
 } from '../src/data/modeloEnvios.js';
+import {fallo, obtenerApp, responder, verificarUsuario} from './firebaseAdmin.js';
 
 const MAX_BYTES = 16 * 1024;
 const MAX_ITEMS = 30;
 const MAX_CANTIDAD = 99;
 const MAX_PRECIO = 1_000_000_000;
-
-const responder = (estado, datos) =>
-  new Response(JSON.stringify(datos), {
-    status: estado,
-    headers: {'Content-Type': 'application/json; charset=utf-8'}
-  });
-
-function fallo(estado, mensaje, datos = {}) {
-  const error = new Error(mensaje);
-  error.estado = estado;
-  error.datos = datos;
-  return error;
-}
-
-function obtenerFirestore(serviceAccountJson, projectId) {
-  if (!serviceAccountJson) throw fallo(500, 'Falta FIREBASE_SERVICE_ACCOUNT_JSON en el servidor.');
-
-  let serviceAccount;
-  try {
-    serviceAccount = JSON.parse(serviceAccountJson);
-  } catch {
-    throw fallo(500, 'FIREBASE_SERVICE_ACCOUNT_JSON no contiene un JSON válido.');
-  }
-
-  if (
-    !serviceAccount ||
-    typeof serviceAccount.project_id !== 'string' ||
-    typeof serviceAccount.client_email !== 'string' ||
-    typeof serviceAccount.private_key !== 'string' ||
-    serviceAccount.project_id !== projectId
-  ) {
-    throw fallo(500, 'La cuenta de servicio de Firebase no es válida para este proyecto.');
-  }
-
-  const existente = getApps().find(app => app.options.projectId === projectId);
-  const app = existente ?? initializeApp({credential: cert(serviceAccount), projectId});
-  return getFirestore(app);
-}
 
 async function leerJson(peticion) {
   if (!peticion.headers.get('content-type')?.toLowerCase().includes('application/json')) {
@@ -102,11 +65,14 @@ function validarPedido(cuerpo) {
   if (errorPago) throw fallo(400, errorPago);
   const pago = limpiarResumenPago(cuerpo.pago);
 
+  const cupon = cuerpo.cupon ?? null;
+  if (cupon !== null && !codigoValido(cupon)) throw fallo(400, 'El cupón no es válido.');
+
   const entrega = cuerpo.entrega;
   if (!entrega || !['envio', 'retiro'].includes(entrega.metodo)) {
     throw fallo(400, 'Elegí un método de entrega válido.');
   }
-  if (entrega.metodo === 'retiro') return {items, email, pago, entrega: {metodo: 'retiro'}};
+  if (entrega.metodo === 'retiro') return {items, email, pago, cupon, entrega: {metodo: 'retiro'}};
   if (typeof entrega.codigoPostal !== 'string' || !/^\d{4}$/.test(entrega.codigoPostal)) {
     throw fallo(400, 'Ingresá un código postal numérico de 4 dígitos.');
   }
@@ -138,6 +104,7 @@ function validarPedido(cuerpo) {
     items,
     email,
     pago,
+    cupon,
     entrega: {
       metodo: 'envio',
       ...direccion,
@@ -179,6 +146,16 @@ function descuentoActivo(anuncio) {
   return anuncio.descuento;
 }
 
+function validarCuponGuardado(snapshot, uid) {
+  // Un cupón ajeno se trata como inexistente
+  if (!snapshot.exists || snapshot.data().uid !== uid) throw fallo(409, 'El cupón no existe o no es tuyo.');
+  const cupon = snapshot.data();
+  const estado = estadoCupon(cupon);
+  if (estado === 'usado') throw fallo(409, 'El cupón ya fue usado.');
+  if (estado === 'vencido') throw fallo(409, 'El cupón venció. Revisá el total y confirmá de nuevo.');
+  return cupon;
+}
+
 function validarZonas(zonas) {
   if (!Array.isArray(zonas)) throw fallo(500, 'La tabla de tarifas de envío no es válida.');
   for (const zona of zonas) {
@@ -200,17 +177,21 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
     if (!projectId) return responder(500, {error: 'Falta el projectId de Firebase.'});
 
     const pedido = validarPedido(await leerJson(peticion));
-    const db = obtenerFirestore(serviceAccountJson, projectId);
+    const app = obtenerApp(serviceAccountJson, projectId);
+    const db = getFirestore(app);
+    const usuario = pedido.cupon ? await verificarUsuario(peticion, app) : null;
     const refsProductos = pedido.items.map(item => db.collection('productos').doc(item.id));
     const refEnvios = db.collection('config').doc('envios');
     const refAnuncio = db.collection('config').doc('anuncio');
+    const refCupon = pedido.cupon ? db.collection('cupones').doc(pedido.cupon) : null;
 
     const hoy = fechaDeHoy();
     const resultado = await db.runTransaction(async transaction => {
-      const [snapshotsProductos, snapshotEnvios, snapshotAnuncio] = await Promise.all([
+      const [snapshotsProductos, snapshotEnvios, snapshotAnuncio, snapshotCupon] = await Promise.all([
         Promise.all(refsProductos.map(ref => transaction.get(ref))),
         transaction.get(refEnvios),
-        transaction.get(refAnuncio)
+        transaction.get(refAnuncio),
+        refCupon && transaction.get(refCupon)
       ]);
 
       const stocks = snapshotsProductos.map((snapshot, index) => ({
@@ -251,7 +232,10 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
       const anuncio = snapshotAnuncio.exists ? snapshotAnuncio.data() : null;
       const descuento = descuentoActivo(anuncio);
       const montoDescuento = Math.round((subtotal * descuento) / 100);
-      const totalProductos = subtotal - montoDescuento;
+      // El cupón va sobre el total ya rebajado
+      const cupon = snapshotCupon ? validarCuponGuardado(snapshotCupon, usuario.uid) : null;
+      const montoCupon = descuentoCupon(subtotal - montoDescuento, cupon);
+      const totalProductos = subtotal - montoDescuento - montoCupon;
 
       // Envío gratis desde el umbral
       const envioGratis =
@@ -273,11 +257,21 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
       if (!Number.isSafeInteger(total)) throw fallo(400, 'El total del pedido excede el límite permitido.');
 
       const nuevosStocks = renglones.map(item => ({id: item.id, stock: item.stock - item.cantidad}));
+      // El pedido no se guarda
+      const numero = `DEMO-${Date.now().toString(36).toUpperCase()}`;
       renglones.forEach(item => transaction.update(item.ref, {stock: item.stock - item.cantidad}));
 
+      if (cupon) {
+        transaction.update(refCupon, {
+          usado: true,
+          usadoEn: new Date().toISOString(),
+          pedido: numero,
+          montoDescuento: montoCupon
+        });
+      }
+
       return {
-        // El pedido no se guarda
-        numero: `DEMO-${Date.now().toString(36).toUpperCase()}`,
+        numero,
         cantidad: renglones.reduce((sum, item) => sum + item.cantidad, 0),
         items: renglones.map(({id, nombre, cantidad, unitario, totalLinea}) => ({
           id,
@@ -289,6 +283,7 @@ export default async function comprar(peticion, {serviceAccountJson, projectId})
         subtotal,
         descuento,
         montoDescuento,
+        cupon: cupon && {codigo: cupon.codigo, porcentaje: cupon.porcentaje, monto: montoCupon},
         metodo: pedido.entrega.metodo,
         email: pedido.email,
         pago: pedido.pago,

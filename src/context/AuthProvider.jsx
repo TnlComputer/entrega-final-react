@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import * as adminApi from '../services/adminApi';
+import * as authApi from '../services/authApi';
 import AuthContext from './AuthContext';
 
 function AuthProvider({children}) {
@@ -8,28 +8,26 @@ function AuthProvider({children}) {
 
   useEffect(
     () =>
-      adminApi.observarSesion(email => {
-        setUsuario(email ? {email} : null);
+      authApi.observarSesion(datos => {
+        setUsuario(datos);
         setCargando(false);
       }),
     []
   );
 
-  const iniciarSesion = async (email, contrasenia) => {
-    const emailConfirmado = await adminApi.iniciarSesion(email, contrasenia);
-    setUsuario({email: emailConfirmado});
-  };
+  const iniciarSesion = async (email, contrasenia) => setUsuario(await authApi.iniciarSesion(email, contrasenia));
+
+  const registrarse = async datos => setUsuario(await authApi.registrarse(datos));
 
   const cerrarSesion = async () => {
-    await adminApi.cerrarSesion().catch(() => {});
+    await authApi.cerrarSesion().catch(() => {});
     setUsuario(null);
   };
 
-  // Solo los admins quedan con sesión iniciada
-  const esAdmin = Boolean(usuario);
+  const esAdmin = Boolean(usuario?.esAdmin);
 
   return (
-    <AuthContext.Provider value={{usuario, esAdmin, cargando, iniciarSesion, cerrarSesion}}>
+    <AuthContext.Provider value={{usuario, esAdmin, cargando, iniciarSesion, registrarse, cerrarSesion}}>
       {children}
     </AuthContext.Provider>
   );

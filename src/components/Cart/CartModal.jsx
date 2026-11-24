@@ -17,13 +17,17 @@ import {
   titularValido,
   vencimientoValido
 } from '../../data/modeloCompra';
+import {descuentoCupon} from '../../data/modeloCupones';
 import {
   UMBRAL_ENVIO_GRATIS,
   celularValido,
   zonaParaCodigoPostal,
   zonaParaLocalidad
 } from '../../data/modeloEnvios';
+import useAuth from '../../hooks/useAuth';
 import useCarrito from '../../hooks/useCarrito';
+import useCupones from '../../hooks/useCupones';
+import CuponesCarrito from './CuponesCarrito';
 import styles from './CartModal.module.css';
 
 const PASOS_CHECKOUT = [
@@ -73,22 +77,29 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
     productosEnCarrito: productos,
     cerrarCarrito,
     quitarDelCarrito,
+    vaciarCarrito,
     cambiarCantidadCarrito,
     procesarCompraSimulada,
     actualizarStocks
   } = useCarrito();
+  const {usuario} = useAuth();
+  const {cuponAplicado} = useCupones();
   const [paso, setPaso] = useState('carrito');
   const [compraSimulada, setCompraSimulada] = useState(null);
   const [errorCompra, setErrorCompra] = useState(null);
   const [confirmando, setConfirmando] = useState(false);
   const [entrega, setEntrega] = useState(ENTREGA_VACIA);
-  const [email, setEmail] = useState('');
+  // Arranca con el email de la cuenta
+  const [emailEscrito, setEmail] = useState(null);
+  const email = emailEscrito ?? usuario?.email ?? '';
   // La tarjeta completa no sale del navegador
   const [pago, setPago] = useState(PAGO_VACIO);
   const subtotal = productos.reduce((total, item) => total + precioFinal(item.producto) * item.cantidad, 0);
   // Descuento del anuncio sobre el total
   const montoDescuento = Math.round((subtotal * descuento) / 100);
-  const totalProductos = subtotal - montoDescuento;
+  // El cupón va sobre el total ya rebajado
+  const montoCupon = descuentoCupon(subtotal - montoDescuento, cuponAplicado);
+  const totalProductos = subtotal - montoDescuento - montoCupon;
   // Envío gratis desde el umbral
   const envioGratisPorMonto = totalProductos > UMBRAL_ENVIO_GRATIS;
   const envioGratis = entrega.metodo === 'envio' && envioGratisPorMonto;
@@ -98,7 +109,7 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
     : (zonaParaCodigoPostal(envios.zonas, entrega.codigoPostal) ??
       zonaParaLocalidad(envios.zonas, entrega.localidad));
   const costoEnvio = entrega.metodo === 'retiro' || envioGratis ? 0 : zonaEnvio ? zonaEnvio.precio : null;
-  const total = subtotal - montoDescuento + (costoEnvio ?? 0);
+  const total = totalProductos + (costoEnvio ?? 0);
   const datosEnvioCompletos =
     entrega.calle.trim().length >= 2 &&
     entrega.calle.trim().length <= 120 &&
@@ -136,10 +147,23 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
     setCompraSimulada(null);
     setErrorCompra(null);
     setEntrega(ENTREGA_VACIA);
-    setEmail('');
+    setEmail(null);
     setPago(PAGO_VACIO);
     cerrarCarrito();
   };
+
+  const vaciar = () => {
+    if (window.confirm('¿Vaciar el carrito?')) vaciarCarrito();
+  };
+
+  const lineaCupon = cuponAplicado && (
+    <div className={styles.cartDescuento}>
+      <span>
+        Cupón {cuponAplicado.codigo} ({cuponAplicado.porcentaje}%)
+      </span>
+      <strong>−{formatoPrecio.format(montoCupon)}</strong>
+    </div>
+  );
 
   const confirmarPagoSimulado = async () => {
     if (!pagoValido || confirmando) return;
@@ -150,7 +174,8 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
         items: productos.map(({producto, cantidad}) => ({id: producto.id, cantidad})),
         entrega,
         email: normalizarEmail(email),
-        pago: resumenPago(pago)
+        pago: resumenPago(pago),
+        cupon: cuponAplicado?.codigo ?? null
       });
       // Se borran los datos de la tarjeta
       setPago(PAGO_VACIO);
@@ -223,6 +248,14 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
                   <div className={styles.cartDescuento}>
                     <span>Descuento {compraSimulada.descuento}%</span>
                     <strong>−{formatoPrecio.format(compraSimulada.montoDescuento)}</strong>
+                  </div>
+                )}
+                {compraSimulada?.cupon && (
+                  <div className={styles.cartDescuento}>
+                    <span>
+                      Cupón {compraSimulada.cupon.codigo} ({compraSimulada.cupon.porcentaje}%)
+                    </span>
+                    <strong>−{formatoPrecio.format(compraSimulada.cupon.monto)}</strong>
                   </div>
                 )}
                 <div>
@@ -430,6 +463,7 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
                   <strong>−{formatoPrecio.format(montoDescuento)}</strong>
                 </div>
               )}
+              {lineaCupon}
               <div>
                 <span>Envío</span>
                 <strong>
@@ -455,6 +489,7 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
               </>
             ) : paso === 'pago' ? (
               <>
+                <CuponesCarrito onIrALogin={cerrar} />
                 <fieldset className={styles.deliveryOptions}>
                   <legend>Elegí cómo pagar</legend>
                   {METODOS_PAGO.map(({id, nombre}) => (
@@ -594,6 +629,13 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
                     <Form.Text>En una tienda real te llevaríamos a Mercado Pago para aprobar el pago.</Form.Text>
                   </Form.Group>
                 )}
+                <div className={styles.cartSummary} aria-live="polite">
+                  {lineaCupon}
+                  <div className={styles.cartTotal}>
+                    <span>Total a pagar</span>
+                    <strong>{formatoPrecio.format(total)}</strong>
+                  </div>
+                </div>
               </>
             ) : (
               <section className={styles.orderReview} aria-label="Revisión final del pedido">
@@ -632,6 +674,7 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
                       <strong>−{formatoPrecio.format(montoDescuento)}</strong>
                     </div>
                   )}
+                  {lineaCupon}
                   <div>
                     <span>Envío</span>
                     <strong>
@@ -709,6 +752,10 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
                 </div>
               ))}
             </div>
+            <Button className={styles.vaciarCarrito} variant="link" type="button" onClick={vaciar}>
+              Vaciar carrito
+            </Button>
+            <CuponesCarrito onIrALogin={cerrar} />
             <div className={styles.cartSummary}>
               <div>
                 <span>Subtotal</span>
@@ -720,6 +767,7 @@ function CartModal({formatoPrecio, descuento = 0, envios = {zonas: [], cargando:
                   <strong>−{formatoPrecio.format(montoDescuento)}</strong>
                 </div>
               )}
+              {lineaCupon}
               <div>
                 <span>Envío</span>
                 <strong>

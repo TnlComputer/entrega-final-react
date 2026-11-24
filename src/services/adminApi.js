@@ -1,53 +1,8 @@
 // API del panel admin (Firebase)
-import {onAuthStateChanged, signInWithEmailAndPassword, signOut} from 'firebase/auth';
-import {collection, doc, getDoc, getDocs, query, setDoc, where, writeBatch} from 'firebase/firestore';
-import {auth, db} from './firebase';
-
-const MENSAJES_FIREBASE = {
-  'auth/invalid-credential': 'Email o contraseña incorrectos.',
-  'auth/invalid-email': 'El email no es válido.',
-  'auth/too-many-requests': 'Demasiados intentos. Esperá unos minutos y probá de nuevo.',
-  'auth/network-request-failed': 'No hay conexión. Revisá internet.',
-  'permission-denied': 'No tenés permiso para hacer cambios. Iniciá sesión de nuevo.',
-  unavailable: 'No hay conexión con la base de datos. Revisá internet.'
-};
-
-// Mensajes de error de Firebase
-const traducir = error => new Error(MENSAJES_FIREBASE[error.code] || error.message || 'Algo salió mal.', {cause: error});
-
-async function esAdmin(usuario) {
-  try {
-    return (await getDoc(doc(db, 'admins', usuario.uid))).exists();
-  } catch {
-    return false;
-  }
-}
-
-// Avisa cuando cambia la sesión
-export function observarSesion(callback) {
-  return onAuthStateChanged(auth, async usuario => {
-    callback(usuario && (await esAdmin(usuario)) ? usuario.email : null);
-  });
-}
-
-export async function iniciarSesion(email, contrasenia) {
-  let credencial;
-  try {
-    credencial = await signInWithEmailAndPassword(auth, email, contrasenia);
-  } catch (error) {
-    throw traducir(error);
-  }
-
-  if (!(await esAdmin(credencial.user))) {
-    await signOut(auth);
-    throw new Error('Esta cuenta no tiene permiso para entrar al panel.');
-  }
-  return credencial.user.email;
-}
-
-export function cerrarSesion() {
-  return signOut(auth);
-}
+import {collection, doc, getDocs, query, setDoc, where, writeBatch} from 'firebase/firestore';
+import {obtenerToken} from './authApi';
+import traducir from './erroresFirebase';
+import {db} from './firebase';
 
 // Guarda el catálogo completo y borra lo que ya no está
 export async function guardarCatalogo({rubros, productos}) {
@@ -92,8 +47,7 @@ export async function guardarZonasEnvio(zonas) {
 }
 
 export async function subirImagen(archivo) {
-  if (!auth.currentUser) throw new Error('Iniciá sesión de nuevo.');
-  const token = await auth.currentUser.getIdToken();
+  const token = await obtenerToken();
 
   let respuesta;
   try {

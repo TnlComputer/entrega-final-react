@@ -23,6 +23,29 @@ service cloud.firestore {
       allow write: if esAdmin();
     }
 
+    match /equipo/{id} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    // Cada uno ve los suyos; marcarlos como usados lo hace el servidor
+    match /cupones/{codigo} {
+      allow read: if esAdmin() || (request.auth != null && resource.data.uid == request.auth.uid);
+      allow create, delete: if esAdmin();
+    }
+
+    // Cada usuario crea el suyo al registrarse
+    match /usuarios/{uid} {
+      allow read: if esAdmin() || (request.auth != null && request.auth.uid == uid);
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['uid', 'nombre', 'email', 'creadoEn'])
+        && request.resource.data.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.nombre is string
+        && request.resource.data.nombre.size() <= 60;
+    }
+
     match /config/{id} {
       allow read: if true;
       allow write: if esAdmin();

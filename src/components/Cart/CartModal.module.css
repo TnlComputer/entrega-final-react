@@ -118,6 +118,34 @@
   font-size: 17px !important;
   line-height: 1;
 }
+.vaciar-carrito {
+  color: var(--muted) !important;
+  font-size: 12px !important;
+  padding: 10px 0 !important;
+}
+.cupon {
+  align-items: center;
+  border: 1px dashed var(--violet);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 10px 14px;
+}
+.cupon strong,
+.cupon small {
+  display: block;
+}
+.cupon strong {
+  color: var(--violet);
+  font-size: 14px;
+}
+.cupon small,
+.cupon-aviso {
+  color: var(--muted);
+  font-size: 12px;
+}
 .cart-summary {
   display: grid;
   gap: 10px;
