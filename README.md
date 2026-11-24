@@ -36,6 +36,7 @@ Una tienda online de artículos de pesca, hecha con React. Tiene un catálogo de
 - Configuración de zonas de envío por rangos inclusivos de CP numéricos de 4 dígitos y/o localidades, sin rangos superpuestos ni localidades duplicadas. Incluye tarifas fijas en ARS y retiro en tienda sin costo.
 - Edición del anuncio: texto, fechas, descuento y vista previa.
 - Cupones: listado con el usuario asignado, vencimiento, estado, fecha de uso y pedido; alta manual para un usuario y baja.
+- Usuarios: listado con rol, alta y último ingreso, y baja de clientes. Los administradores no se pueden eliminar.
 
 El login se realiza con Firebase Authentication. El catálogo, el equipo, los cupones, los avisos, las tarifas de envío y los enlaces de la galería se guardan en Cloud Firestore. Solo pueden entrar al panel las cuentas autorizadas en `admins/{uid}`.
 
@@ -71,7 +72,7 @@ Copiá `.env.example` como `.env.local` y completalo. `.env.local` no se sube al
 3. **Authentication**: activar *Correo electrónico/contraseña* y crear el usuario admin (el mismo de `ADMIN_EMAIL` y `ADMIN_PASSWORD`).
 4. En Firestore, crear la colección `admins` con un documento cuyo ID sea el *UID* de ese usuario (se ve en Authentication). Puede quedar sin campos.
 5. `npm run cargar-datos` sube el catálogo y el anuncio iniciales de `scripts/datos/`, y `npm run cargar-equipo` el equipo.
-6. Para simular compras con descuento de stock y repartir cupones, creá una cuenta de servicio de Firebase con acceso de edición a Firestore y guardá su JSON completo en `FIREBASE_SERVICE_ACCOUNT_JSON`. En local va en `.env.local`; en Netlify, en *Site configuration → Environment variables*. Es una credencial privada: no la subas a Git, no uses el prefijo `VITE_` y no la compartas por chat.
+6. Para simular compras con descuento de stock y repartir cupones, creá una cuenta de servicio de Firebase con acceso de edición a Firestore y a Authentication y guardá su JSON completo en `FIREBASE_SERVICE_ACCOUNT_JSON`. En local va en `.env.local`; en Netlify, en *Site configuration → Environment variables*. Es una credencial privada: no la subas a Git, no uses el prefijo `VITE_` y no la compartas por chat.
 
 | Comando | Qué hace |
 | --- | --- |

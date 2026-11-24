@@ -2,7 +2,7 @@
 import {cert, getApps, initializeApp} from 'firebase-admin/app';
 import firebaseConfig from '../src/services/firebaseConfig.js';
 
-const HOST_AUTH = process.env.FIREBASE_AUTH_EMULATOR_HOST
+export const HOST_AUTH = process.env.FIREBASE_AUTH_EMULATOR_HOST
   ? `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com`
   : 'https://identitytoolkit.googleapis.com';
 

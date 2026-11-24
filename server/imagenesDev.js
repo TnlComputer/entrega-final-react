@@ -3,6 +3,7 @@ import {Readable} from 'node:stream';
 import subirImagen from './subirImagen.js';
 import comprar from './comprar.js';
 import registrarEntrada from './cupones.js';
+import usuarios from './usuarios.js';
 
 export default function imagenesDev(opciones) {
   return {
@@ -13,7 +14,8 @@ export default function imagenesDev(opciones) {
       const rutas = {
         '/api/imagenes': (request, config) => subirImagen(request, config),
         '/api/compras': (request, config) => comprar(request, config),
-        '/api/cupones': (request, config) => registrarEntrada(request, config)
+        '/api/cupones': (request, config) => registrarEntrada(request, config),
+        '/api/usuarios': (request, config) => usuarios(request, config)
       };
 
       for (const [ruta, handler] of Object.entries(rutas)) {

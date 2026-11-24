@@ -13,6 +13,7 @@ import AdminEnvios from './Pages/Admin/AdminEnvios';
 import AdminLayout from './Pages/Admin/AdminLayout';
 import AdminProductos from './Pages/Admin/AdminProductos';
 import AdminRubros from './Pages/Admin/AdminRubros';
+import AdminUsuarios from './Pages/Admin/AdminUsuarios';
 import ProductoForm from './Pages/Admin/ProductoForm';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
@@ -60,6 +61,7 @@ function App() {
                   <Route path="rubros" element={<AdminRubros />} />
                   <Route path="anuncio" element={<AdminAnuncio />} />
                   <Route path="cupones" element={<AdminCupones />} />
+                  <Route path="usuarios" element={<AdminUsuarios />} />
                   <Route path="envios" element={<AdminEnvios />} />
                 </Route>
                 <Route path="*" element={<p>No encontramos esta página.</p>} />
