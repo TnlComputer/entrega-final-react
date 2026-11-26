@@ -1,5 +1,4 @@
 import {Container} from 'react-bootstrap';
-import {Link} from 'react-router-dom';
 import styles from './Footer.module.css';
 
 function Footer() {
@@ -34,9 +33,7 @@ function Footer() {
         </div>
 
         <div className={styles.copyright}>
-          <span>
-            © 2026 El Anzuelo · <Link to="/admin">Administración</Link>
-          </span>
+          <span>© 2026 El Anzuelo</span>
           <span>
             Foto de fondo:{' '}
             <a href="https://commons.wikimedia.org/w/index.php?curid=24774351" target="_blank" rel="noreferrer">
